@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+<head lang="en" ng-app>
+    <meta charset="UTF-8">
+    <title>ISY GeoInnsyn</title>
+
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link rel="stylesheet" type="text/css" href="../vendor/leaflet/dist/leaflet.css" />
+    <link rel="stylesheet" type="text/css" href="indexStyle.css" />
+    <link rel="stylesheet" type="text/css" href="leafletStyle.css" />
+    <link rel="stylesheet" type="text/css" href="../src/assets/Leaflet.MousePosition/L.Control.MousePosition.css" />
+</head>
+
+<body>
+
+<div class="config-top-nav">
+    <div class="config-nav-header leaflet-header">
+        <h1 class="leaflet-logo"><a href="http://leafletjs.com/">Leaflet</a></h1>
+    </div>
+</div>
+<!--<div id="map" class="fullSizeMap"></div>-->
+
+<div class="config-page-wrapper">
+            <span class="config-page">
+                <!--<div class="panel-body"></div>-->
+                <!--<div class="panel-body">
+                    <h2>Kart panel</h2>
+                </div>-->
+                <!--<div class="panel">
+                    <div  mapgui></div>
+                </div>-->
+                <div class="panel">
+                    <div id="map" class="fullSizeMap"></div>
+
+                    <!--<script type="text/javascript" src="dist/vendor/angular/angular.js"></script>-->
+                    <!--<script type="text/javascript" src="dist/vendor/openlayers3/build/ol.js"></script>-->
+                    <script type="text/javascript" src="../vendor/leaflet/dist/leaflet.js"></script>
+                    <script type="text/javascript" src="../dist/vendor/proj4/dist/proj4.js"></script>
+                    <script type="text/javascript" src="../dist/vendor/proj4leaflet/src/proj4leaflet.js"></script>
+                    <script type="text/javascript" src="../src/assets/Leaflet.MousePosition/L.Control.MousePosition.js"></script>
+                    <script type="text/javascript" src="../dist/maplib_leaflet.js"></script>
+
+                    <script type="text/javascript">
+                        (function () {
+                            'use strict';
+                            var mapview = {
+                                epsg: "EPSG:32632",
+                                extent: [-2000000, 3500000, 3545984, 9045984],
+                                maxRes: 21664
+                            };
+
+                            mapview = {
+                                epsg: "EPSG:900913",
+                                extent: [-20037508.34, -20037508.34, 20037508.34, 20037508.34],
+                                maxRes: 156543.03390625
+                            };
+
+                            var config = {
+                                "numZoomLevels": 18,
+                                "newMaxRes":  mapview.maxRes,
+                                "center": [
+                                    254979.524036, -3031334.467146
+                                ],
+                                "zoom": 3,
+                                "layers": [
+                                    {
+                                        "id": "1993",
+                                        "isBaseLayer": true,
+                                        "subLayers": [
+                                            {
+                                                attribution: "L2S",
+                                                source: "TMS",
+                                                url: [
+                                                    "http://cache1.norgeibilder.no/geowebcache/service",
+                                                    "http://cache2.norgeibilder.no/geowebcache/service",
+                                                    "http://cache3.norgeibilder.no/geowebcache/service",
+                                                    "http://cache4.norgeibilder.no/geowebcache/service"
+                                                ],
+                                                name: "NiB",
+                                                /*source: "WMS",*/
+                                                /*url: "http://wms.norgeibilder.no/services/wms/wms.aspx?NiB=jadda",
+                                                name: "SatelliteImage",*/
+                                                format: "image/jpeg",
+                                                coordinate_system: mapview.epsg,
+                                                extent: mapview.extent,
+                                                extentUnits: "m",
+                                                id: "1993",
+                                                tiled: true
+                                            }
+                                        ],
+                                        "visibleOnLoad": true
+                                    }
+
+                                ],
+                                "coordinate_system": mapview.epsg,
+                                "extent": mapview.extent,
+                                "extentUnits": "m"
+                            };
+
+                            var eventHandler = new ISY.Events.EventHandler();
+                            var mapImplementation = new ISY.MapImplementation.Leaflet.Map(
+                                    null,
+                                    eventHandler
+                            );
+                            var layerHandler = new ISY.MapAPI.Layers(mapImplementation);
+                            var groupHandler = new ISY.MapAPI.Groups();
+
+                            var map = new ISY.MapAPI.Map(
+                                    mapImplementation,
+                                    eventHandler,
+                                    null,
+                                    layerHandler,
+                                    groupHandler
+                            );
+
+                            map.Init('map', config);
+
+                            eventHandler.RegisterEvent("MapMoveend", function(){
+                                // rewrite url
+                                if (window.history.replaceState) {
+                                    //prevents browser from storing history with each change:
+                                    var center = map.GetCenter();
+                                    window.history.replaceState(undefined, undefined, "#" + center.lon.toFixed(0)
+                                    + "/" + center.lat.toFixed(0)
+                                    + "/" + center.zoom);
+                                }
+                            });
+
+                        }());
+                    </script>
+                </div>
+            </span>
+</div>
+
+</body>
+</html>

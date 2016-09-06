@@ -1,0 +1,26 @@
+.leaflet-logo {
+    display: block;
+    height: 0;
+    padding-top: 73px;
+    width: 220px;
+    overflow: hidden;
+    background: url(http://leafletjs.com/docs/images/logo.png) 0 0 no-repeat;
+    margin-left: -10px;
+    margin-bottom: 8px;
+    text-decoration: none;
+    -webkit-transition: 0.8s all;
+}
+
+.config-top-nav .leaflet-header {
+    background-color: #ffffff;
+}
+
+.leaflet-container{
+    border-radius: 4px;
+    z-index: 1;
+}
+
+h1 a:focus, a:hover {
+    color:#09f;
+    -webkit-filter: hue-rotate(-70deg) saturate(1.5);
+}

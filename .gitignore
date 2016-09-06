@@ -1,0 +1,11 @@
+*.sw*
+*~
+.bower-cache/
+.bower-registry/
+.bower-tmp/
+/build/
+node_modules/
+/vendor/
+.idea/
+.sass-cache/
+.divshot-cache/

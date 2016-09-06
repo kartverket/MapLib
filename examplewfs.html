@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <style type="text/css">
+             html, body {
+                 height:100%;
+                 width:100%;
+                 padding: 0;
+                 margin: 0;
+             }
+
+             #map {
+                 width:100%;
+                 height:100%;
+                 background-color: #D8E7EF;
+             }
+         </style>
+    </head>
+<body>
+
+<div id="map" tabindex="0"></div>
+<script type="text/javascript" src="vendor/jquery/dist/jquery.min.js"></script>
+<script type="text/javascript" src="vendor/openlayers3/ol.js"></script>
+<script type="text/javascript" src="vendor/proj4/dist/proj4.js"></script>
+<script type="text/javascript" src="vendor/pouchdb/dist/pouchdb.js"></script>
+<script type="text/javascript" src="dist/maplib.js"></script>
+
+<script type="text/javascript">
+    (function () {
+        'use strict';
+
+        var config = {
+            "proxyHost": "http://geoinnsyn.norconsultad.com/services/isy.gis.isyproxy/?",
+            "tokenHost": "http://geoinnsyn.norconsultad.com/services/isy.gis.isygatekeeper",
+            "numZoomLevels": 18,
+            "newMaxRes":  21664,
+            "newMaxScale": 81920000,
+            "center": [570130,7032300],
+            "groups": [],
+            "zoom": 15,
+            "layers": [
+                {
+                    "id": "1992",
+                    "isBaseLayer": true,
+                    "subLayers": [
+                        {
+                            "source": "WMS",
+                            "url": ["http://gatekeeper1.geonorge.no/BaatGatekeeper/gk/gk.cache?LAYERS=norges_grunnkart", "http://gatekeeper2.geonorge.no/BaatGatekeeper/gk/gk.cache?LAYERS=norges_grunnkart"],
+                            "gatekeeper": true,
+                            "name": "norges_grunnkart",
+                            "format": "image/png",
+                            "coordinate_system": "EPSG:32632",
+                            "id": "1992",
+                            "tiled": true
+                        }
+                    ],
+                    "visibleOnLoad": true
+                },
+                {
+                    "id": "8001",
+                    "isBaseLayer": false,
+                    "subLayers": [
+                        {
+                            "source": "WFS",
+                            "url": ["https://kart5.nois.no/trondheim_neste/wfs/default.asp?conname=Regplan&"],
+                            "name": "RpOmråde",
+                            "version": "1.0.0",
+                            //"maxResolution": 3500 / 2834,
+                            "coordinate_system": "EPSG:32632",
+                            //"extent": [-2000000,3500000,3545984,9045984],
+                            //"extentUnits": "m",
+                            "id": "8001",
+                            "tiled": false,
+                            "style": "http://geoinnsyn.norconsultad.com/Services/ISY.GIS.IsyGeoinnsynConfig/api/v1/style?application=GeoInnsyn&name=RegplanVedtatt"
+                        },
+                    ],
+                    "visibleOnLoad": true
+                },
+                {
+                    "id": "8002",
+                    "isBaseLayer": false,
+                    "subLayers": [
+                        {
+                            "source": "WFS",
+                            "url": ["https://kart5.nois.no/trondheim_neste/wfs/default.asp?conname=Tiltak&"],
+                            "name": "PblTiltak",
+                            "version": "1.0.0",
+                            //"maxResolution": 3500 / 2834,
+                            "coordinate_system": "EPSG:32632",
+                            //"extent": [-2000000,3500000,3545984,9045984],
+                            //"extentUnits": "m",
+                            "id": "8002",
+                            "tiled": false,
+                            "style": "http://geoinnsyn.norconsultad.com/Services/ISY.GIS.IsyGeoinnsynConfig/api/v1/style?application=GeoInnsyn&name=pblTiltak_type"
+                        },
+                    ],
+                    "visibleOnLoad": true
+                }
+            ],
+            "coordinate_system": "EPSG:32632",
+            "extent": [-2000000.0, 3500000.0, 3545984.0, 9045984.0],
+            "extentUnits": "m"
+        };
+
+        var eventHandler = new ISY.Events.EventHandler();
+        var offline = new ISY.MapImplementation.OL3.Offline();
+        var mapImplementation = new ISY.MapImplementation.OL3.Map(
+            null,
+            eventHandler,
+            null, null, null, null, null, null,
+            offline
+        );
+        var layerHandler = new ISY.MapAPI.Layers(mapImplementation);
+        var groupHandler = new ISY.MapAPI.Groups();
+        var categoryHandler = new ISY.MapAPI.Categories();
+
+        var map = new ISY.MapAPI.Map(
+            mapImplementation,
+            eventHandler,
+            null,
+            layerHandler,
+            groupHandler,
+            categoryHandler
+        );
+
+        map.Init('map', config);
+
+        function initMap(){
+            console.log("initmap");
+        }
+
+        eventHandler.RegisterEvent(ISY.Events.EventTypes.MapConfigLoaded, initMap);
+
+        eventHandler.TriggerEvent(ISY.Events.EventTypes.MapConfigLoaded);
+    }());
+</script>
+
+</body>
+</html>

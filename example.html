@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <style type="text/css">
+             html, body {
+                 height:100%;
+                 width:100%;
+                 padding: 0;
+                 margin: 0;
+             }
+
+             #map {
+                 width:100%;
+                 height:100%;
+                 background-color: #D8E7EF;
+             }
+         </style>
+    </head>
+<body>
+
+<div id="map" tabindex="0"></div>
+<div id="errorcontainer" style="position: absolute;
+transition: opacity 1250ms;
+padding: 5px 0 5px 0;
+color:#ffffff;font-weight:bold;background-color: #20aaac;bottom: 5px;left: 0;width: 100%;text-align: center;"></div>
+<script type="text/javascript" src="vendor/openlayers3/ol.js"></script>
+<script type="text/javascript" src="vendor/proj4/dist/proj4.js"></script>
+<script type="text/javascript" src="dist/maplib.js"></script>
+
+<script type="text/javascript">
+    (function () {
+        'use strict';
+
+        var config = {
+            "numZoomLevels": 18,
+            "newMaxRes":  21664,
+            "center": [
+                570130,7032300
+            ],
+            "groups": [],
+            "zoom": 15,
+            "layers": [
+                {
+                    "id": "1992",
+                    "isBaseLayer": true,
+                    "subLayers": [
+                        {
+                            "title": "norges_grunnkart",
+                            "source": "WMS",
+                            "url": ["http://opencache.statkart.no/gatekeeper/gk/gk.open?LAYERS=norges_grunnkartt"],
+                            "gatekeeper": true,
+                            "name": "norges_grunnkart",
+                            "format": "image/png",
+                            "coordinate_system": "EPSG:32632",
+                            "id": "1992",
+                            "tiled": true
+                        }
+                    ],
+                    "visibleOnLoad": true
+                }
+            ],
+            "coordinate_system": "EPSG:32632",
+            "extent": [
+                -2000000.0, 3500000.0, 3545984.0, 9045984.0
+            ],
+            "extentUnits": "m"
+        };
+
+        var eventHandler = new ISY.Events.EventHandler();
+        var mapImplementation = new ISY.MapImplementation.OL3.Map(
+            null,
+            eventHandler
+        );
+        var layerHandler = new ISY.MapAPI.Layers(mapImplementation);
+        var groupHandler = new ISY.MapAPI.Groups();
+        var categoryHandler = new ISY.MapAPI.Categories();
+
+        var map = new ISY.MapAPI.Map(
+            mapImplementation,
+            eventHandler,
+            null,
+            layerHandler,
+            groupHandler,
+            categoryHandler
+        );
+
+        map.Init('map', config);
+
+    }());
+</script>
+
+</body>
+</html>

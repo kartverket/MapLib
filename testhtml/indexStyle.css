@@ -1,0 +1,195 @@
+body {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    overflow: hidden;
+    background: #fafafa;
+    color: #19191a;
+    font-size: 16px;
+    font-family: "Open sans",Arial,Helvetica,sans-serif;
+    line-height: 1.3;
+    margin: 0;
+}
+
+*, *:before, *:after {
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
+.config-top-nav {
+    left: 0;
+    position: fixed;
+    width: 100%;
+    top: 0px;
+}
+.config-top-nav .config-nav-header {
+    background-color: #82117f;
+    color: #e6e6e6;
+    padding: 10px;
+}
+.config-top-nav .config-nav-windows {
+    padding: 10px;
+}
+
+.config-bottom-nav {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    padding: 10px;
+    height: 70px;
+}
+
+.config-page-wrapper {
+    background-color: #e6e6e6;
+    box-shadow: inset rgba(0, 0, 0, 0.29804) 1px 1px 2px 1px;
+    max-height: none;
+    position: fixed;
+    bottom: 70px;
+    width: 100%;
+    top: 115px;
+    padding: 10px;
+    overflow: auto;
+}
+
+.config-page {
+    display: flex;
+    flex-direction: row;
+    flex: 1;
+    height: 100%;
+}
+.panel-body {
+    padding: 15px;
+}
+.config-page + .config-page {
+    margin-left: 10px;
+}
+.config-page .config-panel-content {
+    background-color: transparent;
+    padding: 10px;
+    border-top: 1px solid #e6e6e6;
+}
+.config-page .grid-content {
+    background-color: transparent;
+    padding: 10px;
+}
+.config-page .grid-content {
+    background-color: transparent;
+    padding: 10px;
+}
+.config-page .layer-content {
+    padding: 5px;
+}
+.config-page > div {
+    box-shadow: rgba(0, 0, 0, 0.29804) 1px 1px 2px 1px;
+    background-color: white;
+    border-radius: 4px;
+    flex: 1;
+    overflow: auto;
+    position: relative;
+}
+.config-page > div + div {
+    margin-left: 10px;
+}
+.config-page h2 {
+    color: #4c4c4e;
+    font-size: 19px;
+    line-height: 26px;
+    margin: 0;
+    padding: 10px;
+}
+.config-page .layerContainer {
+    margin-top: 10px;
+}
+.config-page label {
+    font-weight: normal;
+}
+
+.definedCategories .moveCategoryMenu {
+    position: initial;
+}
+.definedCategories h2.panel-title {
+    min-height: 30px;
+    padding: 12px 10px;
+}
+
+.moveCategoryMenu {
+    position: absolute;
+    right: 45px;
+    display: inline-block;
+}
+
+.catlist-modal {
+    width: 100%;
+    height: 100%;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: rgba(0, 0, 0, 0.3);
+}
+.catlist-modal .catlist {
+    width: 400px;
+    top: 200px;
+    left: -150px;
+}
+
+.loadingScreen {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: rgba(0, 0, 0, 0.3);
+}
+.loadingScreen .loadingText {
+    font-size: 100px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.center-cell-content {
+    text-align: center;
+}
+
+.panel,
+.panel-heading {
+    overflow: visible !important;
+}
+
+.table-without-borders {
+    border: none;
+    width: auto;
+    table-layout: auto;
+}
+.table-without-borders td {
+    border: none;
+    padding-right: 5px;
+    padding-left: 5px;
+}
+.table-without-borders .opacityRange {
+    width: 70%;
+}
+.table-without-borders .center-content {
+    text-align: center !important;
+}
+.table-without-borders .header-column {
+    font-weight: bold;
+}
+
+.fullSizeMap {
+    position: absolute;
+    bottom: 0;
+    top: 0;
+    right: 0;
+    left: 0;
+}
+.ol-viewport {
+    border-radius: 4px;
+}

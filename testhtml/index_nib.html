@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>ISY GeoInnsyn</title>
+    <script type="text/javascript" src="../vendor/openlayers3/ol.js"></script>
+    <script type="text/javascript" src="../vendor/proj4/dist/proj4.js"></script>
+    <script type="text/javascript" src="../src/assets/proj4/proj4defs.js"></script>
+    <script type="text/javascript" src="../vendor/jquery/dist/jquery.js"></script>
+    <script type="text/javascript" src="../vendor/bootstrap/dist/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="../vendor/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" type="text/css" href="../vendor/openlayers3/ol.css" />
+</head>
+<body>
+<div class="container-fluid">
+
+    <div class="row-fluid">
+        <div class="span12">
+            <div id="map" class="map"></div>
+        </div>
+    </div>
+
+</div>
+<script>
+    // format used to parse WFS GetFeature responses
+    var geojsonFormat = new ol.format.GeoJSON();
+    var projection = new ol.proj.Projection({
+        code: 'EPSG:32633',
+        //extent: [-2500000, 3500000, 3045984, 9045984], //UTM32
+        extent: [-2000000, 3500000, 3545984, 9045984],  //UTM33
+        units: 'm'
+    });
+    $("#map").height($(document).height());
+
+    ol.proj.addProjection(projection);
+
+    var strategy = ol.loadingstrategy.bbox;
+
+    var vectorSource = new ol.source.Vector({
+        loader: function(extent, resolution, projection) {
+            var url = 'http://samx.nois.no/IsyProxy?url=http://kart3.nois.no/sam-x/wfs/default.asp?conname=OD' +
+                    '&version=1.1.0&request=GetFeature&typename=v_geo_prlarea' +
+                    //'&outputFormat=text/javascript' +
+                    '&srsname=EPSG:32633&bbox=' + extent.join(',');
+            // use jsonp: false to prevent jQuery from adding the "callback"
+            // parameter to the URL
+            $.ajax({url: url})
+                    .done(function (response){
+                        var gmlFormat = new ol.format.GML3();
+                        vectorSource.format = new ol.format.WFS({
+                            featureType: 'v_geo_prlarea',
+                            featureNS: response.firstChild.namespaceURI,
+                            gmlFormat: new ol.format.GML3()
+                        });
+                        var features = vectorSource.format.readFeatures(response);
+                        vectorSource.addFeatures(features);
+                    });
+        },
+        strategy: strategy,
+        projection: projection
+    });
+
+    // v3.11.2 bugfix:
+    if (vectorSource.getProjection() == null){
+        if (vectorSource.projection_ !== undefined){
+            vectorSource.projection_ = projection;
+        }
+        if (vectorSource.f !== undefined){
+            vectorSource.f = projection;
+        }
+    }
+
+    var vector = new ol.layer.Vector({
+        source: vectorSource,
+        style: new ol.style.Style({
+            stroke: new ol.style.Stroke({
+                color: 'rgba(0, 0, 255, 1.0)',
+                width: 2
+            })
+        })
+    });
+
+    var rastersource = new ol.source.TileWMS({
+        params: {
+            LAYERS: 'NiB',
+            VERSION: '1.1.1',
+            FORMAT: 'image/jpeg'
+        },
+        url: 'http://cache.norgeibilder.no/geowebcache/service/wms?',
+        crossOrigin: null,
+        transparent: true
+    });
+
+    var raster = new ol.layer.Tile({
+        source: rastersource
+    });
+
+    var map = new ol.Map({
+        layers: [raster],
+        //layers: [raster, vector],
+        target: document.getElementById('map'),
+        view: new ol.View({
+            projection: new ol.proj.Projection({
+                code: 'EPSG:32632',
+                //extent: [-2500000, 3500000, 3045984, 9045984], //UTM33
+                extent: [-2000000, 3500000, 3545984, 9045984],  //UTM32
+                units: 'm'
+            }),
+            center: [569517, 7034234],
+            maxZoom: 19,
+            zoom: 7
+        })
+    });
+
+</script>
+</body>
+</html>

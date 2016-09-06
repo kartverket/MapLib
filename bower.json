@@ -1,0 +1,16 @@
+{
+  "name": "maplib",
+  "version": "0.0.2",
+  "main":[],
+  "ignore":[],
+  "devDependencies": {},
+  "dependencies": {
+    "jquery": "2.2.4",
+    "openlayers3": "https://github.com/openlayers/ol3/releases/download/v3.12.1/v3.12.1-dist.zip",
+    "xml2json": "*",
+    "proj4": "*",
+    "jasmine-ajax": "*",
+    "pouchdb": "~5.0.0",
+    "blob-util": "*"
+  }
+}

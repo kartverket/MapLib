@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>ISY GeoInnsyn</title>
+
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link rel="stylesheet" type="text/css" href="indexStyle.css" />
+
+    <!--<script type="text/javascript" src="vendor/angular/angular.js"></script>-->
+    <script type="text/javascript">
+    </script>
+</head>
+
+<body>
+
+<div class="config-top-nav">
+    <div class="config-nav-header">
+        <h2>maplib - test</h2>
+        <div id="toggleHover" onclick="javascript:toggleHover();" style="cursor: pointer;">toggle</div>
+    </div>
+</div>
+<div class="config-page-wrapper" ng-app="myModule" ng-controller="MyCtrl">
+            <span class="config-page">
+                <!--<div class="panel-body">
+                    <h2>Info panel</h2>
+                    <div>
+                        <div ng-bind="infotext"></div>
+                    </div>
+                </div>-->
+                <!--<div class="panel-body">
+                    <h2>Kart panel</h2>
+                </div>-->
+                <!--<div class="panel">
+                    <div  mapgui></div>
+                </div>-->
+                <div class="panel">
+
+                    <div id="map" class="fullSizeMap"></div>
+
+                    <script type="text/javascript" src="../vendor/openlayers3/ol.js"></script>
+                    <script type="text/javascript" src="../vendor/proj4/dist/proj4.js"></script>
+                    <script type="text/javascript" src="../src/assets/proj4/proj4defs.js"></script>
+                    <script type="text/javascript" src="../vendor/jquery/dist/jquery.js"></script>
+                    <script type="text/javascript" src="../vendor/bootstrap/dist/js/bootstrap.min.js"></script>
+                    <script type="text/javascript" src="../dist/maplib.js"></script>
+                    <link rel="stylesheet" type="text/css" href="../vendor/bootstrap/dist/css/bootstrap.min.css" />
+
+                    <script type="text/javascript">
+                        var bigMap;
+                        (function () {
+                            'use strict';
+
+                            var config = {
+                                "numZoomLevels": 18,
+                                "newMaxRes":  21664,
+                                "newMaxScale": 81920000,
+                                //http://geoinnsyn.nois.no/L2S/?zoom=8&lat=6796692.8125&lon=-118475&srs=EPSG:32633
+                                "center": [570130,7032300],
+                                "zoom": 15,
+                                "tools":[
+                                    {
+                                        "id": "FeatureHoverInfo",
+                                        "title": "FeatureHoverInfo_title",
+                                        "hover": "FeatureHoverInfo_hover",
+                                        "symbol": "glyphicon glyphicon-unchecked",
+                                        "sortOrder": 2,
+                                        "isSelected": true
+                                    }
+                                ],
+                                "layers": [
+                                    {
+                                        "id": "1992",
+                                        "isBaseLayer": true,
+                                        "subLayers": [
+                                            {
+                                                "source": "WMS",
+                                                "url": [
+                                                    "http://cache1.norgeibilder.no/geowebcache/service/wms",
+                                                    "http://cache2.norgeibilder.no/geowebcache/service/wms",
+                                                    "http://cache3.norgeibilder.no/geowebcache/service/wms",
+                                                    "http://cache4.norgeibilder.no/geowebcache/service/wms"
+                                                ],
+                                                "name": "NiB",
+                                                "format": "image/jpeg",
+                                                "coordinate_system": "EPSG:32632",
+                                                "extent": [-2000000,3500000,3545984,9045984],
+                                                "extentUnits": "m",
+                                                "id": "1992",
+                                                "tiled": true
+                                            }
+                                        ],
+                                        "visibleOnLoad": false
+                                    },
+                                    {
+                                        "id": "8000",
+                                        "isBaseLayer": true,
+                                        "subLayers": [
+                                            {
+                                                "source": "WMS",
+                                                "url": ["http://opencache.statkart.no/gatekeeper/gk/gk.open"],
+                                                "name": "norges_grunnkart",
+                                                "format": "image/png",
+                                                "coordinate_system": "EPSG:25832",
+                                                "extent": [-2000000,3500000,3545984,9045984],
+                                                "extentUnits": "m",
+                                                "id": "8000",
+                                                "tiled": true
+                                            }
+                                        ],
+                                        "visibleOnLoad": false
+                                    },
+                                    {
+                                        "id": "7999",
+                                        "isBaseLayer": true,
+                                        "subLayers": [
+                                            {
+                                                "source": "WMS",
+                                                "url": [
+                                                    "http://gatekeeper1.geonorge.no/BaatGatekeeper/gk/gk.cache?SERVICE=WMS&VERSION=1.1.1",
+                                                    "http://gatekeeper2.geonorge.no/BaatGatekeeper/gk/gk.cache?SERVICE=WMS&VERSION=1.1.1",
+                                                    "http://gatekeeper3.geonorge.no/BaatGatekeeper/gk/gk.cache?SERVICE=WMS&VERSION=1.1.1"
+                                                ],
+                                                "gatekeeper": true,
+                                                "name": "norges_grunnkart",
+                                                "format": "image/png",
+                                                "coordinate_system": "EPSG:25832",
+                                                "extent": [-2000000,3500000,3545984,9045984],
+                                                "extentUnits": "m",
+                                                "id": "7999",
+                                                "tiled": true
+                                            }
+                                        ],
+                                        "visibleOnLoad": true
+                                    }
+                                ],
+                                "coordinate_system": "EPSG:32632",
+                                "extent": [-2000000.0, 3500000.0, 3545984.0, 9045984.0],
+                                "extentUnits": "m",
+                                "proxyHost": [
+                                    "http://geoinnsyn.nois.no/isyproxy?"
+                                ],
+                                "proxyToken": "http://geoinnsyn.nois.no/isygatekeeper",
+                                "hoverOptions": {
+                                    "mmultiSelect": false,
+                                    "multiSelect": true
+                                }
+                            };
+
+                            var eventHandler = new ISY.Events.EventHandler();
+                            var hoverInfo = new ISY.MapImplementation.OL3.HoverInfo();
+
+                            var mapImplementation = new ISY.MapImplementation.OL3.Map(
+                                    null,
+                                    eventHandler,
+                                    null,
+                                    null,
+                                    null,
+                                    null,
+                                    hoverInfo
+                            );
+                            var layerHandler = new ISY.MapAPI.Layers(mapImplementation);
+                            var groupHandler = new ISY.MapAPI.Groups();
+
+                            var map = new ISY.MapAPI.Map(
+                                    mapImplementation,
+                                    eventHandler,
+                                    null,
+                                    layerHandler,
+                                    groupHandler
+                            );
+
+                            eventHandler.RegisterEvent("ChangeLayers", map.ArrangeLayers);
+
+                            map.Init('map', config);
+
+/*
+                            eventHandler.RegisterEvent("MapMoveend", function(){
+                                // rewrite url
+                                if (window.history.replaceState) {
+                                    //prevents browser from storing history with each change:
+                                    var center = map.GetCenter();
+                                    window.history.replaceState(undefined, undefined, "#" + center.lon.toFixed(0)
+                                    + "/" + center.lat.toFixed(0)
+                                    + "/" + center.zoom);
+                                }
+                            });
+*/
+
+                            map.ActivateHoverInfo();
+                            bigMap = map;
+
+                            /*var myModule = angular.module("myModule",[])
+                                    .controller("MyCtrl", ["$scope", function($scope){
+                                        var center = map.GetCenter();
+                                        $scope.infotext = center.lon.toFixed(0)
+                                        + "/" + center.lat.toFixed(0)
+                                        + "/" + center.zoom;
+                                    }]);*/
+                        }());
+                        var hoverActive = true;
+                        function toggleHover(){
+                            if (hoverActive){
+                                bigMap.DeactivateHoverInfo();
+                            } else {
+                                bigMap.ActivateHoverInfo();
+                            }
+                            hoverActive = !hoverActive;
+                        }
+                    </script>
+                </div>
+            </span>
+</div>
+<div id="popup"></div>
+</body>
+</html>
