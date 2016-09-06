@@ -393,8 +393,7 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
         }
         return $.ajax({
             type: "GET",
-            //url: tokenHost + "/gatekeeper",
-            url: "https://www.norgeskart.no/ws/gkt.py",
+            url: tokenHost,
             async: false
         }).responseText.trim().replace(/\"/g, "");
     }
