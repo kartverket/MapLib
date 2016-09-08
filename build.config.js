@@ -91,7 +91,9 @@ module.exports = {
       'vendor/openlayers3/ol.js',
       'vendor/xml2json/xml2json.js',
       'vendor/proj4/dist/proj4.js',
-      'vendor/blob-util/dist/blob-util.min.js'
+      'vendor/blob-util/dist/blob-util.min.js',
+      'vendor/xml-to-json/xml.js',
+      'vendor/xml-to-json/json2xml.js'
     ],
     css: [
       'vendor/openlayers3/ol.css'
