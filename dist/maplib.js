@@ -1,5 +1,5 @@
 /**
- * maplib - v0.0.1 - 2016-09-07
+ * maplib - v0.0.1 - 2016-09-08
  * http://localhost
  *
  * Copyright (c) 2016 
@@ -467,14 +467,14 @@ ISY.MapAPI.FeatureInfo = function(mapImplementation, httpHelper, eventHandler, f
         var exception;
 
         if (subLayer.featureInfo.getFeatureInfoFormat === "application/vnd.ogc.gml"){
-
             var xmlFile = jQuery.parseXML(result);
             var jsonFile = xml.xmlToJSON(xmlFile);
-
-            var subLayerFeatures = jsonFile.msGMLOutput[subLayer.providerName + "_layer"][subLayer.providerName + "_feature"];
-            parsedResult =[{
-                "attributes":_convertJSONtoArray(subLayerFeatures)
-            }];
+            if (jsonFile.msGMLOutput[subLayer.providerName + "_layer"] !== undefined){
+                var features = _convertJSONtoArray(jsonFile.msGMLOutput[subLayer.providerName + "_layer"][subLayer.providerName + "_feature"]);
+                parsedResult =[{
+                    "attributes": features
+                }];
+            }
 
         }else{
             try {
@@ -484,7 +484,6 @@ ISY.MapAPI.FeatureInfo = function(mapImplementation, httpHelper, eventHandler, f
                 exception = e;
             }
         }
-
 
         var responseFeatureCollection = new ISY.Domain.LayerResponse();
         responseFeatureCollection.id = subLayer.id;
