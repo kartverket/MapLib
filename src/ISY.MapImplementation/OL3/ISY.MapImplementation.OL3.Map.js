@@ -1114,8 +1114,16 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
         featureInfo.ShowInfoMarker(coordinate, element, map);
     }
 
+    function showInfoMarkers(coordinates, element){
+        featureInfo.ShowInfoMarkers(coordinates, element, map);
+    }
+
     function removeInfoMarker(element){
         featureInfo.RemoveInfoMarker(element, map);
+    }
+
+    function removeInfoMarkers(element){
+        featureInfo.RemoveInfoMarkers(element, map);
     }
 
     function setHighlightStyle(style){
@@ -1971,8 +1979,10 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
         ShowHighlightedFeatures: showHighlightedFeatures,
         ClearHighlightedFeatures: clearHighlightedFeatures,
         ShowInfoMarker: showInfoMarker,
+        ShowInfoMarkers: showInfoMarkers,
         SetHighlightStyle: setHighlightStyle,
         RemoveInfoMarker: removeInfoMarker,
+        RemoveInfoMarkers: removeInfoMarkers,
         ActivateBoxSelect: activateBoxSelect,
         DeactivateBoxSelect: deactivateBoxSelect,
         GetFeaturesInExtent: getFeaturesInExtent,

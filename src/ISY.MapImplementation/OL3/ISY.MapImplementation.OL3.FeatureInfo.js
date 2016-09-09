@@ -8,6 +8,7 @@ ISY.MapImplementation.OL3.FeatureInfo = function(){
     var infoKey = "";
     var boundingBox;
     var infoMarkerOverlay;
+    var infoMarkersOverlay = [];
 
     function showHighlightedFeatures(features, map){
         _ensureHighlightLayer(map);
@@ -51,9 +52,38 @@ ISY.MapImplementation.OL3.FeatureInfo = function(){
         map.addOverlay(infoMarkerOverlay);
     }
 
+    function showInfoMarkers(coordinates,element, map){
+
+        // var $element = $(element);
+        // var height = $element.height();
+        // var width = $element.width();
+        for (var i = 0; i < coordinates.length; i++){
+            var infoMarkerElement = document.createElement("img");
+            infoMarkerElement.src= "assets/img/pin-md-orange.png";
+            infoMarkerElement.style.visibility = "visible";
+            // document.body.appendChild(infoMarkerElement);
+            var infoMarker = new ol.Overlay({
+                element: infoMarkerElement,
+                stopEvent: false,
+                offset:  [0,0]
+            });
+            infoMarker.setPosition(coordinates[i]);
+            map.addOverlay(infoMarker);
+            infoMarkersOverlay.push(infoMarker);
+        }
+    }
+
     function removeInfoMarker(element, map){
         if (infoMarkerOverlay !== undefined){
             map.removeOverlay(infoMarkerOverlay);
+        }
+    }
+
+    function removeInfoMarkers(element, map){
+        if (infoMarkersOverlay !== undefined){
+            for (var i = 0; i < infoMarkersOverlay.length; i++){
+                map.removeOverlay(infoMarkersOverlay[i]);
+            }
         }
     }
 
@@ -269,7 +299,9 @@ ISY.MapImplementation.OL3.FeatureInfo = function(){
         ClearHighlightedFeatures: clearHighlightedFeatures,
         SetHighlightStyle: setHighlightStyle,
         ShowInfoMarker: showInfoMarker,
+        ShowInfoMarkers: showInfoMarkers,
         RemoveInfoMarker: removeInfoMarker,
+        RemoveInfoMarkers: removeInfoMarkers,
         GetFeatureInfoUrl: getFeatureInfoUrl,
         ActivateInfoClick: activateInfoClick,
         DeactivateInfoClick: deactivateInfoClick,

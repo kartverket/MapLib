@@ -249,6 +249,15 @@ ISY.MapAPI.FeatureInfo = function(mapImplementation, httpHelper, eventHandler, f
         mapImplementation.ShowInfoMarker(coordinate, infoMarker);
     }
 
+    function _showInfoMarkers(coordinates){
+        // if (infoMarker === undefined){
+        //     createDefaultInfoMarker();
+        // }
+        // setInfoMarker(infoMarker, true);
+        // infoMarker.style.visibility = "visible";
+        mapImplementation.ShowInfoMarkers(coordinates, infoMarker);
+    }
+
     function setInfoMarker(element, removeCurrent){
         if(useInfoMarker === true) {
             if (removeCurrent === true) {
@@ -273,6 +282,10 @@ ISY.MapAPI.FeatureInfo = function(mapImplementation, httpHelper, eventHandler, f
         setInfoMarker(infoMarker, true);
     }
 
+    function removeInfoMarkers() {
+        mapImplementation.RemoveInfoMarkers(undefined);
+    }
+
     function _hideInfoMarker(){
         infoMarker.style.visibility = "hidden";
     }
@@ -286,15 +299,23 @@ ISY.MapAPI.FeatureInfo = function(mapImplementation, httpHelper, eventHandler, f
         //mapImplementation.ShowInfoMarker(coordinate);
     }
 
+    function showInfoMarkers(coordinates){
+        _showInfoMarkers(coordinates);
+        //mapImplementation.ShowInfoMarker(coordinate);
+    }
+
     return {
         HandlePointSelect: handlePointSelect,
         HandleBoxSelect: handleBoxSelect,
         CreateDefaultInfoMarker: createDefaultInfoMarker,
         SetInfoMarker: setInfoMarker,
         RemoveInfoMarker: removeInfoMarker,
+        RemoveInfoMarkers: removeInfoMarkers,
         GetSupportedGetFeatureInfoFormats: getSupportedGetFeatureInfoFormats,
         GetSupportedGetFeatureFormats: getSupportedGetFeatureFormats,
         SetInfoMarkerPath: setInfoMarkerPath,
-        ShowInfoMarker: showInfoMarker
+        ShowInfoMarker: showInfoMarker,
+        ShowInfoMarkers: showInfoMarkers
+
     };
 };
