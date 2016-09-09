@@ -227,6 +227,10 @@ ISY.MapAPI.Map = function(mapImplementation, eventHandler, featureInfo, layerHan
         featureInfo.RemoveInfoMarker();
     }
 
+    function removeInfoMarkers(){
+        featureInfo.RemoveInfoMarkers();
+    }
+
     function showHighlightedFeatures(layerguid, features){
         mapImplementation.ShowHighlightedFeatures(layerguid, features);
     }
@@ -245,6 +249,10 @@ ISY.MapAPI.Map = function(mapImplementation, eventHandler, featureInfo, layerHan
 
     function showInfoMarker(coordinate){
         featureInfo.ShowInfoMarker(coordinate);
+    }
+
+    function showInfoMarkers(coordinates){
+        featureInfo.ShowInfoMarkers(coordinates);
     }
 
     function deactivateInfoClick(){
@@ -768,6 +776,7 @@ ISY.MapAPI.Map = function(mapImplementation, eventHandler, featureInfo, layerHan
         GetSupportedGetFeatureInfoFormats: getSupportedGetFeatureInfoFormats,
         GetSupportedGetFeatureFormats: getSupportedGetFeatureFormats,
         RemoveInfoMarker: removeInfoMarker,
+        RemoveInfoMarkers: removeInfoMarkers,
         ActivateBoxSelect: activateBoxSelect,
         DeactivateBoxSelect: deactivateBoxSelect,
         GetFeatureCollection: getFeatureCollection,
@@ -882,6 +891,7 @@ ISY.MapAPI.Map = function(mapImplementation, eventHandler, featureInfo, layerHan
         RefreshMap: refreshMap,
         RefreshLayerByGuid: refreshLayerByGuid,
         ShowInfoMarker: showInfoMarker,
+        ShowInfoMarkers: showInfoMarkers,
         GetExtent: getExtent,
         GetVisibleSubLayers: getVisibleSubLayers,
         GetUrlObject: getUrlObject,

@@ -654,6 +654,10 @@ ISY.MapAPI.FeatureInfo = function(mapImplementation, httpHelper, eventHandler, f
         mapImplementation.ShowInfoMarker(coordinate, infoMarker);
     }
 
+    function _showInfoMarkers(coordinates){
+        mapImplementation.ShowInfoMarkers(coordinates, infoMarker);
+    }
+
     function setInfoMarker(element, removeCurrent){
         if(useInfoMarker === true) {
             if (removeCurrent === true) {
@@ -678,6 +682,10 @@ ISY.MapAPI.FeatureInfo = function(mapImplementation, httpHelper, eventHandler, f
         setInfoMarker(infoMarker, true);
     }
 
+    function removeInfoMarkers() {
+        mapImplementation.RemoveInfoMarkers(undefined);
+    }
+
     function _hideInfoMarker(){
         infoMarker.style.visibility = "hidden";
     }
@@ -691,16 +699,24 @@ ISY.MapAPI.FeatureInfo = function(mapImplementation, httpHelper, eventHandler, f
         //mapImplementation.ShowInfoMarker(coordinate);
     }
 
+    function showInfoMarkers(coordinates){
+        _showInfoMarkers(coordinates);
+        //mapImplementation.ShowInfoMarker(coordinate);
+    }
+
     return {
         HandlePointSelect: handlePointSelect,
         HandleBoxSelect: handleBoxSelect,
         CreateDefaultInfoMarker: createDefaultInfoMarker,
         SetInfoMarker: setInfoMarker,
         RemoveInfoMarker: removeInfoMarker,
+        RemoveInfoMarkers: removeInfoMarkers,
         GetSupportedGetFeatureInfoFormats: getSupportedGetFeatureInfoFormats,
         GetSupportedGetFeatureFormats: getSupportedGetFeatureFormats,
         SetInfoMarkerPath: setInfoMarkerPath,
-        ShowInfoMarker: showInfoMarker
+        ShowInfoMarker: showInfoMarker,
+        ShowInfoMarkers: showInfoMarkers
+
     };
 };
 var ISY = ISY || {};
@@ -1268,6 +1284,10 @@ ISY.MapAPI.Map = function(mapImplementation, eventHandler, featureInfo, layerHan
         featureInfo.RemoveInfoMarker();
     }
 
+    function removeInfoMarkers(){
+        featureInfo.RemoveInfoMarkers();
+    }
+
     function showHighlightedFeatures(layerguid, features){
         mapImplementation.ShowHighlightedFeatures(layerguid, features);
     }
@@ -1286,6 +1306,10 @@ ISY.MapAPI.Map = function(mapImplementation, eventHandler, featureInfo, layerHan
 
     function showInfoMarker(coordinate){
         featureInfo.ShowInfoMarker(coordinate);
+    }
+
+    function showInfoMarkers(coordinates){
+        featureInfo.ShowInfoMarkers(coordinates);
     }
 
     function deactivateInfoClick(){
@@ -1809,6 +1833,7 @@ ISY.MapAPI.Map = function(mapImplementation, eventHandler, featureInfo, layerHan
         GetSupportedGetFeatureInfoFormats: getSupportedGetFeatureInfoFormats,
         GetSupportedGetFeatureFormats: getSupportedGetFeatureFormats,
         RemoveInfoMarker: removeInfoMarker,
+        RemoveInfoMarkers: removeInfoMarkers,
         ActivateBoxSelect: activateBoxSelect,
         DeactivateBoxSelect: deactivateBoxSelect,
         GetFeatureCollection: getFeatureCollection,
@@ -1923,6 +1948,7 @@ ISY.MapAPI.Map = function(mapImplementation, eventHandler, featureInfo, layerHan
         RefreshMap: refreshMap,
         RefreshLayerByGuid: refreshLayerByGuid,
         ShowInfoMarker: showInfoMarker,
+        ShowInfoMarkers: showInfoMarkers,
         GetExtent: getExtent,
         GetVisibleSubLayers: getVisibleSubLayers,
         GetUrlObject: getUrlObject,
@@ -4295,6 +4321,7 @@ ISY.MapImplementation.OL3.FeatureInfo = function(){
     var infoKey = "";
     var boundingBox;
     var infoMarkerOverlay;
+    var infoMarkersOverlay = [];
 
     function showHighlightedFeatures(features, map){
         _ensureHighlightLayer(map);
@@ -4338,9 +4365,33 @@ ISY.MapImplementation.OL3.FeatureInfo = function(){
         map.addOverlay(infoMarkerOverlay);
     }
 
+    function showInfoMarkers(coordinates,element, map){
+        for (var i = 0; i < coordinates.length; i++){
+            var infoMarkerElement = document.createElement("img");
+            infoMarkerElement.src= "assets/img/pin-md-orange.png";
+            infoMarkerElement.style.visibility = "visible";
+            var infoMarker = new ol.Overlay({
+                element: infoMarkerElement,
+                stopEvent: false,
+                offset:  [0,0]
+            });
+            infoMarker.setPosition(coordinates[i]);
+            map.addOverlay(infoMarker);
+            infoMarkersOverlay.push(infoMarker);
+        }
+    }
+
     function removeInfoMarker(element, map){
         if (infoMarkerOverlay !== undefined){
             map.removeOverlay(infoMarkerOverlay);
+        }
+    }
+
+    function removeInfoMarkers(element, map){
+        if (infoMarkersOverlay !== undefined){
+            for (var i = 0; i < infoMarkersOverlay.length; i++){
+                map.removeOverlay(infoMarkersOverlay[i]);
+            }
         }
     }
 
@@ -4556,7 +4607,9 @@ ISY.MapImplementation.OL3.FeatureInfo = function(){
         ClearHighlightedFeatures: clearHighlightedFeatures,
         SetHighlightStyle: setHighlightStyle,
         ShowInfoMarker: showInfoMarker,
+        ShowInfoMarkers: showInfoMarkers,
         RemoveInfoMarker: removeInfoMarker,
+        RemoveInfoMarkers: removeInfoMarkers,
         GetFeatureInfoUrl: getFeatureInfoUrl,
         ActivateInfoClick: activateInfoClick,
         DeactivateInfoClick: deactivateInfoClick,
@@ -5979,8 +6032,16 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
         featureInfo.ShowInfoMarker(coordinate, element, map);
     }
 
+    function showInfoMarkers(coordinates, element){
+        featureInfo.ShowInfoMarkers(coordinates, element, map);
+    }
+
     function removeInfoMarker(element){
         featureInfo.RemoveInfoMarker(element, map);
+    }
+
+    function removeInfoMarkers(element){
+        featureInfo.RemoveInfoMarkers(element, map);
     }
 
     function setHighlightStyle(style){
@@ -6836,8 +6897,10 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
         ShowHighlightedFeatures: showHighlightedFeatures,
         ClearHighlightedFeatures: clearHighlightedFeatures,
         ShowInfoMarker: showInfoMarker,
+        ShowInfoMarkers: showInfoMarkers,
         SetHighlightStyle: setHighlightStyle,
         RemoveInfoMarker: removeInfoMarker,
+        RemoveInfoMarkers: removeInfoMarkers,
         ActivateBoxSelect: activateBoxSelect,
         DeactivateBoxSelect: deactivateBoxSelect,
         GetFeaturesInExtent: getFeaturesInExtent,
