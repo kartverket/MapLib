@@ -60,7 +60,7 @@ ISY.MapImplementation.OL3.FeatureInfo = function(){
             var infoMarker = new ol.Overlay({
                 element: infoMarkerElement,
                 stopEvent: false,
-                offset:  [0,0]
+                offset:  [-infoMarkerElement.width / 2, -infoMarkerElement.height]
             });
             infoMarker.setPosition(coordinates[i]);
             map.addOverlay(infoMarker);
