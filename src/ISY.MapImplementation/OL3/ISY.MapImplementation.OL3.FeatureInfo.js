@@ -53,15 +53,10 @@ ISY.MapImplementation.OL3.FeatureInfo = function(){
     }
 
     function showInfoMarkers(coordinates,element, map){
-
-        // var $element = $(element);
-        // var height = $element.height();
-        // var width = $element.width();
         for (var i = 0; i < coordinates.length; i++){
             var infoMarkerElement = document.createElement("img");
             infoMarkerElement.src= "assets/img/pin-md-orange.png";
             infoMarkerElement.style.visibility = "visible";
-            // document.body.appendChild(infoMarkerElement);
             var infoMarker = new ol.Overlay({
                 element: infoMarkerElement,
                 stopEvent: false,

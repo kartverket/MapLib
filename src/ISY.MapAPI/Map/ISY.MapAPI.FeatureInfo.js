@@ -250,11 +250,6 @@ ISY.MapAPI.FeatureInfo = function(mapImplementation, httpHelper, eventHandler, f
     }
 
     function _showInfoMarkers(coordinates){
-        // if (infoMarker === undefined){
-        //     createDefaultInfoMarker();
-        // }
-        // setInfoMarker(infoMarker, true);
-        // infoMarker.style.visibility = "visible";
         mapImplementation.ShowInfoMarkers(coordinates, infoMarker);
     }
 
