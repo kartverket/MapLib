@@ -45,15 +45,41 @@ ISY.MapAPI.FeatureInfo = function(mapImplementation, httpHelper, eventHandler, f
         httpHelper.get(url).success(callback);
     }
 
+    function _convertJSONtoArray(data) {
+        var results = [];
+        Object.keys(data).forEach(function(key){
+            var value = data[key];
+            var result = [];
+            result.push(key);
+            result.push(value);
+            results.push(result);
+        });
+        return results;
+    }
+
     function _handleGetInfoResponse(subLayer, result){
         var parsedResult;
         var exception;
-        try {
-            parsedResult = featureParser.Parse(result);
+
+        if (subLayer.featureInfo.getFeatureInfoFormat === "application/vnd.ogc.gml"){
+            var xmlFile = jQuery.parseXML(result);
+            var jsonFile = xml.xmlToJSON(xmlFile);
+            if (jsonFile.msGMLOutput[subLayer.providerName + "_layer"] !== undefined){
+                var features = _convertJSONtoArray(jsonFile.msGMLOutput[subLayer.providerName + "_layer"][subLayer.providerName + "_feature"]);
+                parsedResult =[{
+                    "attributes": features
+                }];
+            }
+
+        }else{
+            try {
+                parsedResult = featureParser.Parse(result);
+            }
+            catch(e){
+                exception = e;
+            }
         }
-        catch(e){
-            exception = e;
-        }
+
         var responseFeatureCollection = new ISY.Domain.LayerResponse();
         responseFeatureCollection.id = subLayer.id;
         responseFeatureCollection.name = subLayer.providerName;
