@@ -41,8 +41,8 @@ ISY.MapImplementation.OL3.FeatureInfo = function(){
 
     function showInfoMarker(coordinate, element, map){
         var $element = $(element);
-        var height = $element.height();
-        var width = $element.width();
+        var height = $element[0].height;
+        var width = $element[0].width;
         infoMarkerOverlay = new ol.Overlay({
             element: element,
             stopEvent: false,
