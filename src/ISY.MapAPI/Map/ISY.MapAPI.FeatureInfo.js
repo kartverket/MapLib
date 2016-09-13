@@ -246,6 +246,8 @@ ISY.MapAPI.FeatureInfo = function(mapImplementation, httpHelper, eventHandler, f
         }
         setInfoMarker(infoMarker, true);
         infoMarker.style.visibility = "visible";
+        infoMarker.style.position = "absolute";
+        infoMarker.style.zIndex = "11";
         mapImplementation.ShowInfoMarker(coordinate, infoMarker);
     }
 

@@ -651,6 +651,8 @@ ISY.MapAPI.FeatureInfo = function(mapImplementation, httpHelper, eventHandler, f
         }
         setInfoMarker(infoMarker, true);
         infoMarker.style.visibility = "visible";
+        infoMarker.style.position = "absolute";
+        infoMarker.style.zIndex = "11";
         mapImplementation.ShowInfoMarker(coordinate, infoMarker);
     }
 
@@ -4356,7 +4358,7 @@ ISY.MapImplementation.OL3.FeatureInfo = function(){
         var $element = $(element);
         var height = $element.height();
         var width = $element.width();
-        var infoMarkerOverlay = new ol.Overlay({
+        infoMarkerOverlay = new ol.Overlay({
             element: element,
             stopEvent: false,
             offset: [-width / 2, -height]

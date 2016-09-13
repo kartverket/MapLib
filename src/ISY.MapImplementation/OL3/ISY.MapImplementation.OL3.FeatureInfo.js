@@ -43,7 +43,7 @@ ISY.MapImplementation.OL3.FeatureInfo = function(){
         var $element = $(element);
         var height = $element.height();
         var width = $element.width();
-        var infoMarkerOverlay = new ol.Overlay({
+        infoMarkerOverlay = new ol.Overlay({
             element: element,
             stopEvent: false,
             offset: [-width / 2, -height]
