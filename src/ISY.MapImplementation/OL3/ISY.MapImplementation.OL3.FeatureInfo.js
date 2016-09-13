@@ -55,7 +55,7 @@ ISY.MapImplementation.OL3.FeatureInfo = function(){
     function showInfoMarkers(coordinates,element, map){
         for (var i = 0; i < coordinates.length; i++){
             var infoMarkerElement = document.createElement("img");
-            infoMarkerElement.src= "assets/img/pin-md-orange.png";
+            infoMarkerElement.src= "assets/img/pin-md-blueish.png";
             infoMarkerElement.style.visibility = "visible";
             var infoMarker = new ol.Overlay({
                 element: infoMarkerElement,
