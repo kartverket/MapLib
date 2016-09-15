@@ -1,5 +1,5 @@
 /**
- * maplib - v0.0.1 - 2016-09-13
+ * maplib - v0.0.1 - 2016-09-15
  * http://localhost
  *
  * Copyright (c) 2016 
@@ -4372,10 +4372,17 @@ ISY.MapImplementation.OL3.FeatureInfo = function(){
             var infoMarkerElement = document.createElement("img");
             infoMarkerElement.src= "assets/img/pin-md-blueish.png";
             infoMarkerElement.style.visibility = "visible";
+            var width = 0;
+            var height = 0;
+            var $element = $(element);
+            if ( $element[0].height !== 0 &&  $element[0].width !== 0){
+                width = $element[0].width;
+                height = $element[0].height;
+            }
             var infoMarker = new ol.Overlay({
                 element: infoMarkerElement,
                 stopEvent: false,
-                offset:  [-infoMarkerElement.width / 2, -infoMarkerElement.height]
+                offset:  [-width / 2, -height]
             });
             infoMarker.setPosition(coordinates[i]);
             map.addOverlay(infoMarker);
