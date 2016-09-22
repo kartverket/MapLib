@@ -6,11 +6,64 @@ ISY.MapImplementation.OL3.PrintBoxSelect = function(eventHandler){
 
     var isActive = false;
 
-    var panningHandler = function() {
+    var checkForUtmChange = function() {
         if (!isActive) {
             return;
         }
      };
+
+     var registerMouseDragEvent = function () {
+         var currentPos = [];
+         map.on('mousedown', function (evt) {
+
+             currentPos = [evt.pageX, evt.pageY];
+
+             $(document).on('mousemove', function handler(evt) {
+
+                 currentPos=[evt.pageX, evt.pageY];
+                 $(document).off('mousemove', handler);
+
+             });
+
+             $(document).on('mouseup', function handler(evt) {
+
+                 if([evt.pageX, evt.pageY].equals(currentPos))
+                     console.log("Click");
+                 else {
+                     console.log("Drag");
+                     checkForUtmChange();
+                 }
+
+                 $(document).off('mouseup', handler);
+
+             });
+
+         });
+     };
+
+    Array.prototype.equals = function (array) {
+        // if the other array is a falsy value, return
+        if (!array)
+            return false;
+
+        // compare lengths - can save a lot of time
+        if (this.length != array.length)
+            return false;
+
+        for (var i = 0, l=this.length; i < l; i++) {
+            // Check if we have nested arrays
+            if (this[i] instanceof Array && array[i] instanceof Array) {
+                // recurse into the nested arrays
+                if (!this[i].equals(array[i]))
+                    return false;
+            }
+            else if (this[i] != array[i]) {
+                // Warning - two different object instances will never be equal: {x:20} != {x:20}
+                return false;
+            }
+        }
+        return true;
+    };
 
     var printBoxSelectionLayer;
 
@@ -18,21 +71,11 @@ ISY.MapImplementation.OL3.PrintBoxSelect = function(eventHandler){
         isActive = true;
         mapScale = options.mapScale;
 
-        var panning = false;
-        map.on('mousedown', function(){
-            panning=true;
-        });
+        registerMouseDragEvent();
 
-        map.on('pointermove', function(){
-            if(panning) {
-                panningHandler;
-            }
-        });
 
-        $(map.getViewport()).on('mouseout', function() {
-            panning = false;
-        });
-        //addInteraction(map);
+
+
         addPrintBoxSelectLayer(map);
     }
 
