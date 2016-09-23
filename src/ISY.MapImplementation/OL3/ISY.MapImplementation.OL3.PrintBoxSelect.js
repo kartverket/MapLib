@@ -14,7 +14,7 @@ ISY.MapImplementation.OL3.PrintBoxSelect = function() {
         console.log(printBoxSelectionLayer.bbox);
     };
 
-    var registerMouseDragEvent = function () {
+    var registerMouseDragEvent = function (map) {
         var currentPos = [];
         map.on('mousedown', function (evt) {
 
@@ -83,11 +83,14 @@ ISY.MapImplementation.OL3.PrintBoxSelect = function() {
         map.addLayer(printBoxSelectionLayer);
     }
 
-    function activate(map, options) {
+    function activate(map){ //}, options) {
         isActive = true;
-        mapScale = options.mapScale;
-        registerMouseDragEvent();
-        addPrintBoxSelectLayer(map);
+        if (map !== undefined) {
+            console.log('PrintBoxSelect activated');
+            //mapScale = options.mapScale;
+            registerMouseDragEvent(map);
+            addPrintBoxSelectLayer(map);
+        }
     }
 
     function deactivate(map) {

@@ -1612,7 +1612,6 @@ ISY.MapAPI.Map = function(mapImplementation, eventHandler, featureInfo, layerHan
                 if (layer) {
                     if(layer.isBaseLayer === true){
                         setBaseLayer(layer);
-
                     }
                     else{
                         showLayer(layer);
@@ -6516,11 +6515,11 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
     /*
       PrintBoxSelect Start
      */
-    var activatePrintBoxSelect = function (map, options){
-        printBoxSelect.Activate(map, options);
+    var activatePrintBoxSelect = function (){ //, options){
+        printBoxSelect.Activate(map); //, options);
     } ;
 
-    var deactivatePrintBoxSelect = function (map){
+    var deactivatePrintBoxSelect = function (){
         printBoxSelect.Deactivate(map);
     } ;
 
@@ -8911,7 +8910,7 @@ ISY.MapImplementation.OL3.PrintBoxSelect = function() {
         console.log(printBoxSelectionLayer.bbox);
     };
 
-    var registerMouseDragEvent = function () {
+    var registerMouseDragEvent = function (map) {
         var currentPos = [];
         map.on('mousedown', function (evt) {
 
@@ -8980,12 +8979,14 @@ ISY.MapImplementation.OL3.PrintBoxSelect = function() {
         map.addLayer(printBoxSelectionLayer);
     }
 
-    function activate(map, options) {
-        console.log('PrintBoxSelect activated');
+    function activate(map){ //}, options) {
         isActive = true;
-        mapScale = options.mapScale;
-        registerMouseDragEvent();
-        addPrintBoxSelectLayer(map);
+        if (map !== undefined) {
+            console.log('PrintBoxSelect activated');
+            //mapScale = options.mapScale;
+            registerMouseDragEvent(map);
+            addPrintBoxSelectLayer(map);
+        }
     }
 
     function deactivate(map) {

@@ -1551,11 +1551,11 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
     /*
       PrintBoxSelect Start
      */
-    var activatePrintBoxSelect = function (map, options){
-        printBoxSelect.Activate(map, options);
+    var activatePrintBoxSelect = function (){
+        printBoxSelect.Activate(map);
     } ;
 
-    var deactivatePrintBoxSelect = function (map){
+    var deactivatePrintBoxSelect = function (){
         printBoxSelect.Deactivate(map);
     } ;
 
