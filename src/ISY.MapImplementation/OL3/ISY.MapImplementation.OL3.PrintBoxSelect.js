@@ -27,8 +27,6 @@ ISY.MapImplementation.OL3.PrintBoxSelect = function() {
             console.log('Dragging...');
             var deltaCenter = findDelta(map);
             moveLayer(map, deltaCenter);
-            console.log(deltaCenter);
-
         });
 
         map.on('moveend', function() {
@@ -52,7 +50,6 @@ ISY.MapImplementation.OL3.PrintBoxSelect = function() {
         var source = printBoxSelectionLayer.getSource();
         var feature = source.getFeatures()[0];
         feature.getGeometry().translate(deltaCenter[0],deltaCenter[1]);
-        console.log(feature, deltaCenter);
     };
 
     // function addPrintBoxSelectLayer(map) {
@@ -138,7 +135,9 @@ ISY.MapImplementation.OL3.PrintBoxSelect = function() {
         vectorSource.addFeature(feature);
         printBoxSelectionLayer = new ol.layer.Vector({
             name:'Print',
-            source: vectorSource
+            source: vectorSource,
+            updateWhileAnimating: true,
+            updateWhileInteracting: true
         });
 
 

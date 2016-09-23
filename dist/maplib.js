@@ -9034,7 +9034,9 @@ ISY.MapImplementation.OL3.PrintBoxSelect = function() {
         vectorSource.addFeature(feature);
         printBoxSelectionLayer = new ol.layer.Vector({
             name:'Print',
-            source: vectorSource
+            source: vectorSource,
+            updateWhileAnimating: true,
+            updateWhileInteracting: true
         });
 
 
@@ -9046,14 +9048,6 @@ ISY.MapImplementation.OL3.PrintBoxSelect = function() {
         map.addLayer(printBoxSelectionLayer);
         printBoxSelectionLayer.setZIndex(2000);
         //registerMouseEvents(map);
-
-
-        var select = new ol.interaction.Select();
-        var translate = new ol.interaction.Translate({
-            features: select.getFeatures()
-        });
-
-        map.interactions =  ol.interaction.defaults().extend([select, translate]);
     };
 
     function activate(map){ //}, options) {
