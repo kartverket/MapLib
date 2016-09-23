@@ -1577,6 +1577,22 @@ ISY.MapAPI.Map = function(mapImplementation, eventHandler, featureInfo, layerHan
      HoverInfo End
      */
 
+
+    /*
+     PrintBoxSelect Start
+    */
+    function activatePrintBoxSelect(){
+        mapImplementation.ActivatePrintBoxSelect();
+    }
+
+    function deactivatePrintBoxSelect(){
+        mapImplementation.DeactivatePrintBoxSelect();
+    }
+
+    /*
+     PrintBoxSelect End
+     */
+
     /*
         Utility functions Start
      */
@@ -1596,6 +1612,7 @@ ISY.MapAPI.Map = function(mapImplementation, eventHandler, featureInfo, layerHan
                 if (layer) {
                     if(layer.isBaseLayer === true){
                         setBaseLayer(layer);
+
                     }
                     else{
                         showLayer(layer);
@@ -1920,6 +1937,13 @@ ISY.MapAPI.Map = function(mapImplementation, eventHandler, featureInfo, layerHan
         ActivateDrawFeature: activateDrawFeature,
         DeactivateDrawFeature: deactivateDrawFeature,
         // DrawFeature end
+
+        /***********************************/
+
+        // PrintBoxSelect Start
+        ActivatePrintBoxSelect: activatePrintBoxSelect,
+        DeactivatePrintBoxSelect: deactivatePrintBoxSelect,
+        // PrintBoxSelect End
 
         /***********************************/
 
@@ -2563,10 +2587,10 @@ ISY.MapAPI.Tools.Tools = function(mapApi){
         id: 'PrintBoxSelect',
         description: 'This tool activates box select functionality for printing',
         activate: function (){
-            mapApi.ActivateBoxSelect();
+            mapApi.ActivatePrintBoxSelect();
         },
         deactivate: function (){
-            mapApi.DeactivateBoxSelect();
+            mapApi.DeactivatePrintBoxSelect();
         },
         messageObject: []
     };
@@ -6493,11 +6517,11 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
       PrintBoxSelect Start
      */
     var activatePrintBoxSelect = function (map, options){
-        printBoxSelect.activate(map, options);
+        printBoxSelect.Activate(map, options);
     } ;
 
     var deactivatePrintBoxSelect = function (map){
-        printBoxSelect.deactivate(map);
+        printBoxSelect.Deactivate(map);
     } ;
 
     /*
@@ -8957,6 +8981,7 @@ ISY.MapImplementation.OL3.PrintBoxSelect = function() {
     }
 
     function activate(map, options) {
+        console.log('PrintBoxSelect activated');
         isActive = true;
         mapScale = options.mapScale;
         registerMouseDragEvent();
