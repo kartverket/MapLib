@@ -6,13 +6,14 @@ ISY.MapImplementation.OL3.PrintBoxSelect = function() {
 
     var isActive = false;
     var printBoxSelectionLayer;
+    var oldCenter = {};
 
-    var checkForUtmChange = function () {
-        if (!isActive) {
-            return;
-        }
-        console.log(printBoxSelectionLayer.bbox);
-    };
+    // var checkForUtmChange = function () {
+    //     if (!isActive) {
+    //         return;
+    //     }
+    //     console.log(printBoxSelectionLayer.bbox);
+    // };
 
     // var deregisterMouseEvents = function (map) {
     //     map.off('pointerdrag');
@@ -24,37 +25,59 @@ ISY.MapImplementation.OL3.PrintBoxSelect = function() {
         //map.on('pointerdrag', function() {
         map.getView().on('change:center', function() {
             console.log('Dragging...');
-            createFrame(map);
+            var deltaCenter = findDelta(map);
+            moveLayer(map, deltaCenter);
+            console.log(deltaCenter);
+
         });
 
         map.on('moveend', function() {
-            checkForUtmChange();
+            //checkForUtmChange();
             console.log('Dragging ended.');
         });
     };
 
+    var findDelta = function (map) {
+        var newCenter = map.getView().getCenter();
+        var deltaCenter = [
+            newCenter[0] - oldCenter[0],
+            newCenter[1] - oldCenter[1]
+        ];
+        oldCenter = newCenter;
+        return deltaCenter;
+    };
 
-    function addPrintBoxSelectLayer(map) {
-        var source = new ol.source.Vector();
-        var drawStyle = new ISY.MapImplementation.OL3.Styles.Measure();
+    var moveLayer = function(map, deltaCenter){
+        //var vectorLayer = map.getLayerByName('Print');
+        var source = printBoxSelectionLayer.getSource();
+        var feature = source.getFeatures()[0];
+        feature.getGeometry().translate(deltaCenter[0],deltaCenter[1]);
+        console.log(feature, deltaCenter);
+    };
 
-        printBoxSelectionLayer = new ol.layer.Vector({
-            source: source,
-            style: drawStyle.DrawStyles()
-        });
-
-        map.addLayer(printBoxSelectionLayer);
-    }
+    // function addPrintBoxSelectLayer(map) {
+    //     var source = new ol.source.Vector();
+    //     var drawStyle = new ISY.MapImplementation.OL3.Styles.Measure();
+    //
+    //     printBoxSelectionLayer = new ol.layer.Vector({
+    //         source: source,
+    //         style: drawStyle.DrawStyles()
+    //     });
+    //
+    //     map.addLayer(printBoxSelectionLayer);
+    // }
 
     var createFrame = function(map){
-        if (this.maskLayer) {
-            // Remove layer
-            map.removeLayer(this.maskLayer);
-            delete this.maskLayer;
-            // Unregister events
-            //deregisterMouseEvents(map);
-        }
+        // if (this.maskLayer) {
+        //     // Remove layer
+        //     map.removeLayer(this.maskLayer);
+        //     delete this.maskLayer;
+        //     // Unregister events
+        //     //deregisterMouseEvents(map);
+        // }
 
+        var mapCenter = map.getView().getCenter();
+        oldCenter = mapCenter;
 
         // General
         var cols = 4;
@@ -70,7 +93,6 @@ ISY.MapImplementation.OL3.PrintBoxSelect = function() {
 
         // Create a centered box
         var box2 = {};
-        var mapCenter = map.getView().getCenter();
         box2.left = mapCenter[0] - (boxWidth / 2);
         box2.right = box2.left + boxWidth;
         box2.bottom = mapCenter[1] - (boxHeight / 2);
@@ -114,7 +136,7 @@ ISY.MapImplementation.OL3.PrintBoxSelect = function() {
         var feature = new ol.Feature(multiPolygonGeometry, attributes);
         var vectorSource = new ol.source.Vector();
         vectorSource.addFeature(feature);
-        this.maskLayer = new ol.layer.Vector({
+        printBoxSelectionLayer = new ol.layer.Vector({
             name:'Print',
             source: vectorSource
         });
@@ -125,8 +147,8 @@ ISY.MapImplementation.OL3.PrintBoxSelect = function() {
         //feature.geometry.rotate(sone * feature.attributes.tilt, feature.attributes.origin);
 
         // Add layer and set index
-        map.addLayer(this.maskLayer);
-        this.maskLayer.setZIndex(2000);
+        map.addLayer(printBoxSelectionLayer);
+        printBoxSelectionLayer.setZIndex(2000);
         //registerMouseEvents(map);
     };
 
@@ -136,8 +158,8 @@ ISY.MapImplementation.OL3.PrintBoxSelect = function() {
             console.log('PrintBoxSelect activated');
             //mapScale = options.mapScale;
             registerMouseEvents(map);
-            //createFrame(map);
-            addPrintBoxSelectLayer(map);
+            createFrame(map);
+            //addPrintBoxSelectLayer(map);
         }
     }
 
