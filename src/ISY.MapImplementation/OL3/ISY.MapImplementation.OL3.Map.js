@@ -2,7 +2,7 @@ var ISY = ISY || {};
 ISY.MapImplementation = ISY.MapImplementation || {};
 ISY.MapImplementation.OL3 = ISY.MapImplementation.OL3 || {};
 
-ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, measure, featureInfo, mapExport, hoverInfo, measureLine, drawFeature, offline, addLayerFeature, modifyFeature, addFeatureGps){
+ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, measure, featureInfo, mapExport, hoverInfo, measureLine, drawFeature, offline, addLayerFeature, modifyFeature, addFeatureGps, printBoxSelect){
     var map;
     var layerPool = [];
     var isySubLayerPool = [];
@@ -1549,6 +1549,17 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
 
 
     /*
+      PrintBoxSelect Start
+     */
+    var activatePrintBoxSelect = function (){
+        printBoxSelect.Activate(map);
+    } ;
+
+    var deactivatePrintBoxSelect = function (){
+        printBoxSelect.Deactivate(map);
+    } ;
+
+    /*
         Utility functions start
      */
 
@@ -2072,6 +2083,13 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
         DeactivateOffline: deactivateOffline,
         GetResourceFromJson: getResourceFromJson,
         // Offline end
+
+        /***********************************/
+
+        // PrintBoxSelect Start
+        ActivatePrintBoxSelect: activatePrintBoxSelect,
+        DeactivatePrintBoxSelect: deactivatePrintBoxSelect,
+        // PrintBoxSelect End
 
         /***********************************/
 
