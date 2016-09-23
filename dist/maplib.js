@@ -6515,8 +6515,8 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
     /*
       PrintBoxSelect Start
      */
-    var activatePrintBoxSelect = function (){ //, options){
-        printBoxSelect.Activate(map); //, options);
+    var activatePrintBoxSelect = function (){
+        printBoxSelect.Activate(map);
     } ;
 
     var deactivatePrintBoxSelect = function (){
@@ -8911,61 +8911,16 @@ ISY.MapImplementation.OL3.PrintBoxSelect = function() {
     };
 
     var registerMouseDragEvent = function (map) {
-        var currentPos = [];
-        map.on('mousedown', function (evt) {
+        map.on('pointerdrag', function() {
+            console.log('Dragging...');
+        });
 
-            currentPos = [evt.pageX, evt.pageY];
-
-            $(document).on('mousemove', function handler(evt) {
-
-                currentPos = [evt.pageX, evt.pageY];
-                $(document).off('mousemove', handler);
-
-            });
-
-            $(document).on('mouseup', function handler(evt) {
-
-                if ([evt.pageX, evt.pageY].equals(currentPos)) {
-                    console.log("Click");
-                }
-                else {
-                    console.log("Drag");
-                    checkForUtmChange();
-                }
-
-                $(document).off('mouseup', handler);
-
-            });
-
+        map.on('moveend', function() {
+            checkForUtmChange();
+            console.log('Dragging ended.');
         });
     };
 
-    Array.prototype.equals = function (array) {
-        // if the other array is a falsy value, return
-        if (!array) {
-            return false;
-        }
-
-        // compare lengths - can save a lot of time
-        if (this.length != array.length) {
-            return false;
-        }
-
-        for (var i = 0, l = this.length; i < l; i++) {
-            // Check if we have nested arrays
-            if (this[i] instanceof Array && array[i] instanceof Array) {
-                // recurse into the nested arrays
-                if (!this[i].equals(array[i])) {
-                    return false;
-                }
-            }
-            else if (this[i] != array[i]) {
-                // Warning - two different object instances will never be equal: {x:20} != {x:20}
-                return false;
-            }
-        }
-        return true;
-    };
 
     function addPrintBoxSelectLayer(map) {
         var source = new ol.source.Vector();
@@ -8993,6 +8948,7 @@ ISY.MapImplementation.OL3.PrintBoxSelect = function() {
         if (isActive) {
             isActive = false;
             if (map !== undefined) {
+                console.log('PrintBoxSelect deactivated');
                 map.removeLayer(printBoxSelectionLayer);
             }
         }
