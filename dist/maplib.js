@@ -1,5 +1,5 @@
 /**
- * maplib - v0.0.1 - 2016-09-15
+ * maplib - v0.0.1 - 2016-09-23
  * http://localhost
  *
  * Copyright (c) 2016 
@@ -2559,6 +2559,20 @@ ISY.MapAPI.Tools.Tools = function(mapApi){
     var featureEditor = new ISY.MapAPI.Tools.Tool(featureEditorConfig);
     tools.push(featureEditor);
 
+    var printBoxSelectConfig = {
+        id: 'PrintBoxSelect',
+        description: 'This tool activates box select functionality for printing',
+        activate: function (){
+            mapApi.ActivateBoxSelect();
+        },
+        deactivate: function (){
+            mapApi.DeactivateBoxSelect();
+        },
+        messageObject: []
+    };
+    var printBoxSelect = new ISY.MapAPI.Tools.Tool(printBoxSelectConfig);
+    tools.push(printBoxSelect);
+
     function getTools(){
         return tools;
     }
@@ -4929,7 +4943,7 @@ var ISY = ISY || {};
 ISY.MapImplementation = ISY.MapImplementation || {};
 ISY.MapImplementation.OL3 = ISY.MapImplementation.OL3 || {};
 
-ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, measure, featureInfo, mapExport, hoverInfo, measureLine, drawFeature, offline, addLayerFeature, modifyFeature, addFeatureGps){
+ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, measure, featureInfo, mapExport, hoverInfo, measureLine, drawFeature, offline, addLayerFeature, modifyFeature, addFeatureGps, printBoxSelect){
     var map;
     var layerPool = [];
     var isySubLayerPool = [];
@@ -6476,6 +6490,17 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
 
 
     /*
+      PrintBoxSelect Start
+     */
+    var activatePrintBoxSelect = function (map, options){
+        printBoxSelect.activate(map, options);
+    } ;
+
+    var deactivatePrintBoxSelect = function (map){
+        printBoxSelect.deactivate(map);
+    } ;
+
+    /*
         Utility functions start
      */
 
@@ -6999,6 +7024,13 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
         DeactivateOffline: deactivateOffline,
         GetResourceFromJson: getResourceFromJson,
         // Offline end
+
+        /***********************************/
+
+        // PrintBoxSelect Start
+        ActivatePrintBoxSelect: activatePrintBoxSelect,
+        DeactivatePrintBoxSelect: deactivatePrintBoxSelect,
+        // PrintBoxSelect End
 
         /***********************************/
 
@@ -8837,6 +8869,112 @@ ISY.MapImplementation.OL3.Offline = function(){
         DeleteDatabase: deleteDatabase,
         GetDatabase: getDatabase,
         GetResourceFromJson: getResourceFromJson
+    };
+};
+var ISY = ISY || {};
+ISY.MapImplementation = ISY.MapImplementation || {};
+ISY.MapImplementation.OL3 = ISY.MapImplementation.OL3 || {};
+
+ISY.MapImplementation.OL3.PrintBoxSelect = function() {
+
+    var isActive = false;
+    var printBoxSelectionLayer;
+
+    var checkForUtmChange = function () {
+        if (!isActive) {
+            return;
+        }
+        console.log(printBoxSelectionLayer.bbox);
+    };
+
+    var registerMouseDragEvent = function () {
+        var currentPos = [];
+        map.on('mousedown', function (evt) {
+
+            currentPos = [evt.pageX, evt.pageY];
+
+            $(document).on('mousemove', function handler(evt) {
+
+                currentPos = [evt.pageX, evt.pageY];
+                $(document).off('mousemove', handler);
+
+            });
+
+            $(document).on('mouseup', function handler(evt) {
+
+                if ([evt.pageX, evt.pageY].equals(currentPos)) {
+                    console.log("Click");
+                }
+                else {
+                    console.log("Drag");
+                    checkForUtmChange();
+                }
+
+                $(document).off('mouseup', handler);
+
+            });
+
+        });
+    };
+
+    Array.prototype.equals = function (array) {
+        // if the other array is a falsy value, return
+        if (!array) {
+            return false;
+        }
+
+        // compare lengths - can save a lot of time
+        if (this.length != array.length) {
+            return false;
+        }
+
+        for (var i = 0, l = this.length; i < l; i++) {
+            // Check if we have nested arrays
+            if (this[i] instanceof Array && array[i] instanceof Array) {
+                // recurse into the nested arrays
+                if (!this[i].equals(array[i])) {
+                    return false;
+                }
+            }
+            else if (this[i] != array[i]) {
+                // Warning - two different object instances will never be equal: {x:20} != {x:20}
+                return false;
+            }
+        }
+        return true;
+    };
+
+    function addPrintBoxSelectLayer(map) {
+        var source = new ol.source.Vector();
+        var drawStyle = new ISY.MapImplementation.OL3.Styles.Measure();
+
+        printBoxSelectionLayer = new ol.layer.Vector({
+            source: source,
+            style: drawStyle.DrawStyles()
+        });
+
+        map.addLayer(printBoxSelectionLayer);
+    }
+
+    function activate(map, options) {
+        isActive = true;
+        mapScale = options.mapScale;
+        registerMouseDragEvent();
+        addPrintBoxSelectLayer(map);
+    }
+
+    function deactivate(map) {
+        if (isActive) {
+            isActive = false;
+            if (map !== undefined) {
+                map.removeLayer(printBoxSelectionLayer);
+            }
+        }
+    }
+
+    return {
+        Activate: activate,
+        Deactivate: deactivate
     };
 };
 var ISY = ISY || {};
