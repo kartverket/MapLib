@@ -144,6 +144,7 @@ ISY.MapImplementation.OL3.PrintBoxSelect = function() {
         var multiPolygonGeometry = new ol.geom.MultiPolygon(coordinates);
         multiPolygonGeometry.applyTransform(ol.proj.getTransform(UTM.localProj, 'EPSG:32633'));
         var feature = new ol.Feature(multiPolygonGeometry);//, attributes);
+        feature.setStyle(_getStyle());
         var vectorSource = new ol.source.Vector();
         vectorSource.addFeature(feature);
         printBoxSelectionLayer = new ol.layer.Vector({
@@ -156,6 +157,21 @@ ISY.MapImplementation.OL3.PrintBoxSelect = function() {
         map.addLayer(printBoxSelectionLayer);
         printBoxSelectionLayer.setZIndex(2000);
 
+    };
+
+    var _getStyle = function () {
+        var style = new ol.style.Style({
+            stroke: new ol.style.Stroke({
+                color: '#ee9900',
+                width: 1,
+                opacity: 1
+            }),
+            fill: new ol.style.Fill({
+                color: 'rgba(238,153,0,0.4)',
+                opacity: 0.4
+            })
+        });
+        return style;
     };
 
     function activate(map){ //}, options) {
