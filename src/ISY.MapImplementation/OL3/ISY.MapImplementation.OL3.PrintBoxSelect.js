@@ -83,13 +83,11 @@ ISY.MapImplementation.OL3.PrintBoxSelect = function() {
             } else if (lon < 18) {
                 sone = "33W"; localProj = "EPSG:32633";
             } else if (lon < 24) {
-                //sone = "34W"; localProj = "EPSG:32634";
-                sone = "33W"; localProj = "EPSG:32633";
+                sone = "34W"; localProj = "EPSG:32634";
             } else if (lon < 30) {
                 sone = "35W"; localProj = "EPSG:32635";
             } else {
-                //sone = "36W"; localProj = "EPSG:32636";
-                sone = "35W"; localProj = "EPSG:32635";
+                sone = "36W"; localProj = "EPSG:32636";
             }
         } else {
             if (lon < 3) {

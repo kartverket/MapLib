@@ -381,10 +381,14 @@ ISY.MapAPI.CustomCrsLoader = function(){
         //UTM 31-35:
         proj4.defs("EPSG:25832", "+proj=utm +zone=32 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs");
         proj4.defs("EPSG:25833", "+proj=utm +zone=33 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs");
+        proj4.defs("EPSG:25834", "+proj=utm +zone=34 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs");
         proj4.defs("EPSG:25835", "+proj=utm +zone=35 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs");
+        proj4.defs("EPSG:25836", "+proj=utm +zone=36 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs");
         proj4.defs("EPSG:32632", "+proj=utm +zone=32 +datum=WGS84 +units=m +no_defs");
         proj4.defs("EPSG:32633", "+proj=utm +zone=33 +datum=WGS84 +units=m +no_defs");
+        proj4.defs("EPSG:32634", "+proj=utm +zone=34 +datum=WGS84 +units=m +no_defs");
         proj4.defs("EPSG:32635", "+proj=utm +zone=35 +datum=WGS84 +units=m +no_defs");
+        proj4.defs("EPSG:32636", "+proj=utm +zone=36 +datum=WGS84 +units=m +no_defs");
 
         proj4.defs("EPSG:3575", "+proj=laea +lat_0=90 +lon_0=10 +x_0=0 +y_0=0 +datum=WGS84 +units=m +no_defs");
 
@@ -1086,10 +1090,14 @@ ISY.MapAPI.Map = function(mapImplementation, eventHandler, featureInfo, layerHan
 
         addCustomProj('EPSG:25832');
         addCustomProj('EPSG:25833');
+        addCustomProj('EPSG:25834');
         addCustomProj('EPSG:25835');
+        addCustomProj('EPSG:25836');
         addCustomProj('EPSG:32632');
         addCustomProj('EPSG:32633');
+        addCustomProj('EPSG:32634');
         addCustomProj('EPSG:32635');
+        addCustomProj('EPSG:32636');
         // TODO: Geoserver
         //addCustomProj('http://www.opengis.net/gml/srs/epsg.xml#25832');
         //addCustomProj('http://www.opengis.net/gml/srs/epsg.xml#25833');
@@ -8979,13 +8987,11 @@ ISY.MapImplementation.OL3.PrintBoxSelect = function() {
             } else if (lon < 18) {
                 sone = "33W"; localProj = "EPSG:32633";
             } else if (lon < 24) {
-                //sone = "34W"; localProj = "EPSG:32634";
-                sone = "33W"; localProj = "EPSG:32633";
+                sone = "34W"; localProj = "EPSG:32634";
             } else if (lon < 30) {
                 sone = "35W"; localProj = "EPSG:32635";
             } else {
-                //sone = "36W"; localProj = "EPSG:32636";
-                sone = "35W"; localProj = "EPSG:32635";
+                sone = "36W"; localProj = "EPSG:32636";
             }
         } else {
             if (lon < 3) {

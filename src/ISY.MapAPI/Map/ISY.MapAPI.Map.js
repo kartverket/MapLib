@@ -27,10 +27,14 @@ ISY.MapAPI.Map = function(mapImplementation, eventHandler, featureInfo, layerHan
 
         addCustomProj('EPSG:25832');
         addCustomProj('EPSG:25833');
+        addCustomProj('EPSG:25834');
         addCustomProj('EPSG:25835');
+        addCustomProj('EPSG:25836');
         addCustomProj('EPSG:32632');
         addCustomProj('EPSG:32633');
+        addCustomProj('EPSG:32634');
         addCustomProj('EPSG:32635');
+        addCustomProj('EPSG:32636');
         // TODO: Geoserver
         //addCustomProj('http://www.opengis.net/gml/srs/epsg.xml#25832');
         //addCustomProj('http://www.opengis.net/gml/srs/epsg.xml#25833');
