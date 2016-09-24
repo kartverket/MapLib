@@ -522,8 +522,8 @@ ISY.MapAPI.Map = function(mapImplementation, eventHandler, featureInfo, layerHan
     /*
      PrintBoxSelect Start
     */
-    function activatePrintBoxSelect(){
-        mapImplementation.ActivatePrintBoxSelect();
+    function activatePrintBoxSelect(options){
+        mapImplementation.ActivatePrintBoxSelect(options);
     }
 
     function deactivatePrintBoxSelect(){

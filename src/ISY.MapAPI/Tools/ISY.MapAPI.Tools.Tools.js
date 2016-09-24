@@ -183,8 +183,8 @@ ISY.MapAPI.Tools.Tools = function(mapApi){
     var printBoxSelectConfig = {
         id: 'PrintBoxSelect',
         description: 'This tool activates box select functionality for printing',
-        activate: function (){
-            mapApi.ActivatePrintBoxSelect();
+        activate: function (options){
+            mapApi.ActivatePrintBoxSelect(options);
         },
         deactivate: function (){
             mapApi.DeactivatePrintBoxSelect();
