@@ -7,35 +7,44 @@ ISY.MapImplementation.OL3.PrintBoxSelect = function() {
     var isActive = false;
     var printBoxSelectionLayer;
     var oldCenter = {};
+    var oldUTMZone = "";
 
-    // var checkForUtmChange = function () {
-    //     if (!isActive) {
-    //         return;
-    //     }
-    //     console.log(printBoxSelectionLayer.bbox);
-    // };
-
-    // var deregisterMouseEvents = function (map) {
-    //     map.off('pointerdrag');
-    //
-    //     map.off('moveend');
-    // };
+    function _UTMZoneNotChanged(map) {
+        if (!isActive) {
+            return;
+        }
+        var mapCenterGeographic=_getMapCenterGeographic(map);
+        var UTMZone = _getUTMZone(mapCenterGeographic.getCoordinates()[0], mapCenterGeographic.getCoordinates()[1]).sone;
+        if (UTMZone != oldUTMZone){
+            _createFrame(map);
+            return false;
+        }
+        return true;
+    }
 
     var registerMouseEvents = function (map) {
-        //map.on('pointerdrag', function() {
         map.getView().on('change:center', function() {
-            console.log('Dragging...');
-            var deltaCenter = findDelta(map);
-            moveLayer(map, deltaCenter);
+            if(_UTMZoneNotChanged(map)) {
+                var deltaCenter = _findDelta(map);
+                _moveLayer(map, deltaCenter);
+            }
         });
 
-        map.on('moveend', function() {
-            //checkForUtmChange();
-            console.log('Dragging ended.');
-        });
+        // map.on('moveend', function() {
+        // });
     };
 
-    var findDelta = function (map) {
+    var _getMapCenter = function (map){
+        return map.getView().getCenter();
+    };
+
+    var _getMapCenterGeographic = function(map){
+        var mapCenterGeographic = new ol.geom.Point(_getMapCenter(map));
+        mapCenterGeographic.applyTransform(ol.proj.getTransform('EPSG:32633', 'EPSG:4326'));
+        return mapCenterGeographic;
+    };
+
+    var _findDelta = function (map) {
         var newCenter = map.getView().getCenter();
         var deltaCenter = [
             newCenter[0] - oldCenter[0],
@@ -45,134 +54,13 @@ ISY.MapImplementation.OL3.PrintBoxSelect = function() {
         return deltaCenter;
     };
 
-    var moveLayer = function(map, deltaCenter){
-        //var vectorLayer = map.getLayerByName('Print');
+    var _moveLayer = function(map, deltaCenter){
         var source = printBoxSelectionLayer.getSource();
         var feature = source.getFeatures()[0];
         feature.getGeometry().translate(deltaCenter[0],deltaCenter[1]);
     };
 
-    // function addPrintBoxSelectLayer(map) {
-    //     var source = new ol.source.Vector();
-    //     var drawStyle = new ISY.MapImplementation.OL3.Styles.Measure();
-    //
-    //     printBoxSelectionLayer = new ol.layer.Vector({
-    //         source: source,
-    //         style: drawStyle.DrawStyles()
-    //     });
-    //
-    //     map.addLayer(printBoxSelectionLayer);
-    // }
-
-    var createFrame = function(map){
-        // if (this.maskLayer) {
-        //     // Remove layer
-        //     map.removeLayer(this.maskLayer);
-        //     delete this.maskLayer;
-        //     // Unregister events
-        //     //deregisterMouseEvents(map);
-        // }
-
-        var mapCenter = map.getView().getCenter();
-        oldCenter = mapCenter;
-
-        // General
-        var cols = 4;
-        var rows = 3;
-        var pageMargin = 1.7; // cm
-        var pageWidth = 21 - (pageMargin * 2); // 21cm = A4 width
-        var pageHeight = 29.7 -(pageMargin * 2);
-
-        // Get scale from form and create aspect
-        var scale = 25000; // TODO: Parameterize this
-        var boxWidth = (scale * pageWidth * cols) / 100;
-        var boxHeight = (scale * pageHeight * rows) / 100;
-
-        // Create a centered box
-        var box2 = {};
-        box2.left = mapCenter[0] - (boxWidth / 2);
-        box2.right = box2.left + boxWidth;
-        box2.bottom = mapCenter[1] - (boxHeight / 2);
-        box2.top = box2.bottom + boxHeight;
-
-
-
-        var coordinates = [];
-        var minLon1 = box2.left;
-        for (var c = 1; c <= cols; c++) {
-            var minLon2 = minLon1 + ((box2.right - box2.left) / cols);
-            var minLat1 = box2.bottom;
-            for (var r = 1; r <= rows; r++) {
-                var minLat2 = minLat1 + ((box2.top - box2.bottom) / rows);
-                var lowerLeft = new ol.geom.Point([minLon1, minLat1]);
-                var upperLeft = new ol.geom.Point([minLon1, minLat2]);
-                var upperRight = new ol.geom.Point([minLon2, minLat2]);
-                var lowerRight = new ol.geom.Point([minLon2, minLat1]);
-                var tempBox =  new ol.geom.Polygon([[lowerLeft.getCoordinates(), upperLeft.getCoordinates(), upperRight.getCoordinates(), lowerRight.getCoordinates(), lowerLeft.getCoordinates()]]);
-                coordinates.push(tempBox.getCoordinates());
-                minLat1 = minLat2;
-            }
-            minLon1 = minLon2;
-        }
-
-        var multiPolygonGeometry = new ol.geom.MultiPolygon(coordinates);
-        var lonLat = new ol.geom.Point(mapCenter);
-        lonLat.applyTransform(ol.proj.getTransform('EPSG:32633', 'EPSG:4326'));
-        var epsg = getUTMZone(lonLat.getCoordinates()[0], lonLat.getCoordinates()[1]);
-//        var l1 = new OpenLayers.Geometry.Point(box2.left, box2.bottom);
-//        var l2 = new OpenLayers.Geometry.Point(box2.right, box2.bottom);
-//        l1.transform(new OpenLayers.Projection("EPSG:32633"), new OpenLayers.Projection(epsg.localProj));
-//        l2.transform(new OpenLayers.Projection("EPSG:32633"), new OpenLayers.Projection(epsg.localProj));
-
-        // Make vector feature with attributes
-        var attributes = {};
-        attributes.origin = new ol.geom.Point(mapCenter);
-        attributes.tilt = 5.204377268891661; //Math.atan2((l2.y - l1.y), (l2.x - l1.x)) * 180 / Math.PI;
-        attributes.sone =  parseInt(epsg.sone, 10);
-
-        var feature = new ol.Feature(multiPolygonGeometry, attributes);
-        var vectorSource = new ol.source.Vector();
-        vectorSource.addFeature(feature);
-        printBoxSelectionLayer = new ol.layer.Vector({
-            name:'Print',
-            source: vectorSource,
-            updateWhileAnimating: true,
-            updateWhileInteracting: true
-        });
-
-
-
-        //var sone = parseInt(epsg.sone, 10) - 33;
-        //feature.geometry.rotate(sone * feature.attributes.tilt, feature.attributes.origin);
-
-        // Add layer and set index
-        map.addLayer(printBoxSelectionLayer);
-        printBoxSelectionLayer.setZIndex(2000);
-        //registerMouseEvents(map);
-    };
-
-    function activate(map){ //}, options) {
-        isActive = true;
-        if (map !== undefined) {
-            console.log('PrintBoxSelect activated');
-            //mapScale = options.mapScale;
-            registerMouseEvents(map);
-            createFrame(map);
-            //addPrintBoxSelectLayer(map);
-        }
-    }
-
-    function deactivate(map) {
-        if (isActive) {
-            isActive = false;
-            if (map !== undefined) {
-                console.log('PrintBoxSelect deactivated');
-                map.removeLayer(printBoxSelectionLayer);
-            }
-        }
-    }
-
-    getUTMZone = function(lon, lat) {
+    var _getUTMZone = function(lon, lat) {
         // From emergencyPoster.js
         var sone = "32V", localProj = "EPSG:32632";
         if (lat > 72) {
@@ -189,11 +77,13 @@ ISY.MapImplementation.OL3.PrintBoxSelect = function() {
             } else if (lon < 18) {
                 sone = "33W"; localProj = "EPSG:32633";
             } else if (lon < 24) {
-                sone = "34W"; localProj = "EPSG:32634";
+                //sone = "34W"; localProj = "EPSG:32634";
+                sone = "33W"; localProj = "EPSG:32633";
             } else if (lon < 30) {
                 sone = "35W"; localProj = "EPSG:32635";
             } else {
-                sone = "36W"; localProj = "EPSG:32636";
+                //sone = "36W"; localProj = "EPSG:32636";
+                sone = "35W"; localProj = "EPSG:32635";
             }
         } else {
             if (lon < 3) {
@@ -204,6 +94,88 @@ ISY.MapImplementation.OL3.PrintBoxSelect = function() {
         }
         return {'sone':sone, 'localProj': localProj};
     };
+
+    var _createFrame = function(map){
+        if(printBoxSelectionLayer)
+        {
+            map.removeLayer(printBoxSelectionLayer);
+        }
+        var mapCenter = _getMapCenter(map);
+        oldCenter = mapCenter;
+
+        var mapCenterGeographic =_getMapCenterGeographic(map);
+        var UTM = _getUTMZone(mapCenterGeographic.getCoordinates()[0], mapCenterGeographic.getCoordinates()[1]);
+        oldUTMZone = UTM.sone;
+        var mapCenterActiveUTMZone = new ol.geom.Point(mapCenter);
+        mapCenterActiveUTMZone.applyTransform(ol.proj.getTransform('EPSG:32633', UTM.localProj));
+
+        var cols = 4;
+        var rows = 3;
+        var pageMargin = 1.7; // cm
+        var pageWidth = 21 - (pageMargin * 2); // 21cm = A4 width
+        var pageHeight = 29.7 -(pageMargin * 2);
+        var scale = 25000; // TODO: Parameterize this
+        var printSelectBox = {};
+        printSelectBox.width = (scale * pageWidth * cols) / 100;
+        printSelectBox.height = (scale * pageHeight * rows) / 100;
+        printSelectBox.left = mapCenterActiveUTMZone.getCoordinates()[0] - (printSelectBox.width / 2);
+        printSelectBox.right = printSelectBox.left + printSelectBox.width;
+        printSelectBox.bottom = mapCenterActiveUTMZone.getCoordinates()[1] - (printSelectBox.height / 2);
+        printSelectBox.top = printSelectBox.bottom + printSelectBox.height;
+
+        var coordinates = [];
+        var tempLeft = printSelectBox.left;
+        for (var c = 1; c <= cols; c++) {
+            var tempRight = tempLeft + ((printSelectBox.right - printSelectBox.left) / cols);
+            var tempBottom = printSelectBox.bottom;
+            for (var r = 1; r <= rows; r++) {
+                var tempTop = tempBottom + ((printSelectBox.top - printSelectBox.bottom) / rows);
+                var lowerLeft = new ol.geom.Point([tempLeft, tempBottom]);
+                var upperLeft = new ol.geom.Point([tempLeft, tempTop]);
+                var upperRight = new ol.geom.Point([tempRight, tempTop]);
+                var lowerRight = new ol.geom.Point([tempRight, tempBottom]);
+                var tempBox =  new ol.geom.Polygon([[lowerLeft.getCoordinates(), upperLeft.getCoordinates(), upperRight.getCoordinates(), lowerRight.getCoordinates(), lowerLeft.getCoordinates()]]);
+                coordinates.push(tempBox.getCoordinates());
+                tempBottom = tempTop;
+            }
+            tempLeft = tempRight;
+        }
+
+        var multiPolygonGeometry = new ol.geom.MultiPolygon(coordinates);
+        multiPolygonGeometry.applyTransform(ol.proj.getTransform(UTM.localProj, 'EPSG:32633'));
+        var feature = new ol.Feature(multiPolygonGeometry);//, attributes);
+        var vectorSource = new ol.source.Vector();
+        vectorSource.addFeature(feature);
+        printBoxSelectionLayer = new ol.layer.Vector({
+            name:'Print',
+            source: vectorSource,
+            updateWhileAnimating: true,
+            updateWhileInteracting: true
+        });
+
+        map.addLayer(printBoxSelectionLayer);
+        printBoxSelectionLayer.setZIndex(2000);
+
+    };
+
+    function activate(map){ //}, options) {
+        isActive = true;
+        if (map !== undefined) {
+            //mapScale = options.mapScale;
+            registerMouseEvents(map);
+            _createFrame(map);
+        }
+    }
+
+    function deactivate(map) {
+        if (isActive) {
+            isActive = false;
+            if (map !== undefined) {
+                console.log('PrintBoxSelect deactivated');
+                map.removeLayer(printBoxSelectionLayer);
+            }
+        }
+    }
 
     return {
         Activate: activate,
