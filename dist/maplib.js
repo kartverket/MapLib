@@ -1581,8 +1581,8 @@ ISY.MapAPI.Map = function(mapImplementation, eventHandler, featureInfo, layerHan
     /*
      PrintBoxSelect Start
     */
-    function activatePrintBoxSelect(){
-        mapImplementation.ActivatePrintBoxSelect();
+    function activatePrintBoxSelect(options){
+        mapImplementation.ActivatePrintBoxSelect(options);
     }
 
     function deactivatePrintBoxSelect(){
@@ -2585,8 +2585,8 @@ ISY.MapAPI.Tools.Tools = function(mapApi){
     var printBoxSelectConfig = {
         id: 'PrintBoxSelect',
         description: 'This tool activates box select functionality for printing',
-        activate: function (){
-            mapApi.ActivatePrintBoxSelect();
+        activate: function (options){
+            mapApi.ActivatePrintBoxSelect(options);
         },
         deactivate: function (){
             mapApi.DeactivatePrintBoxSelect();
@@ -6515,8 +6515,8 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
     /*
       PrintBoxSelect Start
      */
-    var activatePrintBoxSelect = function (){
-        printBoxSelect.Activate(map);
+    var activatePrintBoxSelect = function (options){
+        printBoxSelect.Activate(map, options);
     } ;
 
     var deactivatePrintBoxSelect = function (){
@@ -8904,6 +8904,7 @@ ISY.MapImplementation.OL3.PrintBoxSelect = function() {
     var printBoxSelectionLayer;
     var oldCenter = {};
     var oldUTMZone = "";
+    var scale = 25000;
 
     function _UTMZoneNotChanged(map) {
         if (!isActive) {
@@ -8917,6 +8918,11 @@ ISY.MapImplementation.OL3.PrintBoxSelect = function() {
         }
         return true;
     }
+
+    // var deregisterMouseEvents = function(map){
+    //     map.getView().un('change:center');
+    //     // map.un('moveend');
+    // };
 
     var registerMouseEvents = function (map) {
         map.getView().on('change:center', function() {
@@ -9010,7 +9016,6 @@ ISY.MapImplementation.OL3.PrintBoxSelect = function() {
         var pageMargin = 1.7; // cm
         var pageWidth = 21 - (pageMargin * 2); // 21cm = A4 width
         var pageHeight = 29.7 -(pageMargin * 2);
-        var scale = 25000; // TODO: Parameterize this
         var printSelectBox = {};
         printSelectBox.width = (scale * pageWidth * cols) / 100;
         printSelectBox.height = (scale * pageHeight * rows) / 100;
@@ -9070,10 +9075,10 @@ ISY.MapImplementation.OL3.PrintBoxSelect = function() {
         return style;
     };
 
-    function activate(map){ //}, options) {
+    function activate(map, options) {
         isActive = true;
         if (map !== undefined) {
-            //mapScale = options.mapScale;
+            scale = options.scale;
             registerMouseEvents(map);
             _createFrame(map);
         }
@@ -9085,6 +9090,7 @@ ISY.MapImplementation.OL3.PrintBoxSelect = function() {
             if (map !== undefined) {
                 console.log('PrintBoxSelect deactivated');
                 map.removeLayer(printBoxSelectionLayer);
+                //deregisterMouseEvents(map);
             }
         }
     }
