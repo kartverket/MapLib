@@ -9,6 +9,7 @@ ISY.MapImplementation.OL3.PrintBoxSelect = function() {
     var oldCenter = {};
     var oldUTMZone = "";
     var scale = 25000;
+    var oldInteraction={};
 
     function _UTMZoneNotChanged(map) {
         if (!isActive) {
@@ -28,7 +29,7 @@ ISY.MapImplementation.OL3.PrintBoxSelect = function() {
     //     // map.un('moveend');
     // };
 
-    var registerMouseEvents = function (map) {
+    var _registerMouseEvents = function (map) {
         map.getView().on('change:center', function() {
             if(_UTMZoneNotChanged(map)) {
                 var deltaCenter = _findDelta(map);
@@ -177,11 +178,35 @@ ISY.MapImplementation.OL3.PrintBoxSelect = function() {
         return style;
     };
 
+    var _removeKineticDragPan = function (map, copyOld) {
+        map.getInteractions().forEach(function (interaction) {
+            if (interaction instanceof ol.interaction.DragPan) {
+                map.removeInteraction(interaction);
+                if(copyOld) {
+                    oldInteraction = interaction;
+                }
+            }
+        });
+    };
+
+    var _applyNonKineticDragPan = function (map){
+        _removeKineticDragPan(map, true);
+        map.addInteraction(
+            new ol.interaction.DragPan({kinetic: false})
+        );
+    };
+
+    var _applyOriginalInteraction = function(map) {
+        _removeKineticDragPan(map, false);
+        map.addInteraction(oldInteraction);
+    };
+
     function activate(map, options) {
         isActive = true;
         if (map !== undefined) {
             scale = options.scale;
-            registerMouseEvents(map);
+            _applyNonKineticDragPan(map);
+            _registerMouseEvents(map);
             _createFrame(map);
         }
     }
@@ -193,6 +218,7 @@ ISY.MapImplementation.OL3.PrintBoxSelect = function() {
                 console.log('PrintBoxSelect deactivated');
                 map.removeLayer(printBoxSelectionLayer);
                 //deregisterMouseEvents(map);
+                _applyOriginalInteraction(map);
             }
         }
     }
