@@ -1,5 +1,5 @@
 /**
- * maplib - v0.0.1 - 2016-09-24
+ * maplib - v0.0.1 - 2016-09-26
  * http://localhost
  *
  * Copyright (c) 2016 
@@ -296,7 +296,8 @@ ISY.Events.EventTypes = {
     TransactionUpdateEnd: "TransactionUpdateEnd",
     TransactionRemoveEnd: "TransactionRemoveEnd",
     FeatureHasBeenDescribed: "FeatureHasBeenDescribed",
-    GeolocationUpdated: "GeolocationUpdated"
+    GeolocationUpdated: "GeolocationUpdated",
+    PrintBoxSelectReturnValue: "PrintBoxSelectReturnValue"
 };
 var ISY = ISY || {};
 ISY.Facade = ISY.Facade || {};
@@ -8906,7 +8907,7 @@ var ISY = ISY || {};
 ISY.MapImplementation = ISY.MapImplementation || {};
 ISY.MapImplementation.OL3 = ISY.MapImplementation.OL3 || {};
 
-ISY.MapImplementation.OL3.PrintBoxSelect = function() {
+ISY.MapImplementation.OL3.PrintBoxSelect = function(eventHandler) {
 
     var isActive = false;
     var printBoxSelectionLayer;
@@ -8919,6 +8920,7 @@ ISY.MapImplementation.OL3.PrintBoxSelect = function() {
     var pageMargin = 1.7; // cm
     var pageWidth = 21 - (pageMargin * 2); // 21cm = A4 width
     var pageHeight = 29.7 -(pageMargin * 2);
+    var eventKeys ={};
 
     function _UTMZoneNotChanged(map) {
         if (!isActive) {
@@ -8933,20 +8935,22 @@ ISY.MapImplementation.OL3.PrintBoxSelect = function() {
         return true;
     }
 
-    // var deregisterMouseEvents = function(map){
-    //     map.getView().un('change:center');
-    //     // map.un('moveend');
-    // };
+    var _deregisterMouseEvents = function(map){
+        for (var eventKey in eventKeys){
+            map.unByKey(eventKeys[eventKey]);
+            eventKeys[eventKey]=false;
+        }
+    };
 
     var _registerMouseEvents = function (map) {
-        map.getView().on('change:center', function() {
+        eventKeys['change_center']=map.getView().on('change:center', function() {
             if(_UTMZoneNotChanged(map)) {
                 var deltaCenter = _findDelta(map);
                 _moveLayer(map, deltaCenter);
             }
         });
 
-        map.on('moveend', function() {
+        eventKeys['moveend']=map.on('moveend', function() {
             _getExtentOfPrintBox(map);
         });
     };
@@ -8955,40 +8959,40 @@ ISY.MapImplementation.OL3.PrintBoxSelect = function() {
         var mapCenter = _getMapCenter(map);
         var mapCenterActiveUTMZone =_getMapCenterActiveUTMZone(mapCenter);
         var printBox = _getPrintBox(mapCenterActiveUTMZone);
-        // var extent = {
-        //     bbox: [printBox.left, printBox.bottom, printBox.right, printBox.top],
-        //     center: mapCenterActiveUTMZone,
-        //     projection: oldUTM.localProj,
-        //     sone: oldUTM.sone,
-        //     scale: scale
-        // };
-
-        var json = {
-            map: {
-                bbox: [printBox.left, printBox.bottom, printBox.right, printBox.top],
-                center: mapCenterActiveUTMZone.getCoordinates(),
-                dpi: "300",
-                layers: [{
-                    baseURL: "http://wms.geonorge.no/skwms1/wms.toporaster3",
-                    customParams: {"TRANSPARENT": "false"},
-                    imageFormat: "image/jpeg",
-                    layers: ["toporaster"],
-                    opacity: 1,
-                    type: "WMS"
-                }],
-                projection: oldUTM.localProj,
-                sone: oldUTM.sone,
-                biSone: ""
-            },
-            paging: 12,
-            layout: "A4 landscape",
-            scale: scale,
-            titel: "Turkart",
-            legend: false,
-            trips: false,
-            link: "http://www.norgeskart.no/turkart/#9/238117/6674760"
+        var extent = {
+            bbox: [printBox.left, printBox.bottom, printBox.right, printBox.top],
+            center: mapCenterActiveUTMZone,
+            projection: oldUTM.localProj,
+            sone: oldUTM.sone,
+            scale: scale
         };
-        console.log(JSON.stringify(json));
+        eventHandler.TriggerEvent(ISY.Events.EventTypes.PrintBoxSelectReturnValue, extent);
+        // var json = {
+        //     map: {
+        //         bbox: [printBox.left, printBox.bottom, printBox.right, printBox.top],
+        //         center: mapCenterActiveUTMZone.getCoordinates(),
+        //         dpi: "300",
+        //         layers: [{
+        //             baseURL: "http://wms.geonorge.no/skwms1/wms.toporaster3",
+        //             customParams: {"TRANSPARENT": "false"},
+        //             imageFormat: "image/jpeg",
+        //             layers: ["toporaster"],
+        //             opacity: 1,
+        //             type: "WMS"
+        //         }],
+        //         projection: oldUTM.localProj,
+        //         sone: oldUTM.sone,
+        //         biSone: ""
+        //     },
+        //     paging: 12,
+        //     layout: "A4 landscape",
+        //     scale: scale,
+        //     titel: "Turkart",
+        //     legend: false,
+        //     trips: false,
+        //     link: "http://www.norgeskart.no/turkart/#9/238117/6674760"
+        // };
+        // console.log(JSON.stringify(json));
     };
 
     var _getMapCenter = function (map){
@@ -9183,7 +9187,7 @@ ISY.MapImplementation.OL3.PrintBoxSelect = function() {
             isActive = false;
             if (map !== undefined) {
                 map.removeLayer(printBoxSelectionLayer);
-                //deregisterMouseEvents(map);
+                _deregisterMouseEvents(map);
                 _applyOriginalInteraction(map);
             }
         }
