@@ -56,7 +56,7 @@ ISY.MapImplementation.OL3.PrintBoxSelect = function(eventHandler) {
         var printBox = _getPrintBox(mapCenterActiveUTMZone);
         var extent = {
             bbox: [printBox.left, printBox.bottom, printBox.right, printBox.top],
-            center: mapCenterActiveUTMZone,
+            center: mapCenterActiveUTMZone.getCoordinates(),
             projection: oldUTM.localProj,
             sone: oldUTM.sone,
             scale: scale
@@ -124,6 +124,7 @@ ISY.MapImplementation.OL3.PrintBoxSelect = function(eventHandler) {
     };
 
     var _createFrame = function(map){
+        _getExtentOfPrintBox(map);
         if(printBoxSelectionLayer)
         {
             map.removeLayer(printBoxSelectionLayer);
