@@ -8961,38 +8961,12 @@ ISY.MapImplementation.OL3.PrintBoxSelect = function(eventHandler) {
         var printBox = _getPrintBox(mapCenterActiveUTMZone);
         var extent = {
             bbox: [printBox.left, printBox.bottom, printBox.right, printBox.top],
-            center: mapCenterActiveUTMZone,
+            center: mapCenterActiveUTMZone.getCoordinates(),
             projection: oldUTM.localProj,
             sone: oldUTM.sone,
             scale: scale
         };
         eventHandler.TriggerEvent(ISY.Events.EventTypes.PrintBoxSelectReturnValue, extent);
-        // var json = {
-        //     map: {
-        //         bbox: [printBox.left, printBox.bottom, printBox.right, printBox.top],
-        //         center: mapCenterActiveUTMZone.getCoordinates(),
-        //         dpi: "300",
-        //         layers: [{
-        //             baseURL: "http://wms.geonorge.no/skwms1/wms.toporaster3",
-        //             customParams: {"TRANSPARENT": "false"},
-        //             imageFormat: "image/jpeg",
-        //             layers: ["toporaster"],
-        //             opacity: 1,
-        //             type: "WMS"
-        //         }],
-        //         projection: oldUTM.localProj,
-        //         sone: oldUTM.sone,
-        //         biSone: ""
-        //     },
-        //     paging: 12,
-        //     layout: "A4 landscape",
-        //     scale: scale,
-        //     titel: "Turkart",
-        //     legend: false,
-        //     trips: false,
-        //     link: "http://www.norgeskart.no/turkart/#9/238117/6674760"
-        // };
-        // console.log(JSON.stringify(json));
     };
 
     var _getMapCenter = function (map){
@@ -9055,6 +9029,7 @@ ISY.MapImplementation.OL3.PrintBoxSelect = function(eventHandler) {
     };
 
     var _createFrame = function(map){
+        _getExtentOfPrintBox(map);
         if(printBoxSelectionLayer)
         {
             map.removeLayer(printBoxSelectionLayer);
