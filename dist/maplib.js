@@ -1,5 +1,5 @@
 /**
- * maplib - v0.0.1 - 2016-09-26
+ * maplib - v0.0.1 - 2016-09-30
  * http://localhost
  *
  * Copyright (c) 2016 
@@ -297,7 +297,8 @@ ISY.Events.EventTypes = {
     TransactionRemoveEnd: "TransactionRemoveEnd",
     FeatureHasBeenDescribed: "FeatureHasBeenDescribed",
     GeolocationUpdated: "GeolocationUpdated",
-    PrintBoxSelectReturnValue: "PrintBoxSelectReturnValue"
+    PrintBoxSelectReturnValue: "PrintBoxSelectReturnValue",
+    MapClickCoordinate: "MapClickCoordinate"
 };
 var ISY = ISY || {};
 ISY.Facade = ISY.Facade || {};
@@ -548,7 +549,7 @@ ISY.MapAPI.FeatureInfo = function(mapImplementation, httpHelper, eventHandler, f
         if(useInfoMarker === true){
             _showInfoMarker(coordinate);
         }
-
+        eventHandler.TriggerEvent(ISY.Events.EventTypes.MapClickCoordinate, coordinate);
         _trigStartGetInfoRequest(layersSupportingGetFeatureInfo);
 
         for(var i = 0; i < layersSupportingGetFeatureInfo.length; i++){

@@ -68,5 +68,6 @@ ISY.Events.EventTypes = {
     TransactionRemoveEnd: "TransactionRemoveEnd",
     FeatureHasBeenDescribed: "FeatureHasBeenDescribed",
     GeolocationUpdated: "GeolocationUpdated",
-    PrintBoxSelectReturnValue: "PrintBoxSelectReturnValue"
+    PrintBoxSelectReturnValue: "PrintBoxSelectReturnValue",
+    MapClickCoordinate: "MapClickCoordinate"
 };

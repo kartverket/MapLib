@@ -138,7 +138,7 @@ ISY.MapAPI.FeatureInfo = function(mapImplementation, httpHelper, eventHandler, f
         if(useInfoMarker === true){
             _showInfoMarker(coordinate);
         }
-
+        eventHandler.TriggerEvent(ISY.Events.EventTypes.MapClickCoordinate, coordinate);
         _trigStartGetInfoRequest(layersSupportingGetFeatureInfo);
 
         for(var i = 0; i < layersSupportingGetFeatureInfo.length; i++){
