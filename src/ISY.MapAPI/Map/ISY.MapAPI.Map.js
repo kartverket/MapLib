@@ -35,6 +35,7 @@ ISY.MapAPI.Map = function(mapImplementation, eventHandler, featureInfo, layerHan
         addCustomProj('EPSG:32634');
         addCustomProj('EPSG:32635');
         addCustomProj('EPSG:32636');
+        addCustomProj('EPSG:4258');
         // TODO: Geoserver
         //addCustomProj('http://www.opengis.net/gml/srs/epsg.xml#25832');
         //addCustomProj('http://www.opengis.net/gml/srs/epsg.xml#25833');

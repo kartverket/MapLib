@@ -1,5 +1,5 @@
 /**
- * maplib - v0.0.1 - 2016-09-30
+ * maplib - v0.0.1 - 2016-10-03
  * http://localhost
  *
  * Copyright (c) 2016 
@@ -393,6 +393,8 @@ ISY.MapAPI.CustomCrsLoader = function(){
         proj4.defs("EPSG:32636", "+proj=utm +zone=36 +datum=WGS84 +units=m +no_defs");
 
         proj4.defs("EPSG:3575", "+proj=laea +lat_0=90 +lon_0=10 +x_0=0 +y_0=0 +datum=WGS84 +units=m +no_defs");
+
+        proj4.defs("EPSG:4258","+proj=longlat +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +no_defs");
 
         // TODO: Geoserver
         //proj4.defs("http://www.opengis.net/gml/srs/epsg.xml#25832", '+proj=utm +zone=32 +ellps=GRS80 +units=m +no_defs');
@@ -1100,6 +1102,7 @@ ISY.MapAPI.Map = function(mapImplementation, eventHandler, featureInfo, layerHan
         addCustomProj('EPSG:32634');
         addCustomProj('EPSG:32635');
         addCustomProj('EPSG:32636');
+        addCustomProj('EPSG:4258');
         // TODO: Geoserver
         //addCustomProj('http://www.opengis.net/gml/srs/epsg.xml#25832');
         //addCustomProj('http://www.opengis.net/gml/srs/epsg.xml#25833');
