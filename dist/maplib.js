@@ -3957,7 +3957,9 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler){
             function(evt) {
                 sketch = evt.feature;
                 var format = new ol.format.GeoJSON('EPSG:25833');
-                eventHandler.TriggerEvent(ISY.Events.EventTypes.DrawFeatureEnd, format.writeFeature(sketch));
+                var features=source.getFeatures();
+                features.push(sketch);
+                eventHandler.TriggerEvent(ISY.Events.EventTypes.DrawFeatureEnd, format.writeFeatures(features));
             }, this);
     }
 
@@ -3971,7 +3973,6 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler){
     }
 
     function activate(map, options){
-        console.log(options);
         isActive = true;
         map.addLayer(drawLayer);
         addInteraction(map, options.type);
@@ -3982,6 +3983,7 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler){
             isActive = false;
             if (map !== undefined) {
                 map.removeLayer(drawLayer);
+                map.removeInteraction(draw);
             }
         }
     }
