@@ -3975,7 +3975,7 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler){
         console.log(options);
         isActive = true;
         map.addLayer(drawLayer);
-        addInteraction(map, 'LineString');
+        addInteraction(map, options.type);
     }
 
     function deactivate(map){
