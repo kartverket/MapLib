@@ -3957,8 +3957,7 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler){
             function(evt) {
                 sketch = evt.feature;
                 var format = new ol.format.GeoJSON('EPSG:25833');
-                console.log(format.writeFeature(sketch));
-                eventHandler.TriggerEvent(ISY.Events.EventTypes.DrawFeatureEnd, sketch.getGeometry().getCoordinates());
+                eventHandler.TriggerEvent(ISY.Events.EventTypes.DrawFeatureEnd, format.writeFeature(sketch));
             }, this);
     }
 
