@@ -3938,10 +3938,12 @@ ISY.MapImplementation.OL3 = ISY.MapImplementation.OL3 || {};
 
 ISY.MapImplementation.OL3.DrawFeature = function(eventHandler){
 
+    var eventHandlers=[];
     var isActive = false;
-    var sketch;
     var draw; // global so we can remove it later
-
+    var modify;
+    var modificationActive=false;
+    var format = new ol.format.GeoJSON('EPSG:25833');
     var features= new ol.Collection();
     var source = new ol.source.Vector({features:features});
     var drawStyle = new ISY.MapImplementation.OL3.Styles.Measure();
@@ -3950,40 +3952,61 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler){
         style: drawStyle.DrawStyles()
     });
 
-    function addEventHandlers(draw){
-        draw.on('drawstart',
-            function(evt) {
-                sketch = evt.feature;
-            }, this);
-        draw.on('drawend',
-            function(evt) {
-                sketch = evt.feature;
-                var format = new ol.format.GeoJSON('EPSG:25833');
-                var features=source.getFeatures();
-                features.push(sketch);
-                eventHandler.TriggerEvent(ISY.Events.EventTypes.DrawFeatureEnd, format.writeFeatures(features));
-            }, this);
+    function addEventHandlers(){
+        eventHandlers.push(source.on('addfeature',
+            function() {
+                drawFeatureEnd();
+            }, this));
+        // source.on('changefeature',
+        //     function() {
+        //         drawFeatureEnd();
+        //     }, this);
+        eventHandlers.push(source.on('removefeature',
+            function() {
+                drawFeatureEnd();
+            }, this));
+        eventHandlers.push(modify.on('modifystart',
+            function(){
+                modificationActive=true;
+            }, this));
+        eventHandlers.push(modify.on('modifyend',
+            function(){
+                modificationActive=false;
+                drawFeatureEnd();
+            }, this));
+    }
+    function drawFeatureEnd(){
+        if(!modificationActive) {
+            var tmpFeatures = source.getFeatures();
+            eventHandler.TriggerEvent(ISY.Events.EventTypes.DrawFeatureEnd, format.writeFeatures(tmpFeatures));
+        }
     }
 
-    function addDrawInteraction(map, value) {
+    function addDrawInteraction(map, type) {
+        if(draw && draw.type==type){
+            return;
+        }
+
         draw = new ol.interaction.Draw({
             source: source,
-            type: (value)
+            type: (type)
         });
         map.addInteraction(draw);
-        addEventHandlers(draw);
     }
 
     function addMoveInteraction(map) {
-        var modify = new ol.interaction.Modify({
-            features: features
-            // // the SHIFT key must be pressed to delete vertices, so
-            // // that new vertices can be drawn at the same position
-            // // of existing vertices
-            // deleteCondition: function(event) {
-            //     return ol.events.condition.shiftKeyOnly(event) &&
-            //         ol.events.condition.singleClick(event);
-            // }
+        if (modify){
+            return;
+        }
+        modify = new ol.interaction.Modify({
+            features: features,
+            // the SHIFT key must be pressed to delete vertices, so
+            // that new vertices can be drawn at the same position
+            // of existing vertices
+            deleteCondition: function(event) {
+                return ol.events.condition.shiftKeyOnly(event) &&
+                    ol.events.condition.singleClick(event);
+            }
         });
         map.addInteraction(modify);
     }
@@ -3993,6 +4016,9 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler){
         map.addLayer(drawLayer);
         addMoveInteraction(map);
         addDrawInteraction(map, options.type);
+        if(eventHandlers.length<1){
+            addEventHandlers();
+        }
 
     }
 
