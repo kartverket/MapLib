@@ -3946,7 +3946,11 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler){
     var draw; // global so we can remove it later
     var modify;
     var modificationActive=false;
-    var format = new ol.format.GeoJSON('EPSG:25833');
+    var format = new ol.format.GeoJSON({
+            defaultDataProjection: 'EPSG:25833',
+            projection: 'EPSG:25833'
+        }
+    );
     var features= new ol.Collection();
     var source = new ol.source.Vector({features:features});
     var drawStyle = new ISY.MapImplementation.OL3.Styles.Measure();
@@ -4016,8 +4020,21 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler){
         map.addInteraction(modify);
     }
 
+    function importGeoJSON(GeoJSON){
+        if(GeoJSON){
+            features=new ol.Collection(format.readFeatures(GeoJSON));
+            source = new ol.source.Vector({features:features});
+            drawLayer = new ol.layer.Vector({
+                source: source,
+                style: drawStyle.DrawStyles()
+            });
+        }
+    }
+
+
     function activate(map, options){
         isActive = true;
+        importGeoJSON(options.GeoJSON);
         map.addLayer(drawLayer);
         addMoveInteraction(map);
         addDrawInteraction(map, options.type);
