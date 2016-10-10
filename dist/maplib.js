@@ -3938,7 +3938,10 @@ ISY.MapImplementation.OL3 = ISY.MapImplementation.OL3 || {};
 
 ISY.MapImplementation.OL3.DrawFeature = function(eventHandler){
 
-    var eventHandlers=[];
+    var eventHandlers={
+        modify:[],
+        source:[]
+    };
     var isActive = false;
     var draw; // global so we can remove it later
     var modify;
@@ -3953,32 +3956,37 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler){
     });
 
     function addEventHandlers(){
-        eventHandlers.push(source.on('addfeature',
+        eventHandlers['source'].push(source.on('addfeature',
             function() {
                 drawFeatureEnd();
             }, this));
-        // source.on('changefeature',
-        //     function() {
-        //         drawFeatureEnd();
-        //     }, this);
-        eventHandlers.push(source.on('removefeature',
+        eventHandlers['source'].push(source.on('removefeature',
             function() {
                 drawFeatureEnd();
             }, this));
-        eventHandlers.push(modify.on('modifystart',
+        eventHandlers['modify'].push(modify.on('modifystart',
             function(){
                 modificationActive=true;
             }, this));
-        eventHandlers.push(modify.on('modifyend',
+        eventHandlers['modify'].push(modify.on('modifyend',
             function(){
                 modificationActive=false;
                 drawFeatureEnd();
             }, this));
     }
+
+    function removeEventHandlers() {
+        for (var modifyEvent = 0; modifyEvent<eventHandlers['modify'].length; modifyEvent++) {
+            modify.unByKey(eventHandlers['modify'][modifyEvent]);
+        }
+        for (var sourceEvent = 0; sourceEvent<eventHandlers['source'].length; sourceEvent++) {
+            source.unByKey(eventHandlers['source'][sourceEvent]);
+        }
+    }
+
     function drawFeatureEnd(){
         if(!modificationActive) {
-            var tmpFeatures = source.getFeatures();
-            eventHandler.TriggerEvent(ISY.Events.EventTypes.DrawFeatureEnd, format.writeFeatures(tmpFeatures));
+            eventHandler.TriggerEvent(ISY.Events.EventTypes.DrawFeatureEnd, format.writeFeatures(source.getFeatures()));
         }
     }
 
@@ -3995,9 +4003,6 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler){
     }
 
     function addMoveInteraction(map) {
-        if (modify){
-            return;
-        }
         modify = new ol.interaction.Modify({
             features: features,
             // the SHIFT key must be pressed to delete vertices, so
@@ -4016,10 +4021,7 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler){
         map.addLayer(drawLayer);
         addMoveInteraction(map);
         addDrawInteraction(map, options.type);
-        if(eventHandlers.length<1){
-            addEventHandlers();
-        }
-
+        addEventHandlers();
     }
 
     function deactivate(map){
@@ -4028,6 +4030,8 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler){
             if (map !== undefined) {
                 map.removeLayer(drawLayer);
                 map.removeInteraction(draw);
+                map.removeInteraction(modify);
+                removeEventHandlers();
             }
         }
     }
