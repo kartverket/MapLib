@@ -7,7 +7,9 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler){
     var isActive = false;
     var sketch;
     var draw; // global so we can remove it later
-    var source = new ol.source.Vector();
+
+    var features= new ol.Collection();
+    var source = new ol.source.Vector({features:features});
     var drawStyle = new ISY.MapImplementation.OL3.Styles.Measure();
     var drawLayer = new ol.layer.Vector({
         source: source,
@@ -29,7 +31,7 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler){
             }, this);
     }
 
-    function addInteraction(map, value) {
+    function addDrawInteraction(map, value) {
         draw = new ol.interaction.Draw({
             source: source,
             type: (value)
@@ -38,10 +40,26 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler){
         addEventHandlers(draw);
     }
 
+    function addMoveInteraction(map) {
+        var modify = new ol.interaction.Modify({
+            features: features
+            // // the SHIFT key must be pressed to delete vertices, so
+            // // that new vertices can be drawn at the same position
+            // // of existing vertices
+            // deleteCondition: function(event) {
+            //     return ol.events.condition.shiftKeyOnly(event) &&
+            //         ol.events.condition.singleClick(event);
+            // }
+        });
+        map.addInteraction(modify);
+    }
+
     function activate(map, options){
         isActive = true;
         map.addLayer(drawLayer);
-        addInteraction(map, options.type);
+        addMoveInteraction(map);
+        addDrawInteraction(map, options.type);
+
     }
 
     function deactivate(map){
