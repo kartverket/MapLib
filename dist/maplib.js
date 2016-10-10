@@ -3945,6 +3945,7 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler){
     var isActive = false;
     var draw; // global so we can remove it later
     var modify;
+    var snap;
     var modificationActive=false;
     var format = new ol.format.GeoJSON({
             defaultDataProjection: 'EPSG:25833',
@@ -4019,6 +4020,13 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler){
         });
         map.addInteraction(modify);
     }
+    function addSnapInteraction(map) {
+        snap = new ol.interaction.Snap({
+            source: source
+        });
+        map.addInteraction(snap);
+    }
+
 
     function importGeoJSON(GeoJSON){
         if(GeoJSON){
@@ -4031,13 +4039,13 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler){
         }
     }
 
-
     function activate(map, options){
         isActive = true;
         importGeoJSON(options.GeoJSON);
         map.addLayer(drawLayer);
         addMoveInteraction(map);
         addDrawInteraction(map, options.type);
+        addSnapInteraction(map);
         addEventHandlers();
     }
 
@@ -4048,6 +4056,7 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler){
                 map.removeLayer(drawLayer);
                 map.removeInteraction(draw);
                 map.removeInteraction(modify);
+                map.removeInteraction(snap);
                 removeEventHandlers();
             }
         }
