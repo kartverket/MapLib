@@ -6,13 +6,15 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler){
 
     var eventHandlers={
         modify:[],
-        source:[]
+        source:[],
+        select:[]
     };
     var type;
     var isActive = false;
     var draw; // global so we can remove it later
     var modify;
     var snap;
+    var select;
     var modificationActive=false;
     var format = new ol.format.GeoJSON({
             defaultDataProjection: 'EPSG:25833',
@@ -28,31 +30,43 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler){
     });
 
     function addEventHandlers(){
-        eventHandlers['source'].push(source.on('addfeature',
-            function() {
-                drawFeatureEnd();
-            }, this));
-        eventHandlers['source'].push(source.on('removefeature',
-            function() {
-                drawFeatureEnd();
-            }, this));
-        eventHandlers['modify'].push(modify.on('modifystart',
-            function(){
-                modificationActive=true;
-            }, this));
-        eventHandlers['modify'].push(modify.on('modifyend',
-            function(){
-                modificationActive=false;
-                drawFeatureEnd();
-            }, this));
+        if(source) {
+            eventHandlers['source'].push(source.on('addfeature',
+                function () {
+                    drawFeatureEnd();
+                }, this));
+            eventHandlers['source'].push(source.on('removefeature',
+                function () {
+                    drawFeatureEnd();
+                }, this));
+        }
+        if(modify) {
+            eventHandlers['modify'].push(modify.on('modifystart',
+                function () {
+                    modificationActive = true;
+                }, this));
+            eventHandlers['modify'].push(modify.on('modifyend',
+                function () {
+                    modificationActive = false;
+                    drawFeatureEnd();
+                }, this));
+        }
+        if(select) {
+            eventHandlers['select'].push(select.on('select',
+                function (e) {
+                    console.log(e);
+                }, this));
+        }
     }
 
     function removeEventHandlers() {
-        for (var modifyEvent = 0; modifyEvent<eventHandlers['modify'].length; modifyEvent++) {
-            modify.unByKey(eventHandlers['modify'][modifyEvent]);
-        }
-        for (var sourceEvent = 0; sourceEvent<eventHandlers['source'].length; sourceEvent++) {
-            source.unByKey(eventHandlers['source'][sourceEvent]);
+        removeSpecificEventHandlers(modify, 'modify');
+        removeSpecificEventHandlers(source, 'source');
+        removeSpecificEventHandlers(select, 'select');
+    }
+    function removeSpecificEventHandlers(interaction, name) {
+        for (var sourceEvent = 0; sourceEvent < eventHandlers[name].length; sourceEvent++) {
+            interaction.unByKey(eventHandlers[name][sourceEvent]);
         }
     }
 
@@ -66,27 +80,44 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler){
         if(draw && draw.type==type){
             return;
         }
-
         draw = new ol.interaction.Draw({
             source: source,
-            type: (type)
+            type: (type),
+            condition: function(event) {
+                return _checkForNoKeys(event) && !modificationActive;
+            }
         });
         map.addInteraction(draw);
     }
 
-    function addMoveInteraction(map) {
+    function addModifyInteraction(map) {
         modify = new ol.interaction.Modify({
             features: features,
-            // the SHIFT key must be pressed to delete vertices, so
-            // that new vertices can be drawn at the same position
-            // of existing vertices
+            condition: function(event) {
+                return _checkForNoKeys(event);
+            },
             deleteCondition: function(event) {
-                return ol.events.condition.shiftKeyOnly(event) &&
-                    ol.events.condition.singleClick(event);
+                return _checkForShiftKey(event);
             }
         });
         map.addInteraction(modify);
     }
+
+    function _checkForShiftKey(event){
+        return ol.events.condition.shiftKeyOnly(event) &&
+            event.type=='pointerdown';
+    }
+
+    function _checkForNoKeys(event){
+        return event.type=='pointerdown' &&
+            ol.events.condition.noModifierKeys(event);
+    }
+
+    // function _checkForAltKey(event){
+    //     return event.type=='pointerdown' &&
+    //         ol.events.condition.altKeyOnly(event);
+    // }
+
     function addSnapInteraction(map) {
         snap = new ol.interaction.Snap({
             source: source
@@ -94,7 +125,14 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler){
         map.addInteraction(snap);
     }
 
-
+    function addSelectInteraction(map){
+        select = new ol.interaction.Select(
+            {
+                condition: ol.events.condition.click
+            }
+        );
+        map.addInteraction(select);
+    }
 
     function initiateDrawing(newFeatures){
         features=new ol.Collection(newFeatures);
@@ -120,13 +158,22 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler){
             }
         }
         map.addLayer(drawLayer);
-        addMoveInteraction(map);
-        if(options.type!='Active'){
-            type=options.type;
-        }
-        addDrawInteraction(map, type);
-        if (options.snap) {
-            addSnapInteraction(map);
+        switch (options.mode){
+            case('modify'):
+                addModifyInteraction(map);
+                break;
+            case('draw'):
+                if(options.type!='Active'){
+                    type=options.type;
+                }
+                addDrawInteraction(map, type);
+                if (options.snap) {
+                    addSnapInteraction(map);
+                }
+                break;
+            case('select'):
+                addSelectInteraction(map);
+                break;
         }
         addEventHandlers();
     }
@@ -139,6 +186,7 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler){
                 map.removeInteraction(draw);
                 map.removeInteraction(modify);
                 map.removeInteraction(snap);
+                map.removeInteraction(select);
                 removeEventHandlers();
             }
         }
