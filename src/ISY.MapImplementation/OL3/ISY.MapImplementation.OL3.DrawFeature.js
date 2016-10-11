@@ -24,11 +24,8 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler){
     );
     var features= new ol.Collection();
     var source = new ol.source.Vector({features:features});
-    var drawStyle = new ISY.MapImplementation.OL3.Styles.Measure();
-    var drawLayer = new ol.layer.Vector({
-        source: source,
-        style: drawStyle.DrawStyles()
-    });
+    //var drawStyle = new ISY.MapImplementation.OL3.Styles.Measure();
+    var drawLayer;
 
     function addEventHandlers(){
         if(source) {
@@ -160,7 +157,7 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler){
             }
         }
         else {
-            initiateDrawing(features);
+            initiateDrawing();
         }
         map.addLayer(drawLayer);
         switch (options.mode){
