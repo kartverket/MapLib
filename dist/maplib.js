@@ -3958,7 +3958,6 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler){
     );
     var features= new ol.Collection();
     var source = new ol.source.Vector({features:features});
-    //var drawStyle = new ISY.MapImplementation.OL3.Styles.Measure();
     var drawLayer;
 
     function addEventHandlers(){
@@ -4077,7 +4076,12 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler){
 
     function activate(map, options) {
         isActive = true;
-        style=options.style;
+        if(!options.style && !style) {
+            style=new ISY.MapImplementation.OL3.Styles.Measure();
+        }
+        else{
+            style = options.style;
+        }
         if(options.GeoJSON){
             if (options.GeoJSON=='remove'){
                 initiateDrawing();
