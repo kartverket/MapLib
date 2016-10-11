@@ -4070,7 +4070,45 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler){
         source = new ol.source.Vector({features:features});
         drawLayer = new ol.layer.Vector({
             source: source,
-            style: style
+            style: styleFunction
+        });
+    }
+
+    function setFeatureStyle(feature){
+        if (!feature.getProperties().style) {
+            feature.setProperties({
+                style: {
+                    fill: style.getFill().getColor(),
+                    stroke: style.getStroke().getColor(),
+                    strokeWidth: style.getStroke().getWidth(),
+                    radius: 2
+                }
+            });
+            return [style];
+        }
+    }
+
+    function styleFunction(feature) {
+        setFeatureStyle(feature);
+        var featureStyle = feature.getProperties().style;
+        return new ol.style.Style({
+            fill: new ol.style.Fill({
+                color: featureStyle.fill
+            }),
+            stroke: new ol.style.Stroke({
+                color: featureStyle.stroke,
+                width: featureStyle.strokeWidth
+            }),
+            image: new ol.style.Circle({
+                radius: featureStyle.radius,
+                fill: new ol.style.Fill({
+                    color: featureStyle.fill
+                }),
+                stroke: new ol.style.Stroke({
+                    color: featureStyle.stroke,
+                    width: featureStyle.strokeWidth
+                })
+            })
         });
     }
 
