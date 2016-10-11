@@ -4045,6 +4045,10 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler){
             if (options.GeoJSON=='remove'){
                 initiateDrawing();
             }
+            else if(options.operation=='undo'){
+                features.pop();
+                initiateDrawing(features.getArray());
+            }
             else {
                 initiateDrawing(format.readFeatures(options.GeoJSON));
             }
