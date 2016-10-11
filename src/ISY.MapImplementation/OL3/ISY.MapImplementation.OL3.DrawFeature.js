@@ -9,6 +9,7 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler){
         source:[],
         select:[]
     };
+    var style;
     var type;
     var isActive = false;
     var draw; // global so we can remove it later
@@ -139,12 +140,13 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler){
         source = new ol.source.Vector({features:features});
         drawLayer = new ol.layer.Vector({
             source: source,
-            style: drawStyle.DrawStyles()
+            style: style
         });
     }
 
     function activate(map, options) {
         isActive = true;
+        style=options.style;
         if(options.GeoJSON){
             if (options.GeoJSON=='remove'){
                 initiateDrawing();
@@ -156,6 +158,9 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler){
             else {
                 initiateDrawing(format.readFeatures(options.GeoJSON));
             }
+        }
+        else {
+            initiateDrawing(features);
         }
         map.addLayer(drawLayer);
         switch (options.mode){
