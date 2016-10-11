@@ -54,7 +54,7 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler){
         if(select) {
             eventHandlers['select'].push(select.on('select',
                 function (e) {
-                    console.log(e);
+                    console.log(e.selected);
                 }, this));
         }
     }
@@ -167,13 +167,13 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler){
                     type=options.type;
                 }
                 addDrawInteraction(map, type);
-                if (options.snap) {
-                    addSnapInteraction(map);
-                }
                 break;
             case('select'):
                 addSelectInteraction(map);
                 break;
+        }
+        if (options.snap) {
+            addSnapInteraction(map);
         }
         addEventHandlers();
     }
