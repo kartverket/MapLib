@@ -1,5 +1,5 @@
 /**
- * maplib - v0.0.1 - 2016-10-10
+ * maplib - v0.0.1 - 2016-10-11
  * http://localhost
  *
  * Copyright (c) 2016 
@@ -3942,6 +3942,7 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler){
         modify:[],
         source:[]
     };
+    var type;
     var isActive = false;
     var draw; // global so we can remove it later
     var modify;
@@ -4039,13 +4040,18 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler){
         }
     }
 
-    function activate(map, options){
+    function activate(map, options) {
         isActive = true;
         importGeoJSON(options.GeoJSON);
         map.addLayer(drawLayer);
         addMoveInteraction(map);
-        addDrawInteraction(map, options.type);
-        addSnapInteraction(map);
+        if(options.type!='Active'){
+            type=options.type;
+        }
+        addDrawInteraction(map, type);
+        if (options.snap) {
+            addSnapInteraction(map);
+        }
         addEventHandlers();
     }
 
