@@ -4029,20 +4029,26 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler){
     }
 
 
-    function importGeoJSON(GeoJSON){
-        if(GeoJSON){
-            features=new ol.Collection(format.readFeatures(GeoJSON));
-            source = new ol.source.Vector({features:features});
-            drawLayer = new ol.layer.Vector({
-                source: source,
-                style: drawStyle.DrawStyles()
-            });
-        }
+
+    function initiateDrawing(newFeatures){
+        features=new ol.Collection(newFeatures);
+        source = new ol.source.Vector({features:features});
+        drawLayer = new ol.layer.Vector({
+            source: source,
+            style: drawStyle.DrawStyles()
+        });
     }
 
     function activate(map, options) {
         isActive = true;
-        importGeoJSON(options.GeoJSON);
+        if(options.GeoJSON){
+            if (options.GeoJSON=='remove'){
+                initiateDrawing();
+            }
+            else {
+                initiateDrawing(format.readFeatures(options.GeoJSON));
+            }
+        }
         map.addLayer(drawLayer);
         addMoveInteraction(map);
         if(options.type!='Active'){
