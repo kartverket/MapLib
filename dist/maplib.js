@@ -4083,7 +4083,7 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler){
                         fill: style.getFill().getColor(),
                         stroke: style.getStroke().getColor(),
                         strokeWidth: style.getStroke().getWidth(),
-                        radius: 2
+                        radius: 5
                     }
                 });
             }
