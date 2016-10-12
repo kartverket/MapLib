@@ -158,7 +158,7 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler){
 
     function styleFunction(feature) {
         var featureStyle = feature.getProperties().style;
-        if(!featuresStyle){
+        if(!featureStyle){
             return style;
         }
         return new ol.style.Style({
