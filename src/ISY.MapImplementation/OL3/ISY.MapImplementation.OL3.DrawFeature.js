@@ -193,6 +193,7 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler){
             else if(options.operation=='undo'){
                 features.pop();
                 initiateDrawing(features.getArray());
+                eventHandler.TriggerEvent(ISY.Events.EventTypes.DrawFeatureEnd, format.writeFeatures(source.getFeatures()));
             }
             else {
                 initiateDrawing(format.readFeatures(options.GeoJSON));
