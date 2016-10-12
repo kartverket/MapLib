@@ -9,6 +9,7 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler){
         source:[],
         select:[]
     };
+    var style;
     var type;
     var isActive = false;
     var draw; // global so we can remove it later
@@ -23,11 +24,7 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler){
     );
     var features= new ol.Collection();
     var source = new ol.source.Vector({features:features});
-    var drawStyle = new ISY.MapImplementation.OL3.Styles.Measure();
-    var drawLayer = new ol.layer.Vector({
-        source: source,
-        style: drawStyle.DrawStyles()
-    });
+    var drawLayer;
 
     function addEventHandlers(){
         if(source) {
@@ -71,6 +68,7 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler){
     }
 
     function drawFeatureEnd(){
+        setFeatureStyle(features.getArray());
         if(!modificationActive) {
             eventHandler.TriggerEvent(ISY.Events.EventTypes.DrawFeatureEnd, format.writeFeatures(source.getFeatures()));
         }
@@ -139,12 +137,59 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler){
         source = new ol.source.Vector({features:features});
         drawLayer = new ol.layer.Vector({
             source: source,
-            style: drawStyle.DrawStyles()
+            style: styleFunction
+        });
+    }
+
+    function setFeatureStyle(features){
+        for (var i =0; i< features.length; i++) {
+            if (!features[i].getProperties().style) {
+                features[i].setProperties({
+                    style: {
+                        fill: style.getFill().getColor(),
+                        stroke: style.getStroke().getColor(),
+                        strokeWidth: style.getStroke().getWidth(),
+                        radius: 5
+                    }
+                });
+            }
+        }
+    }
+
+    function styleFunction(feature) {
+        var featureStyle = feature.getProperties().style;
+        if(!featureStyle){
+            return style;
+        }
+        return new ol.style.Style({
+            fill: new ol.style.Fill({
+                color: featureStyle.fill
+            }),
+            stroke: new ol.style.Stroke({
+                color: featureStyle.stroke,
+                width: featureStyle.strokeWidth
+            }),
+            image: new ol.style.Circle({
+                radius: featureStyle.radius,
+                fill: new ol.style.Fill({
+                    color: featureStyle.fill
+                }),
+                stroke: new ol.style.Stroke({
+                    color: featureStyle.stroke,
+                    width: featureStyle.strokeWidth
+                })
+            })
         });
     }
 
     function activate(map, options) {
         isActive = true;
+        if(!options.style && !style) {
+            style=new ISY.MapImplementation.OL3.Styles.Measure();
+        }
+        else{
+            style = options.style;
+        }
         if(options.GeoJSON){
             if (options.GeoJSON=='remove'){
                 initiateDrawing();
@@ -152,10 +197,14 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler){
             else if(options.operation=='undo'){
                 features.pop();
                 initiateDrawing(features.getArray());
+                eventHandler.TriggerEvent(ISY.Events.EventTypes.DrawFeatureEnd, format.writeFeatures(source.getFeatures()));
             }
             else {
                 initiateDrawing(format.readFeatures(options.GeoJSON));
             }
+        }
+        else {
+            initiateDrawing();
         }
         map.addLayer(drawLayer);
         switch (options.mode){
