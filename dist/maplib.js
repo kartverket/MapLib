@@ -4131,6 +4131,10 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler){
             style: {
                 fill: {
                     color: style.getFill().getColor()
+                },
+                stroke: {
+                    color: style.getFill().getColor(),
+                    width: 2
                 }
             }
         });
@@ -4143,25 +4147,6 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler){
             return style;
         }
         return new ISY.MapImplementation.OL3.Styles.Json(style).GetStyle(feature);
-        // return new ol.style.Style({
-        //     fill: new ol.style.Fill({
-        //         color: featureStyle.fill
-        //     }),
-        //     stroke: new ol.style.Stroke({
-        //         color: featureStyle.stroke,
-        //         width: featureStyle.strokeWidth
-        //     }),
-        //     image: new ol.style.Circle({
-        //         radius: featureStyle.radius,
-        //         fill: new ol.style.Fill({
-        //             color: featureStyle.fill
-        //         }),
-        //         stroke: new ol.style.Stroke({
-        //             color: featureStyle.stroke,
-        //             width: featureStyle.strokeWidth
-        //         })
-        //     })
-        // });
     }
 
     function activate(map, options) {

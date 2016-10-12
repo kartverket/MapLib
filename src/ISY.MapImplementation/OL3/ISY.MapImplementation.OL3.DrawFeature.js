@@ -197,6 +197,10 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler){
             style: {
                 fill: {
                     color: style.getFill().getColor()
+                },
+                stroke: {
+                    color: style.getFill().getColor(),
+                    width: 2
                 }
             }
         });
