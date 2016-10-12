@@ -68,6 +68,7 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler){
     }
 
     function drawFeatureEnd(){
+        setFeatureStyle(features);
         if(!modificationActive) {
             eventHandler.TriggerEvent(ISY.Events.EventTypes.DrawFeatureEnd, format.writeFeatures(source.getFeatures()));
         }
@@ -140,23 +141,26 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler){
         });
     }
 
-    function setFeatureStyle(feature){
-        if (!feature.getProperties().style) {
-            feature.setProperties({
-                style: {
-                    fill: style.getFill().getColor(),
-                    stroke: style.getStroke().getColor(),
-                    strokeWidth: style.getStroke().getWidth(),
-                    radius: 2
-                }
-            });
-            return [style];
+    function setFeatureStyle(features){
+        for (var i =0; i< features.length; i++) {
+            if (!features[i].getProperties().style) {
+                features[i].setProperties({
+                    style: {
+                        fill: style.getFill().getColor(),
+                        stroke: style.getStroke().getColor(),
+                        strokeWidth: style.getStroke().getWidth(),
+                        radius: 5
+                    }
+                });
+            }
         }
     }
 
     function styleFunction(feature) {
-        setFeatureStyle(feature);
         var featureStyle = feature.getProperties().style;
+        if(!featuresStyle){
+            return style;
+        }
         return new ol.style.Style({
             fill: new ol.style.Fill({
                 color: featureStyle.fill
