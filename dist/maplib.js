@@ -3959,6 +3959,8 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler){
     var features= new ol.Collection();
     var source = new ol.source.Vector({features:features});
     var drawLayer;
+    var drawStyle = new ISY.MapImplementation.OL3.Styles.Measure();
+    var jsonStyleFetcher=new ISY.MapImplementation.OL3.Styles.Json();
 
     function addEventHandlers(){
         if(source) {
@@ -3985,7 +3987,35 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler){
         if(select) {
             eventHandlers['select'].push(select.on('select',
                 function (e) {
-                    console.log(e.selected);
+                    var selectedFeatures=e.selected;
+                    console.log(selectedFeatures);
+                    selectedFeatures.forEach(function(feature){
+                       feature.setStyle(new ol.style.Style({
+                           fill: new ol.style.Fill({
+                               color: 'rgba(128, 128, 255, 0.5)',
+                               stroke: new ol.style.Stroke({
+                                   color: 'rgb(128, 128, 255)',
+                                   width: 5
+                               })
+                           }),
+                           stroke: new ol.style.Stroke({
+                               color: 'rgb(128, 128, 255)',
+                               width: 5
+                           }),
+                           image: new ol.style.Circle({
+                               radius: 8,
+                               fill: new ol.style.Fill({
+                                   color: 'rgb(128, 128, 255)'
+                               })
+                           })
+                       }));
+                       console.log(feature);
+                    });
+                    var deSelectedFeatures=e.deselected;
+                    deSelectedFeatures.forEach(function(feature){
+                        feature.setStyle(jsonStyleFetcher.GetStyle(feature));
+                    });
+
                 }, this));
         }
     }
@@ -4150,13 +4180,13 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler){
         if(!featureStyle){
             return style;
         }
-        return new ISY.MapImplementation.OL3.Styles.Json(style).GetStyle(feature);
+        return jsonStyleFetcher.GetStyle(feature);
     }
 
     function activate(map, options) {
         isActive = true;
         if(!options.style && !style) {
-            style=new ISY.MapImplementation.OL3.Styles.Measure();
+            style=drawStyle.Styles();
         }
         else{
             style = options.style;
