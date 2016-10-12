@@ -28,6 +28,26 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler){
     var drawStyle = new ISY.MapImplementation.OL3.Styles.Measure();
     var jsonStyleFetcher=new ISY.MapImplementation.OL3.Styles.Json();
 
+    var _selectedFeatureStyle=new ol.style.Style({
+        fill: new ol.style.Fill({
+            color: 'rgba(128, 128, 255, 0.5)',
+            stroke: new ol.style.Stroke({
+                color: 'rgb(128, 128, 255)',
+                width: 5
+            })
+        }),
+        stroke: new ol.style.Stroke({
+            color: 'rgb(128, 128, 255)',
+            width: 5
+        }),
+        image: new ol.style.Circle({
+            radius: 8,
+            fill: new ol.style.Fill({
+                color: 'rgb(128, 128, 255)'
+            })
+        })
+    });
+
     function addEventHandlers(){
         if(source) {
             eventHandlers['source'].push(source.on('addfeature',
@@ -56,25 +76,7 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler){
                     var selectedFeatures=e.selected;
                     console.log(selectedFeatures);
                     selectedFeatures.forEach(function(feature){
-                       feature.setStyle(new ol.style.Style({
-                           fill: new ol.style.Fill({
-                               color: 'rgba(128, 128, 255, 0.5)',
-                               stroke: new ol.style.Stroke({
-                                   color: 'rgb(128, 128, 255)',
-                                   width: 5
-                               })
-                           }),
-                           stroke: new ol.style.Stroke({
-                               color: 'rgb(128, 128, 255)',
-                               width: 5
-                           }),
-                           image: new ol.style.Circle({
-                               radius: 8,
-                               fill: new ol.style.Fill({
-                                   color: 'rgb(128, 128, 255)'
-                               })
-                           })
-                       }));
+                       feature.setStyle(_selectedFeatureStyle);
                        console.log(feature);
                     });
                     var deSelectedFeatures=e.deselected;
