@@ -184,7 +184,7 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler){
                     color: style.getStroke().getColor(),
                     // lineCap: style.getStroke().getLineCap(),
                     // lineJoin: style.getStroke().getLineJoin(),
-                    // lineDash: style.getStroke().getLineDash(),
+                    lineDash: style.getStroke().getLineDash(),
                     // miterLimit: style.getStroke().getMiterLimit(),
                     width: style.getStroke().getWidth()
                 }
