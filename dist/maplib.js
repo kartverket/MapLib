@@ -4002,7 +4002,7 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler){
     }
 
     function drawFeatureEnd(){
-        setFeatureStyle(features);
+        setFeatureStyle(features.getArray());
         if(!modificationActive) {
             eventHandler.TriggerEvent(ISY.Events.EventTypes.DrawFeatureEnd, format.writeFeatures(source.getFeatures()));
         }
@@ -4092,7 +4092,7 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler){
 
     function styleFunction(feature) {
         var featureStyle = feature.getProperties().style;
-        if(!featuresStyle){
+        if(!featureStyle){
             return style;
         }
         return new ol.style.Style({

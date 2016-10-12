@@ -68,7 +68,7 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler){
     }
 
     function drawFeatureEnd(){
-        setFeatureStyle(features);
+        setFeatureStyle(features.getArray());
         if(!modificationActive) {
             eventHandler.TriggerEvent(ISY.Events.EventTypes.DrawFeatureEnd, format.writeFeatures(source.getFeatures()));
         }
