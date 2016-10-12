@@ -4077,43 +4077,91 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler){
 
     function setFeatureStyle(features){
         for (var i =0; i< features.length; i++) {
-            if (!features[i].getProperties().style) {
-                features[i].setProperties({
-                    style: {
-                        fill: style.getFill().getColor(),
-                        stroke: style.getStroke().getColor(),
-                        strokeWidth: style.getStroke().getWidth(),
-                        radius: 5
-                    }
-                });
+            var feature=features[i];
+            if (!feature.getProperties().style) {
+                determineStyleFromGeometryType(feature);
             }
         }
     }
+
+    function determineStyleFromGeometryType(feature){
+        switch(feature.getGeometry().getType()){
+            case('Point'):
+                setPointStyle(feature);
+                break;
+            case('LineString'):
+                setLineStringStyle(feature);
+                break;
+            case('Polygon'):
+                setPolygonStyle(feature);
+                break;
+        }
+    }
+
+    function setPointStyle(feature){
+        feature.setProperties({
+            style: {
+                image:{
+                    fill: {
+                        color: style.getImage().getFill().getColor()
+                    },
+                    radius: style.getImage().getRadius()
+                    //,stroke: style.getStroke().getColor()
+                }
+            }
+        });
+    }
+    function setLineStringStyle(feature) {
+        feature.setProperties({
+            style: {
+                stroke: {
+                    color: style.getStroke().getColor(),
+                    // lineCap: style.getStroke().getLineCap(),
+                    // lineJoin: style.getStroke().getLineJoin(),
+                    // lineDash: style.getStroke().getLineDash(),
+                    // miterLimit: style.getStroke().getMiterLimit(),
+                    width: style.getStroke().getWidth()
+                }
+            }
+        });
+    }
+
+    function setPolygonStyle(feature){
+        feature.setProperties({
+            style: {
+                fill: {
+                    color: style.getFill().getColor()
+                }
+            }
+        });
+    }
+
 
     function styleFunction(feature) {
         var featureStyle = feature.getProperties().style;
         if(!featureStyle){
             return style;
         }
-        return new ol.style.Style({
-            fill: new ol.style.Fill({
-                color: featureStyle.fill
-            }),
-            stroke: new ol.style.Stroke({
-                color: featureStyle.stroke,
-                width: featureStyle.strokeWidth
-            }),
-            image: new ol.style.Circle({
-                radius: featureStyle.radius,
-                fill: new ol.style.Fill({
-                    color: featureStyle.fill
-                }),
-                stroke: new ol.style.Stroke({
-                    color: featureStyle.stroke,
-                    width: featureStyle.strokeWidth
-                })
-            })
-        });
+        return new ISY.MapImplementation.OL3.Styles.Json(style).GetStyle(feature);
+        // return new ol.style.Style({
+        //     fill: new ol.style.Fill({
+        //         color: featureStyle.fill
+        //     }),
+        //     stroke: new ol.style.Stroke({
+        //         color: featureStyle.stroke,
+        //         width: featureStyle.strokeWidth
+        //     }),
+        //     image: new ol.style.Circle({
+        //         radius: featureStyle.radius,
+        //         fill: new ol.style.Fill({
+        //             color: featureStyle.fill
+        //         }),
+        //         stroke: new ol.style.Stroke({
+        //             color: featureStyle.stroke,
+        //             width: featureStyle.strokeWidth
+        //         })
+        //     })
+        // });
     }
 
     function activate(map, options) {
