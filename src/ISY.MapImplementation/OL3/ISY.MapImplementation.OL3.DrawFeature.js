@@ -199,11 +199,15 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler){
                     color: style.getFill().getColor()
                 },
                 stroke: {
-                    color: style.getFill().getColor(),
+                    color: removeAlphaFromRGBA(style.getFill().getColor()),
                     width: 2
                 }
             }
         });
+    }
+
+    function removeAlphaFromRGBA(rgba){
+        return rgba.replace(',' + rgba.split(',')[3],')').replace('rgba', 'rgb');
     }
 
 
