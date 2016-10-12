@@ -122,7 +122,7 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler){
 
     function addModifyInteraction(map) {
         modify = new ol.interaction.Modify({
-            features: features,
+            features: select.getFeatures(),
             condition: function(event) {
                 return _checkForNoKeys(event);
             },
@@ -278,6 +278,7 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler){
         map.addLayer(drawLayer);
         switch (options.mode){
             case('modify'):
+                addSelectInteraction(map);
                 addModifyInteraction(map);
                 break;
             case('draw'):
@@ -285,9 +286,6 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler){
                     type=options.type;
                 }
                 addDrawInteraction(map, type);
-                break;
-            case('select'):
-                addSelectInteraction(map);
                 break;
         }
         if (options.snap) {
