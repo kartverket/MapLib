@@ -4127,6 +4127,9 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler){
             case('Polygon'):
                 setPolygonStyle(feature);
                 break;
+            // case('Text'):
+            //     setTextStyle(feature);
+            //     break;
         }
     }
 
@@ -4141,7 +4144,8 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler){
                     radius: style.getImage().getRadius()
                     //,radius2: style.getImage().getRadius2()
                     //,stroke: style.getStroke().getColor()
-                }
+                },
+                text: getText()
             }
         });
     }
@@ -4155,7 +4159,8 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler){
                     lineDash: style.getStroke().getLineDash(),
                     // miterLimit: style.getStroke().getMiterLimit(),
                     width: style.getStroke().getWidth()
-                }
+                },
+                text: getText()
             }
         });
     }
@@ -4169,10 +4174,34 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler){
                 stroke: {
                     color: removeAlphaFromRGBA(style.getFill().getColor()),
                     width: 2
-                }
+                },
+                text: getText()
             }
         });
     }
+
+    function getText(){
+        return {
+            text: style.getText().getText()
+            // ,fill: {
+            //     color: style.getFill().getColor()
+            // }
+        };
+    }
+
+    // function setTextStyle(feature) {
+    //     feature.setProperties({
+    //         style: {
+    //             text: {
+    //                 text: style.getText(),
+    //                 fill: {
+    //                     color: style.getFill().getColor()
+    //                 }
+    //             }
+    //
+    //         }
+    //     });
+    // }
 
     function removeAlphaFromRGBA(rgba){
         return rgba.replace(',' + rgba.split(',')[3],')').replace('rgba', 'rgb');
