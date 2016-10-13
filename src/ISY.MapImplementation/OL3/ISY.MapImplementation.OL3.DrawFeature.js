@@ -199,11 +199,13 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler){
     function setPointStyle(feature){
         feature.setProperties({
             style: {
-                image:{
+                regularshape:{
                     fill: {
                         color: style.getImage().getFill().getColor()
                     },
+                    points: style.getImage().getPoints(),
                     radius: style.getImage().getRadius()
+                    //,radius2: style.getImage().getRadius2()
                     //,stroke: style.getStroke().getColor()
                 }
             }
