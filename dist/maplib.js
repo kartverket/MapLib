@@ -4180,10 +4180,10 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler){
     function getText(){
         return {
             font: style.getText().getFont(),
-            text: style.getText().getText()
-            // fill: {
-            //     color: style.getFill().getColor()
-            // }
+            text: style.getText().getText(),
+            fill: {
+                color: style.getText().getFill().getColor()
+            }
         };
     }
 
