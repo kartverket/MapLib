@@ -4127,9 +4127,6 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler){
             case('Polygon'):
                 setPolygonStyle(feature);
                 break;
-            // case('Text'):
-            //     setTextStyle(feature);
-            //     break;
         }
     }
 
@@ -4182,26 +4179,13 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler){
 
     function getText(){
         return {
-            text: style.getText().getText()
-            // ,fill: {
-            //     color: style.getFill().getColor()
-            // }
+            font: style.getText().getFont(),
+            text: style.getText().getText(),
+            fill: {
+                color: style.getText().getFill().getColor()
+            }
         };
     }
-
-    // function setTextStyle(feature) {
-    //     feature.setProperties({
-    //         style: {
-    //             text: {
-    //                 text: style.getText(),
-    //                 fill: {
-    //                     color: style.getFill().getColor()
-    //                 }
-    //             }
-    //
-    //         }
-    //     });
-    // }
 
     function removeAlphaFromRGBA(rgba){
         return rgba.replace(',' + rgba.split(',')[3],')').replace('rgba', 'rgb');

@@ -245,10 +245,11 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler){
 
     function getText(){
         return {
-            text: style.getText().getText()
-            // ,fill: {
-            //     color: style.getFill().getColor()
-            // }
+            font: style.getText().getFont(),
+            text: style.getText().getText(),
+            fill: {
+                color: style.getText().getFill().getColor()
+            }
         };
     }
 
