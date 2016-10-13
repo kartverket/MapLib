@@ -4183,7 +4183,11 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler){
             text: style.getText().getText(),
             fill: {
                 color: style.getText().getFill().getColor()
-            }
+            },
+            stroke: {
+                color: style.getText().getStroke().getColor(),
+                width: style.getText().getStroke().getWidth()
+        }
         };
     }
 
@@ -10565,10 +10569,15 @@ ISY.MapImplementation.OL3.Styles.Json = function (style) {
                     jsonstyle.text.rotation *= -1;
                 }
             }
-            jsonstyle.text.text = _parseTextFilter(feature, jsonstyle.text.text);
-            jsonstyle.text.fill = _createFillStyle(jsonstyle.text);
-            jsonstyle.text.stroke = _createStrokeStyle(jsonstyle.text);
-            return new ol.style.Text(jsonstyle.text);
+            var tmpStyle={
+                text: {
+                    font: jsonstyle.text.font,
+                    text: _parseTextFilter(feature, jsonstyle.text.text),
+                    fill: _createFillStyle(jsonstyle.text),
+                    stroke: _createStrokeStyle(jsonstyle.text)
+                }
+            };
+            return new ol.style.Text(tmpStyle.text);
         }
     }
 
