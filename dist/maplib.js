@@ -4201,8 +4201,7 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler){
         if(!featureStyle){
             return style;
         }
-        featureStyle=jsonStyleFetcher.GetStyle(feature);
-        return featureStyle;
+        return jsonStyleFetcher.GetStyle(feature);
     }
 
     function activate(map, options) {
