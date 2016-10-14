@@ -3962,6 +3962,7 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler){
     var drawLayer;
     var drawStyle = new ISY.MapImplementation.OL3.Styles.Measure();
     var jsonStyleFetcher=new ISY.MapImplementation.OL3.Styles.Json();
+    var guidCreator = new ISY.Utils.Guid();
 
     var _selectedFeatureStyle=new ol.style.Style({
         fill: new ol.style.Fill({
@@ -4033,7 +4034,7 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler){
     }
 
     function drawFeatureEnd(){
-        setFeatureStyle(features.getArray());
+        setFeatureDefaultValues(features.getArray());
         if(!modificationActive) {
             eventHandler.TriggerEvent(ISY.Events.EventTypes.DrawFeatureEnd, format.writeFeatures(source.getFeatures()));
         }
@@ -4106,9 +4107,12 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler){
         });
     }
 
-    function setFeatureStyle(features){
+    function setFeatureDefaultValues(features){
         for (var i =0; i< features.length; i++) {
             var feature=features[i];
+            feature.setProperties({
+                id: guidCreator.NewGuid()
+            });
             if (!feature.getProperties().style) {
                 determineStyleFromGeometryType(feature);
             }
