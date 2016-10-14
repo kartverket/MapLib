@@ -3963,6 +3963,7 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler){
     var drawStyle = new ISY.MapImplementation.OL3.Styles.Measure();
     var jsonStyleFetcher=new ISY.MapImplementation.OL3.Styles.Json();
     var guidCreator = new ISY.Utils.Guid();
+    var selectedFeatureId;
 
     var _selectedFeatureStyle=new ol.style.Style({
         fill: new ol.style.Fill({
@@ -4017,7 +4018,9 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler){
                     deSelectedFeatures.forEach(function(feature){
                         feature.setStyle(jsonStyleFetcher.GetStyle(feature));
                     });
-                    eventHandler.TriggerEvent(ISY.Events.EventTypes.DrawFeatureSelect, selectedFeatures[0].getId());
+                    if (selectedFeatures.length == 1) {
+                        eventHandler.TriggerEvent(ISY.Events.EventTypes.DrawFeatureSelect, selectedFeatures[0].getId());
+                    }
                 }, this));
         }
     }
@@ -4113,7 +4116,7 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler){
             if(!feature.getId()) {
                 feature.setId(guidCreator.NewGuid());
             }
-            if (!feature.getProperties().style) {
+            if (!feature.getProperties().style || feature.getId()==selectedFeatureId) {
                 determineStyleFromGeometryType(feature);
             }
         }
@@ -4208,6 +4211,10 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler){
     }
 
     function activate(map, options) {
+        if (options.selectedFeatureId){
+            console.log(options.selectedFeatureId);
+            selectedFeatureId=options.selectedFeatureId;
+        }
         isActive = true;
         if(!options.style && !style) {
             style=drawStyle.Styles();
@@ -4230,6 +4237,11 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler){
         }
         else {
             initiateDrawing();
+        }
+        if (options.selectedFeatureId){
+            console.log(options.selectedFeatureId);
+            selectedFeatureId=options.selectedFeatureId;
+            setFeatureDefaultValues(features.getArray());
         }
         map.addLayer(drawLayer);
         switch (options.mode){
