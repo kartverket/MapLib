@@ -4211,10 +4211,6 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler){
     }
 
     function activate(map, options) {
-        if (options.selectedFeatureId){
-            console.log(options.selectedFeatureId);
-            selectedFeatureId=options.selectedFeatureId;
-        }
         isActive = true;
         if(!options.style && !style) {
             style=drawStyle.Styles();
@@ -4239,7 +4235,6 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler){
             initiateDrawing();
         }
         if (options.selectedFeatureId){
-            console.log(options.selectedFeatureId);
             selectedFeatureId=options.selectedFeatureId;
             setFeatureDefaultValues(features.getArray());
         }
