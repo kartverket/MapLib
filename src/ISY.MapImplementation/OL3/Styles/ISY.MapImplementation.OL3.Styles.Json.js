@@ -75,15 +75,18 @@ ISY.MapImplementation.OL3.Styles.Json = function (style) {
                     jsonstyle.text.rotation *= -1;
                 }
             }
-            var tmpStyle={
-                text: {
-                    font: jsonstyle.text.font,
-                    text: _parseTextFilter(feature, jsonstyle.text.text),
-                    fill: _createFillStyle(jsonstyle.text),
-                    stroke: _createStrokeStyle(jsonstyle.text)
-                }
-            };
-            return new ol.style.Text(tmpStyle.text);
+            return new ol.style.Text({
+                font: jsonstyle.text.font,
+                offsetX: jsonstyle.text.offsetX,
+                offsetY: jsonstyle.text.offsetY,
+                scale: jsonstyle.text.scale,
+                rotation: jsonstyle.text.rotation,
+                text: _parseTextFilter(feature, jsonstyle.text.text),
+                textAlign: jsonstyle.text.textAlign,
+                textBaseline: jsonstyle.text.textBaseline,
+                fill: _createFillStyle(jsonstyle.text),
+                stroke: _createStrokeStyle(jsonstyle.text)
+            });
         }
     }
 
