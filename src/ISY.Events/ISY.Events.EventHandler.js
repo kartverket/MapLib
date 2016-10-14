@@ -56,6 +56,7 @@ ISY.Events.EventTypes = {
     MeasureEnd: "MeasureEnd",
     DrawFeatureMouseMove: "DrawFeatureMouseMove",
     DrawFeatureEnd: "DrawFeatureEnd",
+    DrawFeatureSelect: "DrawFeatureSelect",
     AddLayerFeatureEnd: "AddLayerFeatureEnd",
     ModifyFeatureEnd: "ModifyFeatureEnd",
     RefreshSourceDone: "RefreshSourceDone",

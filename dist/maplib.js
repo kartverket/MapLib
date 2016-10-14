@@ -285,6 +285,7 @@ ISY.Events.EventTypes = {
     MeasureEnd: "MeasureEnd",
     DrawFeatureMouseMove: "DrawFeatureMouseMove",
     DrawFeatureEnd: "DrawFeatureEnd",
+    DrawFeatureSelect: "DrawFeatureSelect",
     AddLayerFeatureEnd: "AddLayerFeatureEnd",
     ModifyFeatureEnd: "ModifyFeatureEnd",
     RefreshSourceDone: "RefreshSourceDone",
@@ -4008,16 +4009,14 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler){
             eventHandlers['select'].push(select.on('select',
                 function (e) {
                     var selectedFeatures=e.selected;
-                    console.log(selectedFeatures);
                     selectedFeatures.forEach(function(feature){
                        feature.setStyle(_selectedFeatureStyle);
-                       console.log(feature);
                     });
                     var deSelectedFeatures=e.deselected;
                     deSelectedFeatures.forEach(function(feature){
                         feature.setStyle(jsonStyleFetcher.GetStyle(feature));
                     });
-
+                    eventHandler.TriggerEvent(ISY.Events.EventTypes.DrawFeatureSelect, format.writeFeatures(selectedFeatures));
                 }, this));
         }
     }
