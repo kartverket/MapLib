@@ -29,26 +29,8 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler){
     var jsonStyleFetcher=new ISY.MapImplementation.OL3.Styles.Json();
     var guidCreator = new ISY.Utils.Guid();
     var selectedFeatureId;
+    var selectedFeature;
 
-    var _selectedFeatureStyle=new ol.style.Style({
-        fill: new ol.style.Fill({
-            color: 'rgba(128, 128, 255, 0.5)',
-            stroke: new ol.style.Stroke({
-                color: 'rgb(128, 128, 255)',
-                width: 5
-            })
-        }),
-        stroke: new ol.style.Stroke({
-            color: 'rgb(128, 128, 255)',
-            width: 5
-        }),
-        image: new ol.style.Circle({
-            radius: 8,
-            fill: new ol.style.Fill({
-                color: 'rgb(128, 128, 255)'
-            })
-        })
-    });
 
     function addEventHandlers(){
         if(source) {
@@ -76,13 +58,6 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler){
             eventHandlers['select'].push(select.on('select',
                 function (e) {
                     var selectedFeatures=e.selected;
-                    selectedFeatures.forEach(function(feature){
-                       feature.setStyle(_selectedFeatureStyle);
-                    });
-                    var deSelectedFeatures=e.deselected;
-                    deSelectedFeatures.forEach(function(feature){
-                        feature.setStyle(jsonStyleFetcher.GetStyle(feature));
-                    });
                     if (selectedFeatures.length == 1) {
                         eventHandler.TriggerEvent(ISY.Events.EventTypes.DrawFeatureSelect, selectedFeatures[0].getId());
                     }
@@ -158,11 +133,13 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler){
     }
 
     function addSelectInteraction(map){
-        select = new ol.interaction.Select(
-            {
-                condition: ol.events.condition.click
-            }
-        );
+        var selectOptions = {
+            condition: ol.events.condition.click
+        };
+        if (selectedFeature){
+            selectOptions['features']=[selectedFeature];
+        }
+select = new ol.interaction.Select(selectOptions);
         map.addInteraction(select);
     }
 
@@ -183,6 +160,7 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler){
             }
             if (!feature.getProperties().style || feature.getId()==selectedFeatureId) {
                 determineStyleFromGeometryType(feature);
+                selectedFeature=feature;
             }
         }
     }
@@ -305,6 +283,9 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler){
                 setFeatureDefaultValues(features.getArray());
             }
         }
+        else{
+            selectedFeature=undefined;
+        }
         map.addLayer(drawLayer);
         switch (options.mode){
             case('modify'):
@@ -322,6 +303,7 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler){
             addSnapInteraction(map);
         }
         addEventHandlers();
+        drawFeatureEnd();
     }
 
     function deactivate(map){
