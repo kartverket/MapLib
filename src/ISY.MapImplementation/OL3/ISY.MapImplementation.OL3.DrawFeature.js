@@ -299,9 +299,11 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler){
         else {
             initiateDrawing();
         }
-        if (options.selectedFeatureId){
-            selectedFeatureId=options.selectedFeatureId;
-            setFeatureDefaultValues(features.getArray());
+        if (options.selectedFeatureId) {
+            if (options.selectionActive) {
+                selectedFeatureId = options.selectedFeatureId;
+                setFeatureDefaultValues(features.getArray());
+            }
         }
         map.addLayer(drawLayer);
         switch (options.mode){
