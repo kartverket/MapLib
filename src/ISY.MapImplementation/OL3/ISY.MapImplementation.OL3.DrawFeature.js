@@ -226,18 +226,24 @@ select = new ol.interaction.Select(selectOptions);
         });
     }
 
-    function getText(){
-        return {
+    function getText() {
+        var textStyle = {
             font: style.getText().getFont(),
             text: style.getText().getText(),
             fill: {
                 color: style.getText().getFill().getColor()
-            },
-            stroke: {
+            }
+
+        };
+
+        if (style.getText().getStroke()) {
+            var textStroke = {
                 color: style.getText().getStroke().getColor(),
                 width: style.getText().getStroke().getWidth()
+            };
+            textStyle['stroke'] = textStroke;
         }
-        };
+        return textStyle;
     }
 
     function removeAlphaFromRGBA(rgba){
