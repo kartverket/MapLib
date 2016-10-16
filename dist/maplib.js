@@ -3966,25 +3966,6 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler){
     var selectedFeatureId;
     var selectedFeature;
 
-    // var _selectedFeatureStyle=new ol.style.Style({
-    //     fill: new ol.style.Fill({
-    //         color: 'rgba(128, 128, 255, 0.5)',
-    //         stroke: new ol.style.Stroke({
-    //             color: 'rgb(128, 128, 255)',
-    //             width: 5
-    //         })
-    //     }),
-    //     stroke: new ol.style.Stroke({
-    //         color: 'rgb(128, 128, 255)',
-    //         width: 5
-    //     }),
-    //     image: new ol.style.Circle({
-    //         radius: 8,
-    //         fill: new ol.style.Fill({
-    //             color: 'rgb(128, 128, 255)'
-    //         })
-    //     })
-    // });
 
     function addEventHandlers(){
         if(source) {
@@ -4012,13 +3993,6 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler){
             eventHandlers['select'].push(select.on('select',
                 function (e) {
                     var selectedFeatures=e.selected;
-                    // selectedFeatures.forEach(function(feature){
-                    //    feature.setStyle(_selectedFeatureStyle);
-                    // });
-                    // var deSelectedFeatures=e.deselected;
-                    // deSelectedFeatures.forEach(function(feature){
-                    //     feature.setStyle(jsonStyleFetcher.GetStyle(feature));
-                    // });
                     if (selectedFeatures.length == 1) {
                         eventHandler.TriggerEvent(ISY.Events.EventTypes.DrawFeatureSelect, selectedFeatures[0].getId());
                     }
@@ -4187,18 +4161,24 @@ select = new ol.interaction.Select(selectOptions);
         });
     }
 
-    function getText(){
-        return {
+    function getText() {
+        var textStyle = {
             font: style.getText().getFont(),
             text: style.getText().getText(),
             fill: {
                 color: style.getText().getFill().getColor()
-            },
-            stroke: {
+            }
+
+        };
+
+        if (style.getText().getStroke()) {
+            var textStroke = {
                 color: style.getText().getStroke().getColor(),
                 width: style.getText().getStroke().getWidth()
+            };
+            textStyle['stroke'] = textStroke;
         }
-        };
+        return textStyle;
     }
 
     function removeAlphaFromRGBA(rgba){
