@@ -471,7 +471,9 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
                         if (!isySubLayer.noProxy) {
                             isySubLayer.url = _getProxyUrl(isySubLayer.url);
                         }
-                        _loadVectorLayer(isySubLayer, source);
+                        if (isySubLayer.url !== "") {
+                            _loadVectorLayer(isySubLayer, source);
+                        }
                     }
                     break;
                 case ISY.Domain.SubLayer.SOURCES.wfs:
@@ -602,6 +604,7 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
 
     function _loadVectorLayer(isySubLayer, source){
         var callback = function(data){
+            data = typeof data == 'object' ? data : JSON.parse(data);
             var format = new ol.format.GeoJSON();
             for(var i = 0; i < data.features.length; i++) {
                 var feature = data.features[i];
