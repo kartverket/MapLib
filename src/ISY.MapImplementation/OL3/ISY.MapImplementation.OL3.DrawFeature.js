@@ -139,7 +139,7 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler){
         if (selectedFeature){
             selectOptions['features']=[selectedFeature];
         }
-select = new ol.interaction.Select(selectOptions);
+        select = new ol.interaction.Select(selectOptions);
         map.addInteraction(select);
     }
 
@@ -158,9 +158,8 @@ select = new ol.interaction.Select(selectOptions);
             if(!feature.getId()) {
                 feature.setId(guidCreator.NewGuid());
             }
-            if (!feature.getProperties().style || feature.getId()==selectedFeatureId) {
+            if (!feature.getProperties().style) {
                 determineStyleFromGeometryType(feature);
-                selectedFeature=feature;
             }
         }
     }
@@ -286,7 +285,8 @@ select = new ol.interaction.Select(selectOptions);
         if (options.selectedFeatureId) {
             if (options.selectionActive) {
                 selectedFeatureId = options.selectedFeatureId;
-                setFeatureDefaultValues(features.getArray());
+                selectedFeature = source.getFeatureById(selectedFeatureId);
+                determineStyleFromGeometryType(selectedFeature);
             }
         }
         else{
