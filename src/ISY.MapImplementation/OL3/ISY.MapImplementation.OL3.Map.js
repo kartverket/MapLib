@@ -611,7 +611,7 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
             }
         };
         $.ajax({
-            url: isySubLayer.url + "request=GetFeature&typeName="+isySubLayer.name+"&outputFormat=json",
+            url: isySubLayer.url,
             async: false
         }).done(function(response) {
             callback(response);
