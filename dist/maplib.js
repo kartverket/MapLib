@@ -4095,7 +4095,7 @@ select = new ol.interaction.Select(selectOptions);
             }
             if (!feature.getProperties().style || feature.getId()==selectedFeatureId) {
                 determineStyleFromGeometryType(feature);
-
+                selectedFeature=feature;
             }
         }
     }
@@ -4221,9 +4221,7 @@ select = new ol.interaction.Select(selectOptions);
         if (options.selectedFeatureId) {
             if (options.selectionActive) {
                 selectedFeatureId = options.selectedFeatureId;
-                selectedFeature = source.getFeatureById(selectedFeatureId);
-                setFeatureDefaultValues([selectedFeature]);
-
+                setFeatureDefaultValues(features.getArray());
             }
         }
         else{
@@ -9634,10 +9632,7 @@ ISY.MapImplementation.OL3.Sources.Vector = function(isySubLayer){
     switch (isySubLayer.format){
         case ISY.Domain.SubLayer.FORMATS.geoJson:
             source = new ol.source.Vector({
-                    format: new ol.format.GeoJSON({
-                            defaultDataProjection: isySubLayer.coordinate_system
-                        }
-                    ),
+                    format: new ol.format.GeoJSON(),
                     url: isySubLayer.url
                 });
             source.set('type', 'ol.source.Vector');
