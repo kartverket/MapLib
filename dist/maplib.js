@@ -5595,7 +5595,8 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
                             format: new ol.format.GeoJSON({
                                 defaultDataProjection: isySubLayer.coordinate_system
                             }),
-                        url: isySubLayer.url
+                            url: isySubLayer.url
+
                         })
                     });
                 }
@@ -10597,6 +10598,9 @@ ISY.MapImplementation.OL3.Styles.Json = function (style) {
             var pos0 = text.indexOf('{');
             if (pos0 < 0) {
                 return text;
+            }
+            if (text=='{_id}'){
+                return feature.getId();
             }
             var label = '';
             while (pos0 >= 0) {

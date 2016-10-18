@@ -520,7 +520,8 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
                             format: new ol.format.GeoJSON({
                                 defaultDataProjection: isySubLayer.coordinate_system
                             }),
-                        url: isySubLayer.url
+                            url: isySubLayer.url
+
                         })
                     });
                 }

@@ -96,6 +96,9 @@ ISY.MapImplementation.OL3.Styles.Json = function (style) {
             if (pos0 < 0) {
                 return text;
             }
+            if (text=='{_id}'){
+                return feature.getId();
+            }
             var label = '';
             while (pos0 >= 0) {
                 if (pos0 > 0) {
