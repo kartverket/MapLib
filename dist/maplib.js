@@ -3944,6 +3944,7 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler){
         source:[],
         select:[]
     };
+    var text=false;
     var style;
     var type;
     var isActive = false;
@@ -4005,6 +4006,7 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler){
         removeSpecificEventHandlers(source, 'source');
         removeSpecificEventHandlers(select, 'select');
     }
+
     function removeSpecificEventHandlers(interaction, name) {
         for (var sourceEvent = 0; sourceEvent < eventHandlers[name].length; sourceEvent++) {
             interaction.unByKey(eventHandlers[name][sourceEvent]);
@@ -4026,11 +4028,15 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler){
             source: source,
             type: (type),
             condition: function(event) {
-                return _checkForNoKeys(event) && !modificationActive;
+                return _checkForNoKeys(event) && !modificationActive && !_checkForEmptyText();
             }
         });
         map.addInteraction(draw);
     }
+
+    var _checkForEmptyText= function () {
+        return text && style.getText().getText() === "";
+    };
 
     function addModifyInteraction(map) {
         modify = new ol.interaction.Modify({
@@ -4115,20 +4121,31 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler){
     }
 
     function setPointStyle(feature){
-        feature.setProperties({
-            style: {
-                regularshape:{
-                    fill: {
-                        color: style.getImage().getFill().getColor()
-                    },
-                    points: style.getImage().getPoints(),
-                    radius: style.getImage().getRadius()
-                    //,radius2: style.getImage().getRadius2()
-                    //,stroke: style.getStroke().getColor()
-                },
-                text: getText()
-            }
-        });
+        var properties;
+        if(style.getText().getText()!=="") {
+            properties = {
+                style: {
+                    text: getTextFromInputStyle()
+                }
+            };
+        }
+        else {
+            properties = {
+                style: {
+                    regularshape: {
+                        fill: {
+                            color: style.getImage().getFill().getColor()
+                        },
+                        points: style.getImage().getPoints(),
+                        radius: style.getImage().getRadius()
+                        //,radius2: style.getImage().getRadius2()
+                        //,stroke: style.getStroke().getColor()
+                    }
+                }
+            };
+        }
+
+        feature.setProperties(properties);
     }
     function setLineStringStyle(feature) {
         feature.setProperties({
@@ -4140,8 +4157,7 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler){
                     lineDash: style.getStroke().getLineDash(),
                     // miterLimit: style.getStroke().getMiterLimit(),
                     width: style.getStroke().getWidth()
-                },
-                text: getText()
+                }
             }
         });
     }
@@ -4155,13 +4171,12 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler){
                 stroke: {
                     color: removeAlphaFromRGBA(style.getFill().getColor()),
                     width: 2
-                },
-                text: getText()
+                }
             }
         });
     }
 
-    function getText() {
+    function getTextFromInputStyle() {
         var textStyle = {
             font: style.getText().getFont(),
             text: style.getText().getText(),
@@ -4196,6 +4211,8 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler){
 
     function activate(map, options) {
         isActive = true;
+        text=false;
+        console.log(options.selectedFeatureId);
         if(!options.style && !style) {
             style=drawStyle.Styles();
         }
@@ -4225,6 +4242,7 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler){
             }
         }
         else{
+            selectedFeatureId=undefined;
             selectedFeature=undefined;
         }
         map.addLayer(drawLayer);
@@ -4236,6 +4254,10 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler){
             case('draw'):
                 if(options.type!='Active'){
                     type=options.type;
+                }
+                if(options.type=='Text'){
+                    type='Point';
+                    text=true;
                 }
                 addDrawInteraction(map, type);
                 break;
