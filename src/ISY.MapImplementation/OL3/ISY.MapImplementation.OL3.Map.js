@@ -471,7 +471,8 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
                         if (!isySubLayer.noProxy) {
                             isySubLayer.url = _getProxyUrl(isySubLayer.url);
                         }
-                        _loadVectorLayer(isySubLayer, source);
+                        // _loadVectorLayer(isySubLayer, source);
+
                     }
                     break;
                 case ISY.Domain.SubLayer.SOURCES.wfs:
@@ -514,8 +515,14 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
                         _setLayerProperties(layer, isySubLayer);
                     }
                 } else {
-                    layer = new ol.layer.Vector({
-                        source: source
+                    layer= new ol.layer.Vector({
+                        source: new ol.source.Vector({
+                            format: new ol.format.GeoJSON({
+                                defaultDataProjection: isySubLayer.coordinate_system
+                            }),
+                            url: isySubLayer.url
+
+                        })
                     });
                 }
             }
@@ -602,6 +609,7 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
 
     function _loadVectorLayer(isySubLayer, source){
         var callback = function(data){
+            data = typeof data == 'object' ? data : JSON.parse(data);
             var format = new ol.format.GeoJSON();
             for(var i = 0; i < data.features.length; i++) {
                 var feature = data.features[i];
@@ -611,7 +619,7 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
             }
         };
         $.ajax({
-            url: isySubLayer.url + "request=GetFeature&typeName="+isySubLayer.name+"&outputFormat=json",
+            url: isySubLayer.url,
             async: false
         }).done(function(response) {
             callback(response);
