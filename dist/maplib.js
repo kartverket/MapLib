@@ -1,5 +1,5 @@
 /**
- * maplib - v0.0.1 - 2016-10-18
+ * maplib - v0.0.1 - 2016-10-17
  * http://localhost
  *
  * Copyright (c) 2016 
@@ -4074,7 +4074,7 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler){
         if (selectedFeature){
             selectOptions['features']=[selectedFeature];
         }
-select = new ol.interaction.Select(selectOptions);
+        select = new ol.interaction.Select(selectOptions);
         map.addInteraction(select);
     }
 
@@ -4093,9 +4093,8 @@ select = new ol.interaction.Select(selectOptions);
             if(!feature.getId()) {
                 feature.setId(guidCreator.NewGuid());
             }
-            if (!feature.getProperties().style || feature.getId()==selectedFeatureId) {
+            if (!feature.getProperties().style) {
                 determineStyleFromGeometryType(feature);
-                selectedFeature=feature;
             }
         }
     }
@@ -4221,7 +4220,8 @@ select = new ol.interaction.Select(selectOptions);
         if (options.selectedFeatureId) {
             if (options.selectionActive) {
                 selectedFeatureId = options.selectedFeatureId;
-                setFeatureDefaultValues(features.getArray());
+                selectedFeature = source.getFeatureById(selectedFeatureId);
+                determineStyleFromGeometryType(selectedFeature);
             }
         }
         else{
@@ -5546,8 +5546,7 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
                         if (!isySubLayer.noProxy) {
                             isySubLayer.url = _getProxyUrl(isySubLayer.url);
                         }
-                        // _loadVectorLayer(isySubLayer, source);
-
+                        _loadVectorLayer(isySubLayer, source);
                     }
                     break;
                 case ISY.Domain.SubLayer.SOURCES.wfs:
@@ -5590,14 +5589,8 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
                         _setLayerProperties(layer, isySubLayer);
                     }
                 } else {
-                    layer= new ol.layer.Vector({
-                        source: new ol.source.Vector({
-                            format: new ol.format.GeoJSON({
-                                defaultDataProjection: isySubLayer.coordinate_system
-                            }),
-                            url: isySubLayer.url
-
-                        })
+                    layer = new ol.layer.Vector({
+                        source: source
                     });
                 }
             }
@@ -5684,7 +5677,6 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
 
     function _loadVectorLayer(isySubLayer, source){
         var callback = function(data){
-            data = typeof data == 'object' ? data : JSON.parse(data);
             var format = new ol.format.GeoJSON();
             for(var i = 0; i < data.features.length; i++) {
                 var feature = data.features[i];
@@ -5694,7 +5686,7 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
             }
         };
         $.ajax({
-            url: isySubLayer.url,
+            url: isySubLayer.url + "request=GetFeature&typeName="+isySubLayer.name+"&outputFormat=json",
             async: false
         }).done(function(response) {
             callback(response);
@@ -9632,15 +9624,14 @@ ISY.MapImplementation.OL3.Sources = ISY.MapImplementation.OL3.Sources || {};
 
 ISY.MapImplementation.OL3.Sources.Vector = function(isySubLayer){
     var source;
-    //var projection = ol.proj.get(isySubLayer.coordinate_system);
+    var projection = ol.proj.get(isySubLayer.coordinate_system);
 
     switch (isySubLayer.format){
         case ISY.Domain.SubLayer.FORMATS.geoJson:
             source = new ol.source.Vector({
-                format: new ol.format.GeoJSON({
-                    defaultDataProjection: isySubLayer.coordinate_system
-                }),
-                url: isySubLayer.url});
+                format: new ol.format.GeoJSON(),
+                projection: projection
+            });
             source.set('type', 'ol.source.Vector');
             break;
     }
@@ -10598,9 +10589,6 @@ ISY.MapImplementation.OL3.Styles.Json = function (style) {
             var pos0 = text.indexOf('{');
             if (pos0 < 0) {
                 return text;
-            }
-            if (text=='{_id}'){
-                return feature.getId();
             }
             var label = '';
             while (pos0 >= 0) {
