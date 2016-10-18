@@ -10,9 +10,10 @@ ISY.MapImplementation.OL3.Sources.Vector = function(isySubLayer){
     switch (isySubLayer.format){
         case ISY.Domain.SubLayer.FORMATS.geoJson:
             source = new ol.source.Vector({
-                    format: new ol.format.GeoJSON(),
-                    url: isySubLayer.url
-                });
+                format: new ol.format.GeoJSON({
+                    defaultDataProjection: isySubLayer.coordinate_system
+                }),
+                url: isySubLayer.url});
             source.set('type', 'ol.source.Vector');
             break;
     }

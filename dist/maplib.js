@@ -1,5 +1,5 @@
 /**
- * maplib - v0.0.1 - 2016-10-17
+ * maplib - v0.0.1 - 2016-10-18
  * http://localhost
  *
  * Copyright (c) 2016 
@@ -5546,9 +5546,8 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
                         if (!isySubLayer.noProxy) {
                             isySubLayer.url = _getProxyUrl(isySubLayer.url);
                         }
-                        if (isySubLayer.url !== "") {
-                            _loadVectorLayer(isySubLayer, source);
-                        }
+                        // _loadVectorLayer(isySubLayer, source);
+
                     }
                     break;
                 case ISY.Domain.SubLayer.SOURCES.wfs:
@@ -5591,8 +5590,13 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
                         _setLayerProperties(layer, isySubLayer);
                     }
                 } else {
-                    layer = new ol.layer.Vector({
-                        source: source
+                    layer= new ol.layer.Vector({
+                        source: new ol.source.Vector({
+                            format: new ol.format.GeoJSON({
+                                defaultDataProjection: isySubLayer.coordinate_system
+                            }),
+                        url: isySubLayer.url
+                        })
                     });
                 }
             }
@@ -9632,9 +9636,10 @@ ISY.MapImplementation.OL3.Sources.Vector = function(isySubLayer){
     switch (isySubLayer.format){
         case ISY.Domain.SubLayer.FORMATS.geoJson:
             source = new ol.source.Vector({
-                    format: new ol.format.GeoJSON(),
-                    url: isySubLayer.url
-                });
+                format: new ol.format.GeoJSON({
+                    defaultDataProjection: isySubLayer.coordinate_system
+                }),
+                url: isySubLayer.url});
             source.set('type', 'ol.source.Vector');
             break;
     }
