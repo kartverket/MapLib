@@ -3994,11 +3994,98 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler){
             eventHandlers['select'].push(select.on('select',
                 function (e) {
                     var selectedFeatures = e.selected;
+                    // selectedFeatures.forEach(function(feature) {
+                    //     setSelectedStyle(feature);
+                    // });
+                    // var deSelectedFeatures=e.deselected;
+                    // deSelectedFeatures.forEach(function(feature) {
+                    //     feature.setStyle(jsonStyleFetcher.GetStyle(feature));
+                    // });
                     if (selectedFeatures.length == 1) {
                         eventHandler.TriggerEvent(ISY.Events.EventTypes.DrawFeatureSelect, selectedFeatures[0].getId());
                     }
                 }, this));
         }
+    }
+
+    function setSelectedStyle (feature){
+        var selectedColor='rgb(128, 128, 255)';
+        var selectedStyles;
+        var featureStyle=feature.getStyle();
+        if(!featureStyle){
+            featureStyle=style;
+        }
+        if(featureStyle.length){
+            featureStyle=featureStyle[0];
+        }
+
+        switch(feature.getGeometry().getType()){
+            case('Point'):
+                selectedStyles=setSelectedPointStyle(featureStyle, selectedColor);
+                break;
+            case('LineString'):
+                selectedStyles=setSelectedLineStringStyle(featureStyle, selectedColor);
+                break;
+            case('Polygon'):
+                selectedStyles=setSelectedPolygonStyle(featureStyle, selectedColor);
+                break;
+        }
+        feature.setStyle(selectedStyles);
+    }
+
+    function setSelectedPointStyle(featureStyle, selectedColor) {
+        if(featureStyle.getText().getText()){
+            return [ setSelectedTextStyle(featureStyle, selectedColor), featureStyle];
+        }
+        else {
+            return [new ol.style.Style({
+                image: new ol.style.RegularShape({
+                    fill: new ol.style.Fill({
+                        color: selectedColor
+                    }),
+                    radius: featureStyle.getImage().getRadius() + 5,
+                    points: featureStyle.getImage().getPoints()
+                })
+            }),featureStyle];
+        }
+    }
+
+    function setSelectedLineStringStyle(featureStyle, selectedColor) {
+        return [new ol.style.Style({
+            stroke: new ol.style.Stroke({
+                color: selectedColor,
+                lineDash: featureStyle.getStroke().getLineDash(),
+                width: featureStyle.getStroke().getWidth() + 5
+            })
+        }),featureStyle];
+    }
+
+    function setSelectedPolygonStyle(featureStyle, selectedColor) {
+        return [featureStyle, new ol.style.Style({
+            fill: new ol.style.Fill({
+                color: 'rgba(0,0,0,0)'
+
+            }),
+            stroke: new ol.style.Stroke({
+                color: selectedColor,
+                width: 7
+            })
+        })];
+    }
+
+    function setSelectedTextStyle(featureStyle, selectedColor) {
+        return new ol.style.Style({
+            text: new ol.style.Text({
+                    font: featureStyle.getText().getFont(),
+                    text: featureStyle.getText().getText(),
+                    stroke: new ol.style.Stroke({
+                        color: selectedColor,
+                        width: 5
+                    }),
+                    fill: featureStyle.getText().getFill()
+                }
+            )
+        });
     }
 
     function removeEventHandlers() {
@@ -4099,9 +4186,9 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler){
             if(!feature.getId()) {
                 feature.setId(guidCreator.NewGuid());
             }
-            if (!feature.getProperties().style || feature.getId()==selectedFeatureId) {
+            if (!feature.getProperties().style) { //} || feature.getId()==selectedFeatureId) {
                 determineStyleFromGeometryType(feature);
-                selectedFeature=feature;
+                //selectedFeature=feature;
             }
         }
     }
@@ -4200,7 +4287,6 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler){
         return rgba.replace(',' + rgba.split(',')[3],')').replace('rgba', 'rgb');
     }
 
-
     function styleFunction(feature) {
         var featureStyle = feature.getProperties().style;
         if(!featureStyle){
@@ -4240,7 +4326,9 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler){
         if (options.selectedFeatureId) {
             if (options.selectionActive) {
                 selectedFeatureId = options.selectedFeatureId;
-                setFeatureDefaultValues(features.getArray());
+                selectedFeature=source.getFeatureById(selectedFeatureId);
+                determineStyleFromGeometryType(selectedFeature);
+                setSelectedStyle(selectedFeature);
             }
         }
         else{
