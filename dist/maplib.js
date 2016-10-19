@@ -4305,7 +4305,6 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler){
     function activate(map, options) {
         isActive = true;
         text=false;
-        console.log(options.selectedFeatureId);
         if(!options.style && !style) {
             style=drawStyle.Styles();
         }
