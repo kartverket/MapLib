@@ -109,7 +109,7 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler){
                     fill: new ol.style.Fill({
                         color: selectedColor
                     }),
-                    radius: featureStyle.getImage().getRadius() + 5,
+                    radius: featureStyle.getImage().getRadius() + 3,
                     points: featureStyle.getImage().getPoints()
                 })
             }),featureStyle];
@@ -152,7 +152,7 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler){
                     text: featureStyle.getText().getText(),
                     stroke: new ol.style.Stroke({
                         color: selectedColor,
-                        width: 5
+                        width: featureStyle.getText().getStroke().getWidth() + 5
                     }),
                     fill: featureStyle.getText().getFill()
                 }
