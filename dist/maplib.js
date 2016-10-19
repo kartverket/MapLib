@@ -4011,6 +4011,7 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler){
     function setSelectedStyle (feature){
         var selectedColor='rgb(128, 128, 255)';
         var selectedStyles;
+        jsonStyleFetcher.GetStyle(feature);
         var featureStyle=feature.getStyle();
         if(!featureStyle){
             featureStyle=style;
@@ -4034,7 +4035,7 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler){
     }
 
     function setSelectedPointStyle(featureStyle, selectedColor) {
-        if(featureStyle.getText().getText()){
+        if(featureStyle.getText()){
             return [ setSelectedTextStyle(featureStyle, selectedColor), featureStyle];
         }
         else {
@@ -4070,7 +4071,13 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler){
                 color: selectedColor,
                 width: 7
             })
-        })];
+        }),
+            new ol.style.Style({
+                fill: new ol.style.Fill({
+                    color: 'rgba(255,255,255,255)'
+
+                })
+            }) ];
     }
 
     function setSelectedTextStyle(featureStyle, selectedColor) {
