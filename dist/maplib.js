@@ -4169,7 +4169,8 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler){
 
     function addSelectInteraction(map){
         var selectOptions = {
-            condition: ol.events.condition.click
+            condition: ol.events.condition.click,
+            layers: [drawLayer]
         };
         if (selectedFeature){
             selectOptions['features']=[selectedFeature];
