@@ -288,8 +288,10 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler){
             if (options.GeoJSON=='remove'){
                 initiateDrawing();
             }
-            else if(options.operation=='undo'){
-                features.pop();
+            else if(options.operation=='delete' && options.selectedFeatureId){
+                source.removeFeature(source.getFeatureById(options.selectedFeatureId));
+                selectedFeatureId=undefined;
+                selectedFeature=undefined;
                 initiateDrawing(features.getArray());
                 eventHandler.TriggerEvent(ISY.Events.EventTypes.DrawFeatureEnd, format.writeFeatures(source.getFeatures()));
             }

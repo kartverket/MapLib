@@ -1,5 +1,5 @@
 /**
- * maplib - v0.0.1 - 2016-10-18
+ * maplib - v0.0.1 - 2016-10-19
  * http://localhost
  *
  * Copyright (c) 2016 
@@ -3968,8 +3968,8 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler){
     var selectedFeature;
 
 
-    function addEventHandlers(){
-        if(source) {
+    function addEventHandlers() {
+        if (source) {
             eventHandlers['source'].push(source.on('addfeature',
                 function () {
                     drawFeatureEnd();
@@ -3979,7 +3979,7 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler){
                     drawFeatureEnd();
                 }, this));
         }
-        if(modify) {
+        if (modify) {
             eventHandlers['modify'].push(modify.on('modifystart',
                 function () {
                     modificationActive = true;
@@ -3990,10 +3990,10 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler){
                     drawFeatureEnd();
                 }, this));
         }
-        if(select) {
+        if (select) {
             eventHandlers['select'].push(select.on('select',
                 function (e) {
-                    var selectedFeatures=e.selected;
+                    var selectedFeatures = e.selected;
                     if (selectedFeatures.length == 1) {
                         eventHandler.TriggerEvent(ISY.Events.EventTypes.DrawFeatureSelect, selectedFeatures[0].getId());
                     }
@@ -4223,8 +4223,10 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler){
             if (options.GeoJSON=='remove'){
                 initiateDrawing();
             }
-            else if(options.operation=='undo'){
-                features.pop();
+            else if(options.operation=='delete' && options.selectedFeatureId){
+                source.removeFeature(source.getFeatureById(options.selectedFeatureId));
+                selectedFeatureId=undefined;
+                selectedFeature=undefined;
                 initiateDrawing(features.getArray());
                 eventHandler.TriggerEvent(ISY.Events.EventTypes.DrawFeatureEnd, format.writeFeatures(source.getFeatures()));
             }
