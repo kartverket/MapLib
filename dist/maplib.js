@@ -575,8 +575,7 @@ ISY.MapAPI.FeatureInfo = function(mapImplementation, httpHelper, eventHandler, f
 
     function _sendGetFeatureInfoRequest(subLayer, coordinate){
         var infoUrl = mapImplementation.GetInfoUrl(subLayer, coordinate);
-        var test = decodeURIComponent(infoUrl);
-        console.log(test);
+        infoUrl = decodeURIComponent(infoUrl);
         _handleGetInfoRequest(infoUrl, subLayer);
     }
 
