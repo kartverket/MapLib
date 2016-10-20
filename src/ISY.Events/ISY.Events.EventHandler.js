@@ -56,6 +56,7 @@ ISY.Events.EventTypes = {
     MeasureEnd: "MeasureEnd",
     DrawFeatureMouseMove: "DrawFeatureMouseMove",
     DrawFeatureEnd: "DrawFeatureEnd",
+    DrawFeatureSelect: "DrawFeatureSelect",
     AddLayerFeatureEnd: "AddLayerFeatureEnd",
     ModifyFeatureEnd: "ModifyFeatureEnd",
     RefreshSourceDone: "RefreshSourceDone",
@@ -67,5 +68,7 @@ ISY.Events.EventTypes = {
     TransactionUpdateEnd: "TransactionUpdateEnd",
     TransactionRemoveEnd: "TransactionRemoveEnd",
     FeatureHasBeenDescribed: "FeatureHasBeenDescribed",
-    GeolocationUpdated: "GeolocationUpdated"
+    GeolocationUpdated: "GeolocationUpdated",
+    PrintBoxSelectReturnValue: "PrintBoxSelectReturnValue",
+    MapClickCoordinate: "MapClickCoordinate"
 };

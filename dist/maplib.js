@@ -1,5 +1,5 @@
 /**
- * maplib - v0.0.1 - 2016-10-20
+ * maplib - v0.0.1 - 2016-10-19
  * http://localhost
  *
  * Copyright (c) 2016 
@@ -285,6 +285,7 @@ ISY.Events.EventTypes = {
     MeasureEnd: "MeasureEnd",
     DrawFeatureMouseMove: "DrawFeatureMouseMove",
     DrawFeatureEnd: "DrawFeatureEnd",
+    DrawFeatureSelect: "DrawFeatureSelect",
     AddLayerFeatureEnd: "AddLayerFeatureEnd",
     ModifyFeatureEnd: "ModifyFeatureEnd",
     RefreshSourceDone: "RefreshSourceDone",
@@ -296,7 +297,9 @@ ISY.Events.EventTypes = {
     TransactionUpdateEnd: "TransactionUpdateEnd",
     TransactionRemoveEnd: "TransactionRemoveEnd",
     FeatureHasBeenDescribed: "FeatureHasBeenDescribed",
-    GeolocationUpdated: "GeolocationUpdated"
+    GeolocationUpdated: "GeolocationUpdated",
+    PrintBoxSelectReturnValue: "PrintBoxSelectReturnValue",
+    MapClickCoordinate: "MapClickCoordinate"
 };
 var ISY = ISY || {};
 ISY.Facade = ISY.Facade || {};
@@ -381,12 +384,18 @@ ISY.MapAPI.CustomCrsLoader = function(){
         //UTM 31-35:
         proj4.defs("EPSG:25832", "+proj=utm +zone=32 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs");
         proj4.defs("EPSG:25833", "+proj=utm +zone=33 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs");
+        proj4.defs("EPSG:25834", "+proj=utm +zone=34 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs");
         proj4.defs("EPSG:25835", "+proj=utm +zone=35 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs");
+        proj4.defs("EPSG:25836", "+proj=utm +zone=36 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs");
         proj4.defs("EPSG:32632", "+proj=utm +zone=32 +datum=WGS84 +units=m +no_defs");
         proj4.defs("EPSG:32633", "+proj=utm +zone=33 +datum=WGS84 +units=m +no_defs");
+        proj4.defs("EPSG:32634", "+proj=utm +zone=34 +datum=WGS84 +units=m +no_defs");
         proj4.defs("EPSG:32635", "+proj=utm +zone=35 +datum=WGS84 +units=m +no_defs");
+        proj4.defs("EPSG:32636", "+proj=utm +zone=36 +datum=WGS84 +units=m +no_defs");
 
         proj4.defs("EPSG:3575", "+proj=laea +lat_0=90 +lon_0=10 +x_0=0 +y_0=0 +datum=WGS84 +units=m +no_defs");
+
+        proj4.defs("EPSG:4258","+proj=longlat +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +no_defs");
 
         // TODO: Geoserver
         //proj4.defs("http://www.opengis.net/gml/srs/epsg.xml#25832", '+proj=utm +zone=32 +ellps=GRS80 +units=m +no_defs');
@@ -543,7 +552,7 @@ ISY.MapAPI.FeatureInfo = function(mapImplementation, httpHelper, eventHandler, f
         if(useInfoMarker === true){
             _showInfoMarker(coordinate);
         }
-
+        eventHandler.TriggerEvent(ISY.Events.EventTypes.MapClickCoordinate, coordinate);
         _trigStartGetInfoRequest(layersSupportingGetFeatureInfo);
 
         for(var i = 0; i < layersSupportingGetFeatureInfo.length; i++){
@@ -566,8 +575,6 @@ ISY.MapAPI.FeatureInfo = function(mapImplementation, httpHelper, eventHandler, f
 
     function _sendGetFeatureInfoRequest(subLayer, coordinate){
         var infoUrl = mapImplementation.GetInfoUrl(subLayer, coordinate);
-        var test = decodeURIComponent(infoUrl);
-        console.log(test);
         _handleGetInfoRequest(infoUrl, subLayer);
     }
 
@@ -1088,10 +1095,15 @@ ISY.MapAPI.Map = function(mapImplementation, eventHandler, featureInfo, layerHan
 
         addCustomProj('EPSG:25832');
         addCustomProj('EPSG:25833');
+        addCustomProj('EPSG:25834');
         addCustomProj('EPSG:25835');
+        addCustomProj('EPSG:25836');
         addCustomProj('EPSG:32632');
         addCustomProj('EPSG:32633');
+        addCustomProj('EPSG:32634');
         addCustomProj('EPSG:32635');
+        addCustomProj('EPSG:32636');
+        addCustomProj('EPSG:4258');
         // TODO: Geoserver
         //addCustomProj('http://www.opengis.net/gml/srs/epsg.xml#25832');
         //addCustomProj('http://www.opengis.net/gml/srs/epsg.xml#25833');
@@ -1579,6 +1591,22 @@ ISY.MapAPI.Map = function(mapImplementation, eventHandler, featureInfo, layerHan
      HoverInfo End
      */
 
+
+    /*
+     PrintBoxSelect Start
+    */
+    function activatePrintBoxSelect(options){
+        mapImplementation.ActivatePrintBoxSelect(options);
+    }
+
+    function deactivatePrintBoxSelect(){
+        mapImplementation.DeactivatePrintBoxSelect();
+    }
+
+    /*
+     PrintBoxSelect End
+     */
+
     /*
         Utility functions Start
      */
@@ -1922,6 +1950,13 @@ ISY.MapAPI.Map = function(mapImplementation, eventHandler, featureInfo, layerHan
         ActivateDrawFeature: activateDrawFeature,
         DeactivateDrawFeature: deactivateDrawFeature,
         // DrawFeature end
+
+        /***********************************/
+
+        // PrintBoxSelect Start
+        ActivatePrintBoxSelect: activatePrintBoxSelect,
+        DeactivatePrintBoxSelect: deactivatePrintBoxSelect,
+        // PrintBoxSelect End
 
         /***********************************/
 
@@ -2560,6 +2595,20 @@ ISY.MapAPI.Tools.Tools = function(mapApi){
 
     var featureEditor = new ISY.MapAPI.Tools.Tool(featureEditorConfig);
     tools.push(featureEditor);
+
+    var printBoxSelectConfig = {
+        id: 'PrintBoxSelect',
+        description: 'This tool activates box select functionality for printing',
+        activate: function (options){
+            mapApi.ActivatePrintBoxSelect(options);
+        },
+        deactivate: function (){
+            mapApi.DeactivatePrintBoxSelect();
+        },
+        messageObject: []
+    };
+    var printBoxSelect = new ISY.MapAPI.Tools.Tool(printBoxSelectConfig);
+    tools.push(printBoxSelect);
 
     function getTools(){
         return tools;
@@ -3890,192 +3939,431 @@ ISY.MapImplementation.OL3 = ISY.MapImplementation.OL3 || {};
 
 ISY.MapImplementation.OL3.DrawFeature = function(eventHandler){
 
+    var eventHandlers={
+        modify:[],
+        source:[],
+        select:[]
+    };
+    var text=false;
+    var style;
+    var type;
     var isActive = false;
-    var circleFeature; // The circle feature
-    var circleOverlay; // Overlay for the circle
-    var translate;
-
-    /**
-     * Currently drawn feature.
-     * @type {ol.Feature}
-     */
-    var sketch;
-
-
-    /**
-     * The help tooltip element.
-     * @type {Element}
-     */
-    var helpTooltipElement;
-
-
-    /**
-     * Overlay to show the help messages.
-     * @type {ol.Overlay}
-     */
-    var helpTooltip;
+    var draw; // global so we can remove it later
+    var modify;
+    var snap;
+    var select;
+    var modificationActive=false;
+    var format = new ol.format.GeoJSON({
+            defaultDataProjection: 'EPSG:25833',
+            projection: 'EPSG:25833'
+        }
+    );
+    var features= new ol.Collection();
+    var source = new ol.source.Vector({features:features});
+    var drawLayer;
+    var drawStyle = new ISY.MapImplementation.OL3.Styles.Measure();
+    var jsonStyleFetcher=new ISY.MapImplementation.OL3.Styles.Json();
+    var guidCreator = new ISY.Utils.Guid();
+    var selectedFeatureId;
+    var selectedFeature;
 
 
-    /**
-     * The measure tooltip element.
-     * @type {Element}
-     */
-    var measureTooltipElement;
+    function addEventHandlers() {
+        if (source) {
+            eventHandlers['source'].push(source.on('addfeature',
+                function () {
+                    drawFeatureEnd();
+                }, this));
+            eventHandlers['source'].push(source.on('removefeature',
+                function () {
+                    drawFeatureEnd();
+                }, this));
+        }
+        if (modify) {
+            eventHandlers['modify'].push(modify.on('modifystart',
+                function () {
+                    modificationActive = true;
+                }, this));
+            eventHandlers['modify'].push(modify.on('modifyend',
+                function () {
+                    modificationActive = false;
+                    drawFeatureEnd();
+                }, this));
+        }
+        if (select) {
+            eventHandlers['select'].push(select.on('select',
+                function (e) {
+                    var selectedFeatures = e.selected;
+                    // selectedFeatures.forEach(function(feature) {
+                    //     setSelectedStyle(feature);
+                    // });
+                    // var deSelectedFeatures=e.deselected;
+                    // deSelectedFeatures.forEach(function(feature) {
+                    //     feature.setStyle(jsonStyleFetcher.GetStyle(feature));
+                    // });
+                    if (selectedFeatures.length == 1) {
+                        eventHandler.TriggerEvent(ISY.Events.EventTypes.DrawFeatureSelect, selectedFeatures[0].getId());
+                    }
+                }, this));
+        }
+    }
 
+    function setSelectedStyle (feature){
+        var selectedColor='rgb(128, 128, 255)';
+        var selectedStyles;
+        jsonStyleFetcher.GetStyle(feature);
+        var featureStyle=feature.getStyle();
+        if(!featureStyle){
+            featureStyle=style;
+        }
+        if(featureStyle.length){
+            featureStyle=featureStyle[0];
+        }
 
-    /**
-     * Overlay to show the measurement.
-     * @type {ol.Overlay}
-     */
-    var measureTooltip;
+        switch(feature.getGeometry().getType()){
+            case('Point'):
+                selectedStyles=setSelectedPointStyle(featureStyle, selectedColor);
+                break;
+            case('LineString'):
+                selectedStyles=setSelectedLineStringStyle(featureStyle, selectedColor);
+                break;
+            case('Polygon'):
+                selectedStyles=setSelectedPolygonStyle(featureStyle, selectedColor);
+                break;
+        }
+        feature.setStyle(selectedStyles);
+    }
 
+    function setSelectedPointStyle(featureStyle, selectedColor) {
+        if(featureStyle.getText()){
+            return [ setSelectedTextStyle(featureStyle, selectedColor), featureStyle];
+        }
+        else {
+            return [new ol.style.Style({
+                image: new ol.style.RegularShape({
+                    fill: new ol.style.Fill({
+                        color: selectedColor
+                    }),
+                    radius: featureStyle.getImage().getRadius() + 3,
+                    points: featureStyle.getImage().getPoints()
+                })
+            }),featureStyle];
+        }
+    }
 
-    /**
-     * Message to show when the user is drawing a polygon.
-     * @type {string}
-     */
-    //var continuePolygonMsg = 'Click to continue drawing the polygon';
+    function setSelectedLineStringStyle(featureStyle, selectedColor) {
+        return [new ol.style.Style({
+            stroke: new ol.style.Stroke({
+                color: selectedColor,
+                lineDash: featureStyle.getStroke().getLineDash(),
+                width: featureStyle.getStroke().getWidth() + 5
+            })
+        }),featureStyle];
+    }
 
+    function setSelectedPolygonStyle(featureStyle, selectedColor) {
+        return [featureStyle, new ol.style.Style({
+            fill: new ol.style.Fill({
+                color: 'rgba(0,0,0,0)'
 
-    /**
-     * Message to show when the user is drawing a line.
-     * @type {string}
-     */
-    var continueLineMsg = 'Click to continue drawing the line';
+            }),
+            stroke: new ol.style.Stroke({
+                color: selectedColor,
+                width: 7
+            })
+        }),
+            new ol.style.Style({
+                fill: new ol.style.Fill({
+                    color: 'rgba(255,255,255,255)'
 
+                })
+            }) ];
+    }
 
-    /**
-     * Handle pointer move.
-     * @param {ol.MapBrowserEvent} evt
-     */
-    var pointerMoveHandler = function(evt) {
-        if (evt.dragging || !isActive) {
+    function setSelectedTextStyle(featureStyle, selectedColor) {
+        return new ol.style.Style({
+            text: new ol.style.Text({
+                    font: featureStyle.getText().getFont(),
+                    text: featureStyle.getText().getText(),
+                    stroke: new ol.style.Stroke({
+                        color: selectedColor,
+                        width: featureStyle.getText().getStroke().getWidth() + 5
+                    }),
+                    fill: featureStyle.getText().getFill()
+                }
+            )
+        });
+    }
+
+    function removeEventHandlers() {
+        removeSpecificEventHandlers(modify, 'modify');
+        removeSpecificEventHandlers(source, 'source');
+        removeSpecificEventHandlers(select, 'select');
+    }
+
+    function removeSpecificEventHandlers(interaction, name) {
+        for (var sourceEvent = 0; sourceEvent < eventHandlers[name].length; sourceEvent++) {
+            interaction.unByKey(eventHandlers[name][sourceEvent]);
+        }
+    }
+
+    function drawFeatureEnd(){
+        setFeatureDefaultValues(features.getArray());
+        if(!modificationActive) {
+            eventHandler.TriggerEvent(ISY.Events.EventTypes.DrawFeatureEnd, format.writeFeatures(source.getFeatures()));
+        }
+    }
+
+    function addDrawInteraction(map, type) {
+        if(draw && draw.type==type){
             return;
         }
-        /** @type {string} */
-        var helpMsg = translate['start_drawing'];//'Click to start drawing';
-
-        if (sketch) {
-            var geom = (sketch.getGeometry());
-            if (geom instanceof ol.geom.Polygon) {
-                helpMsg = translate['continue_drawing'];//continuePolygonMsg;
-            } else if (geom instanceof ol.geom.LineString) {
-                helpMsg = continueLineMsg;
-            }
-        }
-        helpTooltipElement.innerHTML = helpMsg;
-        helpTooltip.setPosition(evt.coordinate);
-
-        $(helpTooltipElement).removeClass('hidden');
-    };
-
-    var draw; // global so we can remove it later
-    var drawLayer;
-    function addInteraction(map) {
-        circleOverlay = new ol.layer.Vector({
-            map: map,
-            source: new ol.source.Vector({
-                useSpatialIndex: false // optional, might improve performance
-            }),
-            updateWhileAnimating: true, // optional, for instant visual feedback
-            updateWhileInteracting: true // optional, for instant visual feedback
-        });
-        //map.addOverlay(circleOverlay);
-        var type ='Polygon';// (typeSelect.value == 'area' ? 'Polygon' : 'LineString');
-        var source = new ol.source.Vector();
-        var drawStyle = new ISY.MapImplementation.OL3.Styles.Measure();
         draw = new ol.interaction.Draw({
             source: source,
-            style: drawStyle.DrawStyles(),
-            type: /** @type {ol.geom.GeometryType} */ (type)
+            type: (type),
+            condition: function(event) {
+                return _checkForNoKeys(event) && !modificationActive && !_checkForEmptyText();
+            }
         });
+        map.addInteraction(draw);
+    }
+
+    var _checkForEmptyText= function () {
+        return text && style.getText().getText() === "";
+    };
+
+    function addModifyInteraction(map) {
+        modify = new ol.interaction.Modify({
+            features: select.getFeatures(),
+            condition: function(event) {
+                return _checkForNoKeys(event);
+            },
+            deleteCondition: function(event) {
+                return _checkForShiftKey(event);
+            }
+        });
+        map.addInteraction(modify);
+    }
+
+    function _checkForShiftKey(event){
+        return ol.events.condition.shiftKeyOnly(event) &&
+            event.type=='pointerdown';
+    }
+
+    function _checkForNoKeys(event){
+        return event.type=='pointerdown' &&
+            ol.events.condition.noModifierKeys(event);
+    }
+
+    // function _checkForAltKey(event){
+    //     return event.type=='pointerdown' &&
+    //         ol.events.condition.altKeyOnly(event);
+    // }
+
+    function addSnapInteraction(map) {
+        snap = new ol.interaction.Snap({
+            source: source
+        });
+        map.addInteraction(snap);
+    }
+
+    function addSelectInteraction(map){
+        var selectOptions = {
+            condition: ol.events.condition.click,
+            layers: [drawLayer]
+        };
+        if (selectedFeature){
+            selectOptions['features']=[selectedFeature];
+        }
+        select = new ol.interaction.Select(selectOptions);
+        map.addInteraction(select);
+    }
+
+    function initiateDrawing(newFeatures){
+        features=new ol.Collection(newFeatures);
+        source = new ol.source.Vector({features:features});
         drawLayer = new ol.layer.Vector({
             source: source,
-            style: drawStyle.DrawStyles()
+            style: styleFunction
         });
-
-        map.addInteraction(draw);
-        map.addLayer(drawLayer);
-
-        createMeasureTooltip(map);
-        createHelpTooltip(map);
-
-        var listener;
-        draw.on('drawstart',
-            function(evt) {
-                // set sketch
-                sketch = evt.feature;
-
-                var firstPoint = sketch.getGeometry().getCoordinates()[0][0];
-                circleFeature = new ol.Feature(new ol.geom.Circle(firstPoint, 0));
-                circleOverlay.getSource().addFeature(circleFeature);
-            }, this);
-
-        draw.on('drawend',
-            function(evt) {
-                measureTooltipElement.className = 'tooltip tooltip-static';
-                measureTooltip.setOffset([0, -7]);
-                // unset sketch
-                sketch = null;
-                // unset tooltip so that a new one can be created
-                measureTooltipElement = null;
-                createMeasureTooltip(map);
-                ol.Observable.unByKey(listener);
-
-                sketch = evt.feature;
-
-                eventHandler.TriggerEvent(ISY.Events.EventTypes.DrawFeatureEnd, sketch.getGeometry().getCoordinates());
-            }, this);
     }
 
-    /**
-     * Creates a new help tooltip
-     */
-    function createHelpTooltip(map) {
-        if (helpTooltipElement) {
-            if (helpTooltipElement.parentNode !== null){
-                helpTooltipElement.parentNode.removeChild(helpTooltipElement);
+    function setFeatureDefaultValues(features){
+        for (var i =0; i< features.length; i++) {
+            var feature=features[i];
+            if(!feature.getId()) {
+                feature.setId(guidCreator.NewGuid());
+            }
+            if (!feature.getProperties().style) { //} || feature.getId()==selectedFeatureId) {
+                determineStyleFromGeometryType(feature);
+                //selectedFeature=feature;
             }
         }
-        helpTooltipElement = document.createElement('div');
-        helpTooltipElement.className = 'tooltip hidden';
-        helpTooltip = new ol.Overlay({
-            element: helpTooltipElement,
-            offset: [15, 0],
-            positioning: 'center-left'
-        });
-        map.addOverlay(helpTooltip);
     }
 
-
-    /**
-     * Creates a new measure tooltip
-     */
-    function createMeasureTooltip(map) {
-        if (measureTooltipElement) {
-            if (measureTooltipElement.parentNode !== null){
-                measureTooltipElement.parentNode.removeChild(measureTooltipElement);
-            }
+    function determineStyleFromGeometryType(feature){
+        switch(feature.getGeometry().getType()){
+            case('Point'):
+                setPointStyle(feature);
+                break;
+            case('LineString'):
+                setLineStringStyle(feature);
+                break;
+            case('Polygon'):
+                setPolygonStyle(feature);
+                break;
         }
-        measureTooltipElement = document.createElement('div');
-        measureTooltipElement.className = 'tooltip tooltip-measure';
-        measureTooltip = new ol.Overlay({
-            element: measureTooltipElement,
-            offset: [0, -15],
-            positioning: 'bottom-center'
-        });
-        map.addOverlay(measureTooltip);
     }
 
-    function  activate(map, options){
+    function setPointStyle(feature){
+        var properties;
+        if(style.getText().getText()!=="") {
+            properties = {
+                style: {
+                    text: getTextFromInputStyle()
+                }
+            };
+        }
+        else {
+            properties = {
+                style: {
+                    regularshape: {
+                        fill: {
+                            color: style.getImage().getFill().getColor()
+                        },
+                        points: style.getImage().getPoints(),
+                        radius: style.getImage().getRadius()
+                        //,radius2: style.getImage().getRadius2()
+                        //,stroke: style.getStroke().getColor()
+                    }
+                }
+            };
+        }
+
+        feature.setProperties(properties);
+    }
+    function setLineStringStyle(feature) {
+        feature.setProperties({
+            style: {
+                stroke: {
+                    color: style.getStroke().getColor(),
+                    // lineCap: style.getStroke().getLineCap(),
+                    // lineJoin: style.getStroke().getLineJoin(),
+                    lineDash: style.getStroke().getLineDash(),
+                    // miterLimit: style.getStroke().getMiterLimit(),
+                    width: style.getStroke().getWidth()
+                }
+            }
+        });
+    }
+
+    function setPolygonStyle(feature){
+        feature.setProperties({
+            style: {
+                fill: {
+                    color: style.getFill().getColor()
+                },
+                stroke: {
+                    color: removeAlphaFromRGBA(style.getFill().getColor()),
+                    width: 2
+                }
+            }
+        });
+    }
+
+    function getTextFromInputStyle() {
+        var textStyle = {
+            font: style.getText().getFont(),
+            text: style.getText().getText(),
+            fill: {
+                color: style.getText().getFill().getColor()
+            }
+
+        };
+
+        if (style.getText().getStroke()) {
+            var textStroke = {
+                color: style.getText().getStroke().getColor(),
+                width: style.getText().getStroke().getWidth()
+            };
+            textStyle['stroke'] = textStroke;
+        }
+        return textStyle;
+    }
+
+    function removeAlphaFromRGBA(rgba){
+        return rgba.replace(',' + rgba.split(',')[3],')').replace('rgba', 'rgb');
+    }
+
+    function styleFunction(feature) {
+        var featureStyle = feature.getProperties().style;
+        if(!featureStyle){
+            return style;
+        }
+        return jsonStyleFetcher.GetStyle(feature);
+    }
+
+    function activate(map, options) {
         isActive = true;
-        translate = options.translate;
-        map.on('pointermove', pointerMoveHandler);
-
-        $(map.getViewport()).on('mouseout', function() {
-            $(helpTooltipElement).addClass('hidden');
-        });
-        addInteraction(map);
+        text=false;
+        if(!options.style && !style) {
+            style=drawStyle.Styles();
+        }
+        else{
+            style = options.style;
+        }
+        if(options.GeoJSON){
+            if (options.GeoJSON=='remove'){
+                initiateDrawing();
+            }
+            else if(options.operation=='delete' && options.selectedFeatureId){
+                source.removeFeature(source.getFeatureById(options.selectedFeatureId));
+                selectedFeatureId=undefined;
+                selectedFeature=undefined;
+                initiateDrawing(features.getArray());
+                eventHandler.TriggerEvent(ISY.Events.EventTypes.DrawFeatureEnd, format.writeFeatures(source.getFeatures()));
+            }
+            else {
+                initiateDrawing(format.readFeatures(options.GeoJSON));
+            }
+        }
+        else {
+            initiateDrawing();
+        }
+        if (options.selectedFeatureId) {
+            if (options.selectionActive) {
+                selectedFeatureId = options.selectedFeatureId;
+                selectedFeature=source.getFeatureById(selectedFeatureId);
+                determineStyleFromGeometryType(selectedFeature);
+                setSelectedStyle(selectedFeature);
+            }
+        }
+        else{
+            selectedFeatureId=undefined;
+            selectedFeature=undefined;
+        }
+        map.addLayer(drawLayer);
+        switch (options.mode){
+            case('modify'):
+                addSelectInteraction(map);
+                addModifyInteraction(map);
+                break;
+            case('draw'):
+                if(options.type!='Active'){
+                    type=options.type;
+                }
+                if(options.type=='Text'){
+                    type='Point';
+                    text=true;
+                }
+                addDrawInteraction(map, type);
+                break;
+        }
+        if (options.snap) {
+            addSnapInteraction(map);
+        }
+        addEventHandlers();
+        drawFeatureEnd();
     }
 
     function deactivate(map){
@@ -4083,35 +4371,12 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler){
             isActive = false;
             if (map !== undefined) {
                 map.removeLayer(drawLayer);
-                //map.unByKey(pointerUp);
-                //map.unByKey(pointerMove);
-                //pointerUp = "";
-                //pointerMove = "";
-                measureTooltipElement.className = 'tooltip tooltip-static';
-                measureTooltip.setOffset([0, -7]);
-                //currentFeature = null;
-                measureTooltipElement = null;
                 map.removeInteraction(draw);
-                map.removeOverlay(circleOverlay);
-                map.removeOverlay(measureTooltip);
-                map.removeOverlay(helpTooltip);
-                if (helpTooltipElement) {
-                    helpTooltipElement.parentNode.removeChild(helpTooltipElement);
-                    //helpTooltipElement = null;
-                }
-                if (measureTooltipElement) {
-                    measureTooltipElement.parentNode.removeChild(measureTooltipElement);
-                    //measureTooltipElement = null;
-                }
-                //$(elementInfo).popover('destroy');
-                //$(element).popover('destroy');
-                var tooltipStaticElements = document.getElementsByClassName('tooltip tooltip-static');
-                while(tooltipStaticElements.length > 0){
-                    var staticElement = tooltipStaticElements[0];
-                    staticElement.parentNode.removeChild(staticElement);
-                }
+                map.removeInteraction(modify);
+                map.removeInteraction(snap);
+                map.removeInteraction(select);
+                removeEventHandlers();
             }
-            eventHandler.TriggerEvent(ISY.Events.EventTypes.MeasureEnd);
         }
     }
 
@@ -4931,7 +5196,7 @@ var ISY = ISY || {};
 ISY.MapImplementation = ISY.MapImplementation || {};
 ISY.MapImplementation.OL3 = ISY.MapImplementation.OL3 || {};
 
-ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, measure, featureInfo, mapExport, hoverInfo, measureLine, drawFeature, offline, addLayerFeature, modifyFeature, addFeatureGps){
+ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, measure, featureInfo, mapExport, hoverInfo, measureLine, drawFeature, offline, addLayerFeature, modifyFeature, addFeatureGps, printBoxSelect){
     var map;
     var layerPool = [];
     var isySubLayerPool = [];
@@ -5400,7 +5665,8 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
                         if (!isySubLayer.noProxy) {
                             isySubLayer.url = _getProxyUrl(isySubLayer.url);
                         }
-                        _loadVectorLayer(isySubLayer, source);
+                        // _loadVectorLayer(isySubLayer, source);
+
                     }
                     break;
                 case ISY.Domain.SubLayer.SOURCES.wfs:
@@ -5443,8 +5709,14 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
                         _setLayerProperties(layer, isySubLayer);
                     }
                 } else {
-                    layer = new ol.layer.Vector({
-                        source: source
+                    layer= new ol.layer.Vector({
+                        source: new ol.source.Vector({
+                            format: new ol.format.GeoJSON({
+                                defaultDataProjection: isySubLayer.coordinate_system
+                            }),
+                            url: isySubLayer.url
+
+                        })
                     });
                 }
             }
@@ -5531,6 +5803,7 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
 
     function _loadVectorLayer(isySubLayer, source){
         var callback = function(data){
+            data = typeof data == 'object' ? data : JSON.parse(data);
             var format = new ol.format.GeoJSON();
             for(var i = 0; i < data.features.length; i++) {
                 var feature = data.features[i];
@@ -5540,7 +5813,7 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
             }
         };
         $.ajax({
-            url: isySubLayer.url + "request=GetFeature&typeName="+isySubLayer.name+"&outputFormat=json",
+            url: isySubLayer.url,
             async: false
         }).done(function(response) {
             callback(response);
@@ -6478,6 +6751,17 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
 
 
     /*
+      PrintBoxSelect Start
+     */
+    var activatePrintBoxSelect = function (options){
+        printBoxSelect.Activate(map, options);
+    } ;
+
+    var deactivatePrintBoxSelect = function (){
+        printBoxSelect.Deactivate(map);
+    } ;
+
+    /*
         Utility functions start
      */
 
@@ -7001,6 +7285,13 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
         DeactivateOffline: deactivateOffline,
         GetResourceFromJson: getResourceFromJson,
         // Offline end
+
+        /***********************************/
+
+        // PrintBoxSelect Start
+        ActivatePrintBoxSelect: activatePrintBoxSelect,
+        DeactivatePrintBoxSelect: deactivatePrintBoxSelect,
+        // PrintBoxSelect End
 
         /***********************************/
 
@@ -8845,6 +9136,276 @@ var ISY = ISY || {};
 ISY.MapImplementation = ISY.MapImplementation || {};
 ISY.MapImplementation.OL3 = ISY.MapImplementation.OL3 || {};
 
+ISY.MapImplementation.OL3.PrintBoxSelect = function(eventHandler) {
+
+    var isActive = false;
+    var printBoxSelectionLayer;
+    var oldCenter = {};
+    var oldUTM = "";
+    var scale = 25000;
+    var oldInteraction={};
+    var cols = 4;
+    var rows = 3;
+    var pageMargin = 1.7; // cm
+    var pageWidth = 21 - (pageMargin * 2); // 21cm = A4 width
+    var pageHeight = 29.7 -(pageMargin * 2);
+    var eventKeys ={};
+
+    function _UTMZoneNotChanged(map) {
+        if (!isActive) {
+            return;
+        }
+        var mapCenterGeographic=_getMapCenterGeographic(_getMapCenter(map));
+        var UTM = _getUTMZoneFromGeographicPoint(mapCenterGeographic.getCoordinates()[0], mapCenterGeographic.getCoordinates()[1]);
+        if (UTM != oldUTM){
+            _createFrame(map);
+            return false;
+        }
+        return true;
+    }
+
+    var _deregisterMouseEvents = function(map){
+        for (var eventKey in eventKeys){
+            map.unByKey(eventKeys[eventKey]);
+            eventKeys[eventKey]=false;
+        }
+    };
+
+    var _registerMouseEvents = function (map) {
+        eventKeys['change_center']=map.getView().on('change:center', function() {
+            if(_UTMZoneNotChanged(map)) {
+                var deltaCenter = _findDelta(map);
+                _moveLayer(map, deltaCenter);
+            }
+        });
+
+        eventKeys['moveend']=map.on('moveend', function() {
+            _getExtentOfPrintBox(map);
+        });
+    };
+
+    var _getExtentOfPrintBox = function (map) {
+        var mapCenter = _getMapCenter(map);
+        var mapCenterActiveUTMZone =_getMapCenterActiveUTMZone(mapCenter);
+        var printBox = _getPrintBox(mapCenterActiveUTMZone);
+        var extent = {
+            bbox: [printBox.left, printBox.bottom, printBox.right, printBox.top],
+            center: mapCenterActiveUTMZone.getCoordinates(),
+            projection: oldUTM.localProj,
+            sone: oldUTM.sone,
+            scale: scale
+        };
+        eventHandler.TriggerEvent(ISY.Events.EventTypes.PrintBoxSelectReturnValue, extent);
+    };
+
+    var _getMapCenter = function (map){
+        return map.getView().getCenter();
+    };
+
+    var _getMapCenterGeographic = function(mapCenter){
+        var mapCenterGeographic = new ol.geom.Point(mapCenter);
+        mapCenterGeographic.applyTransform(ol.proj.getTransform('EPSG:32633', 'EPSG:4326'));
+        return mapCenterGeographic;
+    };
+
+    var _findDelta = function (map) {
+        var newCenter = map.getView().getCenter();
+        var deltaCenter = [
+            newCenter[0] - oldCenter[0],
+            newCenter[1] - oldCenter[1]
+        ];
+        oldCenter = newCenter;
+        return deltaCenter;
+    };
+
+    var _moveLayer = function(map, deltaCenter){
+        var source = printBoxSelectionLayer.getSource();
+        var feature = source.getFeatures()[0];
+        feature.getGeometry().translate(deltaCenter[0],deltaCenter[1]);
+    };
+
+    var _getUTMZoneFromGeographicPoint = function(lon, lat) {
+        // From emergencyPoster.js
+        var sone = "32V", localProj = "EPSG:32632";
+        if (lat > 72) {
+            if (lon < 21) {
+                sone = "33X"; localProj = "EPSG:32633";
+            } else {
+                sone = "35X"; localProj = "EPSG:32635";
+            }
+        } else if (lat > 64) {
+            if (lon < 6) {
+                sone = "31W"; localProj = "EPSG:32631";
+            } else if (lon < 12) {
+                sone = "32W"; localProj = "EPSG:32632";
+            } else if (lon < 18) {
+                sone = "33W"; localProj = "EPSG:32633";
+            } else if (lon < 24) {
+                sone = "34W"; localProj = "EPSG:32634";
+            } else if (lon < 30) {
+                sone = "35W"; localProj = "EPSG:32635";
+            } else {
+                sone = "36W"; localProj = "EPSG:32636";
+            }
+        } else {
+            if (lon < 3) {
+                sone = "31V"; localProj = "EPSG:32631";
+            } else if (lon >= 12) {
+                sone = "33V"; localProj = "EPSG:32633";
+            }
+        }
+        return {'sone':sone, 'localProj': localProj};
+    };
+
+    var _createFrame = function(map){
+        _getExtentOfPrintBox(map);
+        if(printBoxSelectionLayer)
+        {
+            map.removeLayer(printBoxSelectionLayer);
+        }
+        var mapCenter = _getMapCenter(map);
+        oldCenter = mapCenter;
+
+        var printBoxSelect = _getPrintBox(_getMapCenterActiveUTMZone(mapCenter));
+        var multiPolygonGeometry = _getMultiPolygonGeometry(_getGrid(printBoxSelect), mapCenter);
+
+        var feature = new ol.Feature(multiPolygonGeometry);
+        feature.setStyle(_getStyle());
+
+        var vectorSource = new ol.source.Vector();
+        vectorSource.addFeature(feature);
+
+        printBoxSelectionLayer = new ol.layer.Vector({
+            name:'PrintBoxSelect',
+            source: vectorSource,
+            updateWhileAnimating: true,
+            updateWhileInteracting: true
+        });
+
+        map.addLayer(printBoxSelectionLayer);
+        printBoxSelectionLayer.setZIndex(2000);
+
+    };
+
+    var _getUTMZoneFromMapCenter = function (mapCenter) {
+        var mapCenterGeographic =_getMapCenterGeographic(mapCenter);
+        var UTM = _getUTMZoneFromGeographicPoint(mapCenterGeographic.getCoordinates()[0], mapCenterGeographic.getCoordinates()[1]);
+        oldUTM = UTM;
+        return UTM;
+    };
+
+    var _getMultiPolygonGeometry = function (coordinates, mapCenter) {
+        var multiPolygonGeometry = new ol.geom.MultiPolygon(coordinates);
+        multiPolygonGeometry.applyTransform(ol.proj.getTransform(_getUTMZoneFromMapCenter(mapCenter).localProj, 'EPSG:32633'));
+        return multiPolygonGeometry;
+    };
+
+    var _getMapCenterActiveUTMZone = function (mapCenter) {
+        var mapCenterActiveUTMZone= new ol.geom.Point(mapCenter);
+        mapCenterActiveUTMZone.applyTransform(ol.proj.getTransform('EPSG:32633',_getUTMZoneFromMapCenter(mapCenter).localProj));
+        return mapCenterActiveUTMZone;
+    };
+
+    var _getPrintBox = function(mapCenterActiveUTMZone){
+        var printBoxSelect={};
+        printBoxSelect.width = (scale * pageWidth * cols) / 100;
+        printBoxSelect.height = (scale * pageHeight * rows) / 100;
+        printBoxSelect.left = mapCenterActiveUTMZone.getCoordinates()[0] - (printBoxSelect.width / 2);
+        printBoxSelect.right = printBoxSelect.left + printBoxSelect.width;
+        printBoxSelect.bottom = mapCenterActiveUTMZone.getCoordinates()[1] - (printBoxSelect.height / 2);
+        printBoxSelect.top = printBoxSelect.bottom + printBoxSelect.height;
+        return printBoxSelect;
+    };
+
+    var _getGrid = function (printBoxSelect) {
+        var coordinates = [];
+        var tempLeft = printBoxSelect.left;
+        for (var c = 1; c <= cols; c++) {
+            var tempRight = tempLeft + ((printBoxSelect.right - printBoxSelect.left) / cols);
+            var tempBottom = printBoxSelect.bottom;
+            for (var r = 1; r <= rows; r++) {
+                var tempTop = tempBottom + ((printBoxSelect.top - printBoxSelect.bottom) / rows);
+                var lowerLeft = new ol.geom.Point([tempLeft, tempBottom]);
+                var upperLeft = new ol.geom.Point([tempLeft, tempTop]);
+                var upperRight = new ol.geom.Point([tempRight, tempTop]);
+                var lowerRight = new ol.geom.Point([tempRight, tempBottom]);
+                var tempBox =  new ol.geom.Polygon([[lowerLeft.getCoordinates(), upperLeft.getCoordinates(), upperRight.getCoordinates(), lowerRight.getCoordinates(), lowerLeft.getCoordinates()]]);
+                coordinates.push(tempBox.getCoordinates());
+                tempBottom = tempTop;
+            }
+            tempLeft = tempRight;
+        }
+        return coordinates;
+    };
+
+    var _getStyle = function () {
+        var style = new ol.style.Style({
+            stroke: new ol.style.Stroke({
+                color: '#ee9900',
+                width: 1,
+                opacity: 1
+            }),
+            fill: new ol.style.Fill({
+                color: 'rgba(238,153,0,0.4)',
+                opacity: 0.4
+            })
+        });
+        return style;
+    };
+
+    var _removeKineticDragPan = function (map, copyOld) {
+        map.getInteractions().forEach(function (interaction) {
+            if (interaction instanceof ol.interaction.DragPan) {
+                map.removeInteraction(interaction);
+                if(copyOld) {
+                    oldInteraction = interaction;
+                }
+            }
+        });
+    };
+
+    var _applyNonKineticDragPan = function (map){
+        _removeKineticDragPan(map, true);
+        map.addInteraction(
+            new ol.interaction.DragPan({kinetic: false})
+        );
+    };
+
+    var _applyOriginalInteraction = function(map) {
+        _removeKineticDragPan(map, false);
+        map.addInteraction(oldInteraction);
+    };
+
+    function activate(map, options) {
+        isActive = true;
+        if (map !== undefined) {
+            scale = options.scale;
+            _applyNonKineticDragPan(map);
+            _registerMouseEvents(map);
+            _createFrame(map);
+        }
+    }
+
+    function deactivate(map) {
+        if (isActive) {
+            isActive = false;
+            if (map !== undefined) {
+                map.removeLayer(printBoxSelectionLayer);
+                _deregisterMouseEvents(map);
+                _applyOriginalInteraction(map);
+            }
+        }
+    }
+
+    return {
+        Activate: activate,
+        Deactivate: deactivate
+    };
+};
+var ISY = ISY || {};
+ISY.MapImplementation = ISY.MapImplementation || {};
+ISY.MapImplementation.OL3 = ISY.MapImplementation.OL3 || {};
+
 ISY.MapImplementation.OL3.ProgressBar = function(eventHandler){
     var olMap;
     var _progress;
@@ -9190,14 +9751,15 @@ ISY.MapImplementation.OL3.Sources = ISY.MapImplementation.OL3.Sources || {};
 
 ISY.MapImplementation.OL3.Sources.Vector = function(isySubLayer){
     var source;
-    var projection = ol.proj.get(isySubLayer.coordinate_system);
+    //var projection = ol.proj.get(isySubLayer.coordinate_system);
 
     switch (isySubLayer.format){
         case ISY.Domain.SubLayer.FORMATS.geoJson:
             source = new ol.source.Vector({
-                format: new ol.format.GeoJSON(),
-                projection: projection
-            });
+                format: new ol.format.GeoJSON({
+                    defaultDataProjection: isySubLayer.coordinate_system
+                }),
+                url: isySubLayer.url});
             source.set('type', 'ol.source.Vector');
             break;
     }
@@ -10135,10 +10697,18 @@ ISY.MapImplementation.OL3.Styles.Json = function (style) {
                     jsonstyle.text.rotation *= -1;
                 }
             }
-            jsonstyle.text.text = _parseTextFilter(feature, jsonstyle.text.text);
-            jsonstyle.text.fill = _createFillStyle(jsonstyle.text);
-            jsonstyle.text.stroke = _createStrokeStyle(jsonstyle.text);
-            return new ol.style.Text(jsonstyle.text);
+            return new ol.style.Text({
+                font: jsonstyle.text.font,
+                offsetX: jsonstyle.text.offsetX,
+                offsetY: jsonstyle.text.offsetY,
+                scale: jsonstyle.text.scale,
+                rotation: jsonstyle.text.rotation,
+                text: _parseTextFilter(feature, jsonstyle.text.text),
+                textAlign: jsonstyle.text.textAlign,
+                textBaseline: jsonstyle.text.textBaseline,
+                fill: _createFillStyle(jsonstyle.text),
+                stroke: _createStrokeStyle(jsonstyle.text)
+            });
         }
     }
 
@@ -10147,6 +10717,9 @@ ISY.MapImplementation.OL3.Styles.Json = function (style) {
             var pos0 = text.indexOf('{');
             if (pos0 < 0) {
                 return text;
+            }
+            if (text=='{_id}'){
+                return feature.getId();
             }
             var label = '';
             while (pos0 >= 0) {
