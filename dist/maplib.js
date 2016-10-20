@@ -1,5 +1,5 @@
 /**
- * maplib - v0.0.1 - 2016-10-19
+ * maplib - v0.0.1 - 2016-10-20
  * http://localhost
  *
  * Copyright (c) 2016 
@@ -575,6 +575,8 @@ ISY.MapAPI.FeatureInfo = function(mapImplementation, httpHelper, eventHandler, f
 
     function _sendGetFeatureInfoRequest(subLayer, coordinate){
         var infoUrl = mapImplementation.GetInfoUrl(subLayer, coordinate);
+        var test = decodeURIComponent(infoUrl);
+        console.log(test);
         _handleGetInfoRequest(infoUrl, subLayer);
     }
 
