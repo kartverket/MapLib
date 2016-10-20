@@ -1,5 +1,5 @@
 /**
- * maplib - v0.0.1 - 2016-10-19
+ * maplib - v0.0.1 - 2016-10-20
  * http://localhost
  *
  * Copyright (c) 2016 
@@ -4330,7 +4330,7 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler){
         else {
             initiateDrawing();
         }
-        if (options.selectedFeatureId) {
+        if (options.operation!='delete' && options.selectedFeatureId) {
             if (options.selectionActive) {
                 selectedFeatureId = options.selectedFeatureId;
                 selectedFeature=source.getFeatureById(selectedFeatureId);

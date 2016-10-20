@@ -395,7 +395,7 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler){
         else {
             initiateDrawing();
         }
-        if (options.selectedFeatureId) {
+        if (options.operation!='delete' && options.selectedFeatureId) {
             if (options.selectionActive) {
                 selectedFeatureId = options.selectedFeatureId;
                 selectedFeature=source.getFeatureById(selectedFeatureId);
