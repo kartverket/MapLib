@@ -45,16 +45,26 @@ ISY.MapAPI.FeatureInfo = function(mapImplementation, httpHelper, eventHandler, f
         httpHelper.get(url).success(callback);
     }
 
-    function _convertJSONtoArray(data) {
+    function _convertJSONtoArray(data, includedFields) {
         var results = [];
         Object.keys(data).forEach(function(key){
-            var value = data[key];
-            var result = [];
-            result.push(key);
-            result.push(value);
-            results.push(result);
+            if(includedFields && Object.keys(includedFields).indexOf(key) < 0){
+                return;
+            }
+            results.push([includedFields[key], data[key]]);
         });
         return results;
+    }
+
+    function readIncludedFields(includedFields){
+        var includedFieldsDict={};
+        if (includedFields.field.constructor != Array){
+            includedFields.field = [includedFields.field];
+        }
+        includedFields.field.forEach(function(field){
+            includedFieldsDict[field.name]=field.alias ? field.alias : field.name;
+        });
+        return includedFieldsDict;
     }
 
     function _handleGetInfoResponse(subLayer, result){
@@ -64,25 +74,21 @@ ISY.MapAPI.FeatureInfo = function(mapImplementation, httpHelper, eventHandler, f
         if (subLayer.featureInfo.supportsGetFeatureInfo && subLayer.source=='WMS'){
             var xmlFile = jQuery.parseXML(result);
             var jsonFile = xml.xmlToJSON(xmlFile);
+            var includedFields=readIncludedFields(subLayer.featureInfo.includedFields);
             if (jsonFile.hasOwnProperty("msGMLOutput")){
                 if (jsonFile.msGMLOutput.hasOwnProperty(subLayer.providerName + "_layer")){
                     var getProperties = jsonFile.msGMLOutput[subLayer.providerName + "_layer"][subLayer.providerName + "_feature"];
                     // var features = _convertJSONtoArray(getProperties);
                     parsedResult = [];
-                    if (getProperties.constructor === Array){
-                        for (var i = 0; i < getProperties.length; i++){
-                            var attr = {
-                                "attributes" : {}
-                            };
-                            attr.attributes = _convertJSONtoArray(getProperties[i]);
-                            parsedResult.push(attr);
-                        }
-                    }else {
-                        var attr1 = {
+                    if (getProperties.constructor != Array){
+                        getProperties=[getProperties];
+                    }
+                    for (var i = 0; i < getProperties.length; i++){
+                        var attr = {
                             "attributes" : {}
                         };
-                        attr1.attributes = _convertJSONtoArray(getProperties);
-                        parsedResult.push(attr1);
+                        attr.attributes = _convertJSONtoArray(getProperties[i], includedFields);
+                        parsedResult.push(attr);
                     }
                 }
             }
