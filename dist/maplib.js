@@ -1,5 +1,5 @@
 /**
- * maplib - v0.0.1 - 2016-10-20
+ * maplib - v0.0.1 - 2016-10-21
  * http://localhost
  *
  * Copyright (c) 2016 
@@ -4316,7 +4316,7 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler){
             if (options.GeoJSON=='remove'){
                 initiateDrawing();
             }
-            else if(options.operation=='delete' && options.selectedFeatureId){
+            else if(options.deleteFeature && options.selectedFeatureId){
                 source.removeFeature(source.getFeatureById(options.selectedFeatureId));
                 selectedFeatureId=undefined;
                 selectedFeature=undefined;
@@ -4330,7 +4330,7 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler){
         else {
             initiateDrawing();
         }
-        if (options.operation!='delete' && options.selectedFeatureId) {
+        if (!options.deleteFeature && options.selectedFeatureId) {
             if (options.selectionActive) {
                 selectedFeatureId = options.selectedFeatureId;
                 selectedFeature=source.getFeatureById(selectedFeatureId);
@@ -4343,26 +4343,28 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler){
             selectedFeature=undefined;
         }
         map.addLayer(drawLayer);
-        switch (options.mode){
-            case('modify'):
-                addSelectInteraction(map);
-                addModifyInteraction(map);
-                break;
-            case('draw'):
-                if(options.type!='Active'){
-                    type=options.type;
-                }
-                if(options.type=='Text'){
-                    type='Point';
-                    text=true;
-                }
-                addDrawInteraction(map, type);
-                break;
+        if(!options.onlyAddLayer) {
+            switch (options.mode) {
+                case('modify'):
+                    addSelectInteraction(map);
+                    addModifyInteraction(map);
+                    break;
+                case('draw'):
+                    if (options.type != 'Active') {
+                        type = options.type;
+                    }
+                    if (options.type == 'Text') {
+                        type = 'Point';
+                        text = true;
+                    }
+                    addDrawInteraction(map, type);
+                    break;
+            }
+            if (options.snap) {
+                addSnapInteraction(map);
+            }
+            addEventHandlers();
         }
-        if (options.snap) {
-            addSnapInteraction(map);
-        }
-        addEventHandlers();
         drawFeatureEnd();
     }
 
