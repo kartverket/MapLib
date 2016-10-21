@@ -65,10 +65,24 @@ ISY.MapAPI.FeatureInfo = function(mapImplementation, httpHelper, eventHandler, f
             var xmlFile = jQuery.parseXML(result);
             var jsonFile = xml.xmlToJSON(xmlFile);
             if (jsonFile.msGMLOutput[subLayer.providerName + "_layer"] !== undefined){
-                var features = _convertJSONtoArray(jsonFile.msGMLOutput[subLayer.providerName + "_layer"][subLayer.providerName + "_feature"]);
-                parsedResult =[{
-                    "attributes": features
-                }];
+                var getProperties = jsonFile.msGMLOutput[subLayer.providerName + "_layer"][subLayer.providerName + "_feature"];
+                // var features = _convertJSONtoArray(getProperties);
+                parsedResult = [];
+                if (getProperties.constructor === Array){
+                    for (var i = 0; i < getProperties.length; i++){
+                        var attr = {
+                            "attributes" : {}
+                        };
+                        attr.attributes = _convertJSONtoArray(getProperties[i]);
+                        parsedResult.push(attr);
+                    }
+                }else {
+                    var attr1 = {
+                        "attributes" : {}
+                    };
+                    attr1.attributes = _convertJSONtoArray(getProperties);
+                    parsedResult.push(attr1);
+                }
             }
 
         }else{
