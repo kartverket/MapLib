@@ -1,5 +1,5 @@
 /**
- * maplib - v0.0.1 - 2016-10-21
+ * maplib - v0.0.1 - 2016-10-24
  * http://localhost
  *
  * Copyright (c) 2016 
@@ -416,12 +416,12 @@ var ISY = ISY || {};
 ISY.MapAPI = ISY.MapAPI || {};
 ISY.MapAPI.Map = ISY.MapAPI.Map || {};
 
-ISY.MapAPI.FeatureInfo = function(mapImplementation, httpHelper, eventHandler, featureParser){
+ISY.MapAPI.FeatureInfo = function(mapImplementation, httpHelper, eventHandler, featureParser) {
 
     /*
-        The reference to document in this class is necessary due to offset.
-        When the marker is placed onto the map for the first time offset does not work unless the image is already present in the DOM.
-        A possible fix to this is to not use an image and instead use an icon.
+     The reference to document in this class is necessary due to offset.
+     When the marker is placed onto the map for the first time offset does not work unless the image is already present in the DOM.
+     A possible fix to this is to not use an image and instead use an icon.
 
      */
 
@@ -431,17 +431,17 @@ ISY.MapAPI.FeatureInfo = function(mapImplementation, httpHelper, eventHandler, f
     var pixelTolerance = 10;
 
     /*
-        Common feature info functions
+     Common feature info functions
      */
 
-    function _trigStartGetInfoRequest(layersToRequest){
+    function _trigStartGetInfoRequest(layersToRequest) {
         var responseFeatureCollections = _createResponseFeatureCollections(layersToRequest);
         eventHandler.TriggerEvent(ISY.Events.EventTypes.FeatureInfoStart, responseFeatureCollections);
     }
 
-    function _createResponseFeatureCollections(layersToRequest){
+    function _createResponseFeatureCollections(layersToRequest) {
         var responseFeatureCollections = [];
-        for(var i = 0; i < layersToRequest.length; i++){
+        for (var i = 0; i < layersToRequest.length; i++) {
             var layerToRequest = layersToRequest[i];
             var responseFeatureCollection = new ISY.Domain.LayerResponse();
             responseFeatureCollection.id = layerToRequest.id;
@@ -452,34 +452,59 @@ ISY.MapAPI.FeatureInfo = function(mapImplementation, httpHelper, eventHandler, f
         return responseFeatureCollections;
     }
 
-    function _handleGetInfoRequest(url, subLayer){
-        var callback = function(data){
+    function _handleGetInfoRequest(url, subLayer) {
+        var callback = function (data) {
             _handleGetInfoResponse(subLayer, data);
         };
         httpHelper.get(url).success(callback);
     }
 
-    function _convertJSONtoArray(data, includedFields) {
+    function _convertJSONtoArray(data) {
         var results = [];
-        Object.keys(data).forEach(function(key){
-            if(includedFields && Object.keys(includedFields).indexOf(key) < 0){
-                return;
-            }
-            results.push([includedFields[key], data[key]]);
+        Object.keys(data).forEach(function (key) {
+            results.push([key, data[key]]);
         });
         return results;
     }
 
-    function readIncludedFields(includedFields){
-        var includedFieldsDict={};
-        if (includedFields.field.constructor != Array){
+    function readIncludedFields(includedFields) {
+        var includedFieldsDict = {};
+        if (includedFields.field.constructor != Array) {
             includedFields.field = [includedFields.field];
         }
-        includedFields.field.forEach(function(field){
-            includedFieldsDict[field.name]=field.alias ? field.alias : field.name;
+        includedFields.field.forEach(function (field) {
+            includedFieldsDict[field.name] = field.alias ? field.alias : field.name;
         });
         return includedFieldsDict;
     }
+
+    function applyIncludedFields(parsedResult, subLayer) {
+        if(!subLayer.featureInfo || !subLayer.featureInfo.includedFields){
+            return parsedResult;
+        }
+        var includedFields = readIncludedFields(subLayer.featureInfo.includedFields);
+        var parsedResultsIncluded=[];
+        parsedResult.forEach(function (feature) {
+            parsedResultsIncluded.push(compareIncludedFields(includedFields, feature));
+        });
+        return parsedResultsIncluded;
+    }
+
+    function compareIncludedFields(includedFields, feature){
+        var newFields = {
+            attributes : []
+        };
+        for (var i = 0; i < feature.attributes.length; i++) {
+            var fieldName = feature.attributes[i][0];
+            var fieldValue = feature.attributes[i][1];
+            if (Object.keys(includedFields).indexOf(fieldName) > 0) {
+                newFields.attributes.push([includedFields[fieldName], fieldValue]);
+            }
+        }
+        return newFields;
+    }
+
+
 
     function _handleGetInfoResponse(subLayer, result){
         var parsedResult;
@@ -488,7 +513,7 @@ ISY.MapAPI.FeatureInfo = function(mapImplementation, httpHelper, eventHandler, f
         if (subLayer.featureInfo.supportsGetFeatureInfo && subLayer.source=='WMS'){
             var xmlFile = jQuery.parseXML(result);
             var jsonFile = xml.xmlToJSON(xmlFile);
-            var includedFields=readIncludedFields(subLayer.featureInfo.includedFields);
+
             if (jsonFile.hasOwnProperty("msGMLOutput")){
                 if (jsonFile.msGMLOutput.hasOwnProperty(subLayer.providerName + "_layer")){
                     var getProperties = jsonFile.msGMLOutput[subLayer.providerName + "_layer"][subLayer.providerName + "_feature"];
@@ -501,7 +526,7 @@ ISY.MapAPI.FeatureInfo = function(mapImplementation, httpHelper, eventHandler, f
                         var attr = {
                             "attributes" : {}
                         };
-                        attr.attributes = _convertJSONtoArray(getProperties[i], includedFields);
+                        attr.attributes = _convertJSONtoArray(getProperties[i]);
                         parsedResult.push(attr);
                     }
                 }
@@ -515,6 +540,8 @@ ISY.MapAPI.FeatureInfo = function(mapImplementation, httpHelper, eventHandler, f
                 exception = e;
             }
         }
+
+        parsedResult=applyIncludedFields(parsedResult, subLayer);
 
         var responseFeatureCollection = new ISY.Domain.LayerResponse();
         responseFeatureCollection.id = subLayer.id;
