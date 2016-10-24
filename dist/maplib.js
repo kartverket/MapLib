@@ -1,5 +1,5 @@
 /**
- * maplib - v0.0.1 - 2016-10-21
+ * maplib - v0.0.1 - 2016-10-24
  * http://localhost
  *
  * Copyright (c) 2016 
@@ -416,12 +416,12 @@ var ISY = ISY || {};
 ISY.MapAPI = ISY.MapAPI || {};
 ISY.MapAPI.Map = ISY.MapAPI.Map || {};
 
-ISY.MapAPI.FeatureInfo = function(mapImplementation, httpHelper, eventHandler, featureParser){
+ISY.MapAPI.FeatureInfo = function(mapImplementation, httpHelper, eventHandler, featureParser) {
 
     /*
-        The reference to document in this class is necessary due to offset.
-        When the marker is placed onto the map for the first time offset does not work unless the image is already present in the DOM.
-        A possible fix to this is to not use an image and instead use an icon.
+     The reference to document in this class is necessary due to offset.
+     When the marker is placed onto the map for the first time offset does not work unless the image is already present in the DOM.
+     A possible fix to this is to not use an image and instead use an icon.
 
      */
 
@@ -431,17 +431,17 @@ ISY.MapAPI.FeatureInfo = function(mapImplementation, httpHelper, eventHandler, f
     var pixelTolerance = 10;
 
     /*
-        Common feature info functions
+     Common feature info functions
      */
 
-    function _trigStartGetInfoRequest(layersToRequest){
+    function _trigStartGetInfoRequest(layersToRequest) {
         var responseFeatureCollections = _createResponseFeatureCollections(layersToRequest);
         eventHandler.TriggerEvent(ISY.Events.EventTypes.FeatureInfoStart, responseFeatureCollections);
     }
 
-    function _createResponseFeatureCollections(layersToRequest){
+    function _createResponseFeatureCollections(layersToRequest) {
         var responseFeatureCollections = [];
-        for(var i = 0; i < layersToRequest.length; i++){
+        for (var i = 0; i < layersToRequest.length; i++) {
             var layerToRequest = layersToRequest[i];
             var responseFeatureCollection = new ISY.Domain.LayerResponse();
             responseFeatureCollection.id = layerToRequest.id;
@@ -452,8 +452,8 @@ ISY.MapAPI.FeatureInfo = function(mapImplementation, httpHelper, eventHandler, f
         return responseFeatureCollections;
     }
 
-    function _handleGetInfoRequest(url, subLayer){
-        var callback = function(data){
+    function _handleGetInfoRequest(url, subLayer) {
+        var callback = function (data) {
             _handleGetInfoResponse(subLayer, data);
         };
         httpHelper.get(url).success(callback);
@@ -461,15 +461,66 @@ ISY.MapAPI.FeatureInfo = function(mapImplementation, httpHelper, eventHandler, f
 
     function _convertJSONtoArray(data) {
         var results = [];
-        Object.keys(data).forEach(function(key){
-            var value = data[key];
-            var result = [];
-            result.push(key);
-            result.push(value);
-            results.push(result);
+        Object.keys(data).forEach(function (key) {
+            results.push([key, data[key]]);
         });
         return results;
     }
+
+    function readIncludedFields(includedFields) {
+        var includedFieldsDict = {};
+        if (includedFields.field) {
+            if (includedFields.field.constructor != Array) {
+                includedFields.field = [includedFields.field];
+            }
+            includedFields.field.forEach(function (field) {
+                includedFieldsDict[field.name] = field.alias ? field.alias : field.name;
+            });
+        }
+
+        if (includedFields.capitalize == "true") {
+            includedFieldsDict['_capitalize'] = true;
+        }
+        return includedFieldsDict;
+    }
+
+    function applyIncludedFields(parsedResult, subLayer) {
+        if(!subLayer.featureInfo || !subLayer.featureInfo.includedFields){
+            return parsedResult;
+        }
+        var includedFields = readIncludedFields(subLayer.featureInfo.includedFields);
+        var parsedResultsIncluded=[];
+        parsedResult.forEach(function (feature) {
+            parsedResultsIncluded.push(compareIncludedFields(includedFields, feature));
+        });
+        return parsedResultsIncluded;
+    }
+
+    function compareIncludedFields(includedFields, feature){
+        var newFields = {
+            attributes : []
+        };
+        for (var i = 0; i < feature.attributes.length; i++) {
+            var fieldName = feature.attributes[i][0];
+            var fieldValue = feature.attributes[i][1];
+            var newFieldName;
+            if (Object.keys(includedFields).indexOf(fieldName) > 0 ) {
+                newFieldName = includedFields._capitalize ? includedFields[fieldName].toLowerCase().capitalizeFirstLetter() : includedFields[fieldName];
+            }
+            else if(Object.keys(includedFields).length == 1){
+                newFieldName = includedFields._capitalize ? fieldName.toLowerCase().capitalizeFirstLetter() : fieldName;
+            }
+            else{
+                continue;
+            }
+            newFields.attributes.push([newFieldName, fieldValue]);
+        }
+        return newFields;
+    }
+
+    String.prototype.capitalizeFirstLetter = function() {
+        return this.charAt(0).toUpperCase() + this.slice(1);
+    };
 
     function _handleGetInfoResponse(subLayer, result){
         var parsedResult;
@@ -483,20 +534,15 @@ ISY.MapAPI.FeatureInfo = function(mapImplementation, httpHelper, eventHandler, f
                     var getProperties = jsonFile.msGMLOutput[subLayer.providerName + "_layer"][subLayer.providerName + "_feature"];
                     // var features = _convertJSONtoArray(getProperties);
                     parsedResult = [];
-                    if (getProperties.constructor === Array){
-                        for (var i = 0; i < getProperties.length; i++){
-                            var attr = {
-                                "attributes" : {}
-                            };
-                            attr.attributes = _convertJSONtoArray(getProperties[i]);
-                            parsedResult.push(attr);
-                        }
-                    }else {
-                        var attr1 = {
+                    if (getProperties.constructor != Array){
+                        getProperties=[getProperties];
+                    }
+                    for (var i = 0; i < getProperties.length; i++){
+                        var attr = {
                             "attributes" : {}
                         };
-                        attr1.attributes = _convertJSONtoArray(getProperties);
-                        parsedResult.push(attr1);
+                        attr.attributes = _convertJSONtoArray(getProperties[i]);
+                        parsedResult.push(attr);
                     }
                 }
             }
@@ -509,6 +555,12 @@ ISY.MapAPI.FeatureInfo = function(mapImplementation, httpHelper, eventHandler, f
                 exception = e;
             }
         }
+
+        if(!parsedResult){
+            return;
+        }
+
+        parsedResult=applyIncludedFields(parsedResult, subLayer);
 
         var responseFeatureCollection = new ISY.Domain.LayerResponse();
         responseFeatureCollection.id = subLayer.id;
