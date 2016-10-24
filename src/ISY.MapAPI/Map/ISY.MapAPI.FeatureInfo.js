@@ -55,13 +55,16 @@ ISY.MapAPI.FeatureInfo = function(mapImplementation, httpHelper, eventHandler, f
 
     function readIncludedFields(includedFields) {
         var includedFieldsDict = {};
-        if (includedFields.field.constructor != Array) {
-            includedFields.field = [includedFields.field];
+        if (includedFields.field) {
+            if (includedFields.field.constructor != Array) {
+                includedFields.field = [includedFields.field];
+            }
+            includedFields.field.forEach(function (field) {
+                includedFieldsDict[field.name] = field.alias ? field.alias : field.name;
+            });
         }
-        includedFields.field.forEach(function (field) {
-            includedFieldsDict[field.name] = field.alias ? field.alias : field.name;
-        });
-        if (includedFields.capitalize == "true"){
+
+        if (includedFields.capitalize == "true") {
             includedFieldsDict['_capitalize'] = true;
         }
         return includedFieldsDict;
@@ -86,10 +89,17 @@ ISY.MapAPI.FeatureInfo = function(mapImplementation, httpHelper, eventHandler, f
         for (var i = 0; i < feature.attributes.length; i++) {
             var fieldName = feature.attributes[i][0];
             var fieldValue = feature.attributes[i][1];
-            if (Object.keys(includedFields).indexOf(fieldName) > 0) {
-                var newField = includedFields._capitalize ? includedFields[fieldName].capitalizeFirstLetter() : includedFields[fieldName];
-                newFields.attributes.push([newField, fieldValue]);
+            var newFieldName;
+            if (Object.keys(includedFields).indexOf(fieldName) > 0 ) {
+                newFieldName = includedFields._capitalize ? includedFields[fieldName].toLowerCase().capitalizeFirstLetter() : includedFields[fieldName];
             }
+            else if(Object.keys(includedFields).length == 1){
+                newFieldName = includedFields._capitalize ? fieldName.toLowerCase().capitalizeFirstLetter() : fieldName;
+            }
+            else{
+                continue;
+            }
+            newFields.attributes.push([newFieldName, fieldValue]);
         }
         return newFields;
     }
