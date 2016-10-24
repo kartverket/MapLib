@@ -61,6 +61,9 @@ ISY.MapAPI.FeatureInfo = function(mapImplementation, httpHelper, eventHandler, f
         includedFields.field.forEach(function (field) {
             includedFieldsDict[field.name] = field.alias ? field.alias : field.name;
         });
+        if (includedFields.capitalize == "true"){
+            includedFieldsDict['_capitalize'] = true;
+        }
         return includedFieldsDict;
     }
 
@@ -84,13 +87,16 @@ ISY.MapAPI.FeatureInfo = function(mapImplementation, httpHelper, eventHandler, f
             var fieldName = feature.attributes[i][0];
             var fieldValue = feature.attributes[i][1];
             if (Object.keys(includedFields).indexOf(fieldName) > 0) {
-                newFields.attributes.push([includedFields[fieldName], fieldValue]);
+                var newField = includedFields._capitalize ? includedFields[fieldName].capitalizeFirstLetter() : includedFields[fieldName];
+                newFields.attributes.push([newField, fieldValue]);
             }
         }
         return newFields;
     }
 
-
+    String.prototype.capitalizeFirstLetter = function() {
+        return this.charAt(0).toUpperCase() + this.slice(1);
+    };
 
     function _handleGetInfoResponse(subLayer, result){
         var parsedResult;
@@ -124,6 +130,10 @@ ISY.MapAPI.FeatureInfo = function(mapImplementation, httpHelper, eventHandler, f
             catch(e){
                 exception = e;
             }
+        }
+
+        if(!parsedResult){
+            return;
         }
 
         parsedResult=applyIncludedFields(parsedResult, subLayer);
