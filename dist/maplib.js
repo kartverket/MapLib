@@ -4028,7 +4028,8 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler){
     var eventHandlers={
         modify:[],
         source:[],
-        select:[]
+        select:[],
+        draw:[]
     };
     var text=false;
     var style;
@@ -4038,7 +4039,11 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler){
     var modify;
     var snap;
     var select;
+    var listener;
+    var measureTooltipElement;
+    var measureTooltip;
     var modificationActive=false;
+    var wgs84Sphere = new ol.Sphere(6378137);
     var format = new ol.format.GeoJSON({
             defaultDataProjection: 'EPSG:25833',
             projection: 'EPSG:25833'
@@ -4054,7 +4059,7 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler){
     var selectedFeature;
 
 
-    function addEventHandlers() {
+    function addEventHandlers(map, showMeasurements) {
         if (source) {
             eventHandlers['source'].push(source.on('addfeature',
                 function () {
@@ -4091,6 +4096,41 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler){
                         eventHandler.TriggerEvent(ISY.Events.EventTypes.DrawFeatureSelect, selectedFeatures[0].getId());
                     }
                 }, this));
+        }
+        if(showMeasurements) {
+            createMeasureTooltip(map);
+            eventHandlers['draw'].push(draw.on('drawstart',
+                function(evt) {
+                    // set sketch
+                    sketch = evt.feature;
+
+                    var tooltipCoord = evt.coordinate;
+
+                    listener = sketch.getGeometry().on('change', function(evt) {
+                        var geom = evt.target;
+                        var output;
+                        if (geom instanceof ol.geom.Polygon) {
+                            output = formatArea(map, geom);
+                            tooltipCoord = geom.getInteriorPoint().getCoordinates();
+                        } else if (geom instanceof ol.geom.LineString) {
+                            output = formatLength(map, geom);
+                            tooltipCoord = geom.getLastCoordinate();
+                        }
+                        measureTooltipElement.innerHTML = output;
+                        measureTooltip.setPosition(tooltipCoord);
+                    });
+                }, this));
+            // eventHandlers['draw'].push(draw.on('drawend',
+            //     function() {
+            //         measureTooltipElement.className = 'tooltip tooltip-static';
+            //         measureTooltip.setOffset([0, -7]);
+            //         // unset sketch
+            //         sketch = null;
+            //         // unset tooltip so that a new one can be created
+            //         measureTooltipElement = null;
+            //         createMeasureTooltip(map);
+            //         ol.Observable.unByKey(listener);
+            //     }, this));
         }
     }
 
@@ -4389,6 +4429,82 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler){
         return jsonStyleFetcher.GetStyle(feature);
     }
 
+    var formatLength = function(map, line) {
+        var length;
+        // if (geodesicCheckbox.checked) {
+            var coordinates = line.getCoordinates();
+            length = 0;
+            var sourceProj = map.getView().getProjection();
+            for (var i = 0, ii = coordinates.length - 1; i < ii; ++i) {
+                var c1 = ol.proj.transform(coordinates[i], sourceProj, 'EPSG:4326');
+                var c2 = ol.proj.transform(coordinates[i + 1], sourceProj, 'EPSG:4326');
+                length += wgs84Sphere.haversineDistance(c1, c2);
+            }
+        // } else {
+        //     length = Math.round(line.getLength() * 100) / 100;
+        // }
+        var output;
+        if (length > 100) {
+            output = (Math.round(length / 1000 * 100) / 100) +
+                ' ' + 'km';
+        } else {
+            output = (Math.round(length * 100) / 100) +
+                ' ' + 'm';
+        }
+        return output;
+    };
+
+    var formatArea = function(map, polygon) {
+        var area;
+        // if (geodesicCheckbox.checked) {
+            var sourceProj = map.getView().getProjection();
+            var geom = (polygon.clone().transform(
+                sourceProj, 'EPSG:4326'));
+            var coordinates = geom.getLinearRing(0).getCoordinates();
+            area = Math.abs(wgs84Sphere.geodesicArea(coordinates));
+        // } else {
+        //     area = polygon.getArea();
+        // }
+        var output;
+        if (area > 10000) {
+            output = (Math.round(area / 1000000 * 100) / 100) +
+                ' ' + 'km<sup>2</sup>';
+        } else {
+            output = (Math.round(area * 100) / 100) +
+                ' ' + 'm<sup>2</sup>';
+        }
+        return output;
+    };
+
+    function createMeasureTooltip(map) {
+        if (measureTooltipElement) {
+            measureTooltipElement.parentNode.removeChild(measureTooltipElement);
+        }
+        measureTooltipElement = document.createElement('div');
+        measureTooltipElement.className = 'tooltip tooltip-measure';
+        measureTooltip = new ol.Overlay({
+            element: measureTooltipElement,
+            offset: [0, -15],
+            positioning: 'bottom-center'
+        });
+        map.addOverlay(measureTooltip);
+    }
+
+    var _removeDoubleClickZoom = function (map) {
+        map.getInteractions().forEach(function (interaction) {
+            if (interaction instanceof ol.interaction.DoubleClickZoom) {
+                map.removeInteraction(interaction);
+            }
+        });
+    };
+
+    var _applyDoubleClickZoom = function (map){
+        _removeDoubleClickZoom(map);
+        map.addInteraction(
+            new ol.interaction.DoubleClickZoom()
+        );
+    };
+
     function activate(map, options) {
         isActive = true;
         text=false;
@@ -4449,9 +4565,10 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler){
             if (options.snap) {
                 addSnapInteraction(map);
             }
-            addEventHandlers();
+            addEventHandlers(map, options.showMeasurements);
         }
         drawFeatureEnd();
+        _removeDoubleClickZoom(map);
     }
 
     function deactivate(map){
@@ -4464,6 +4581,7 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler){
                 map.removeInteraction(snap);
                 map.removeInteraction(select);
                 removeEventHandlers();
+                _applyDoubleClickZoom(map);
             }
         }
     }
