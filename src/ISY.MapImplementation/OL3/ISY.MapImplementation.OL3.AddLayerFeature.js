@@ -182,6 +182,21 @@ ISY.MapImplementation.OL3.AddLayerFeature = function(eventHandler){
         map.addOverlay(helpTooltip);
     }
 
+    var _removeDoubleClickZoom = function (map) {
+        map.getInteractions().forEach(function (interaction) {
+            if (interaction instanceof ol.interaction.DoubleClickZoom) {
+                map.removeInteraction(interaction);
+            }
+        });
+    };
+
+    var _applyDoubleClickZoom = function (map){
+        _removeDoubleClickZoom(map);
+        map.addInteraction(
+            new ol.interaction.DoubleClickZoom()
+        );
+    };
+
     function  activate(map, options){
         isActive = true;
         translate = options.translate;
@@ -195,6 +210,7 @@ ISY.MapImplementation.OL3.AddLayerFeature = function(eventHandler){
             $(helpTooltipElement).addClass('hidden');
         });
         addInteraction(map);
+        _removeDoubleClickZoom(map);
     }
 
     function _removeOverlays(map){
@@ -216,6 +232,7 @@ ISY.MapImplementation.OL3.AddLayerFeature = function(eventHandler){
     }
 
     function deactivate(map){
+        _applyDoubleClickZoom(map);
         if (isActive) {
             isActive = false;
             startModify = false;
