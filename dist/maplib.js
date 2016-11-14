@@ -1,5 +1,5 @@
 /**
- * maplib - v0.0.1 - 2016-11-11
+ * maplib - v0.0.1 - 2016-11-14
  * http://localhost
  *
  * Copyright (c) 2016 
@@ -4225,6 +4225,7 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler){
         removeSpecificEventHandlers(modify, 'modify');
         removeSpecificEventHandlers(source, 'source');
         removeSpecificEventHandlers(select, 'select');
+        removeSpecificEventHandlers(draw, 'draw');
     }
 
     function removeSpecificEventHandlers(interaction, name) {
@@ -4494,6 +4495,7 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler){
         map.getInteractions().forEach(function (interaction) {
             if (interaction instanceof ol.interaction.DoubleClickZoom) {
                 map.removeInteraction(interaction);
+                return;
             }
         });
     };
