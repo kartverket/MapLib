@@ -55,7 +55,9 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler){
                     modificationActive = true;
                 }, this));
             eventHandlers['modify'].push(modify.on('modifyend',
-                function () {
+                function (evt) {
+                    var feature=evt.features.getArray()[0];
+                    feature.setProperties({measurement: getMeasurements(feature.getGeometry(), map)});
                     modificationActive = false;
                     drawFeatureEnd();
                 }, this));
@@ -82,39 +84,34 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler){
                 function(evt) {
                     // set sketch
                     sketch = evt.feature;
-
-                    var tooltipCoord = evt.coordinate;
-
                     listener = sketch.getGeometry().on('change', function(evt) {
-                        var geom = evt.target;
-                        var output;
-                        if (geom instanceof ol.geom.Polygon) {
-                            output = formatArea(map, geom);
-                            tooltipCoord = geom.getInteriorPoint().getCoordinates();
-                        } else if (geom instanceof ol.geom.LineString) {
-                            output = formatLength(map, geom);
-                            tooltipCoord = geom.getLastCoordinate();
-                        }
+                        var output= getMeasurements(evt.target, map);
+                        sketch.setProperties({measurement: output});
                         measureTooltipElement.innerHTML = output;
-                        measureTooltip.setPosition(tooltipCoord);
+                        measureTooltip.setPosition(getTooltipCoord(evt.target));
                     });
                 }, this));
-            // eventHandlers['draw'].push(draw.on('drawend',
-            //     function() {
-            //         measureTooltipElement.className = 'tooltip tooltip-static';
-            //         measureTooltip.setOffset([0, -7]);
-            //         // unset sketch
-            //         sketch = null;
-            //         // unset tooltip so that a new one can be created
-            //         measureTooltipElement = null;
-            //         createMeasureTooltip(map);
-            //         ol.Observable.unByKey(listener);
-            //     }, this));
         }
         eventHandlers['draw'].push(draw.on('drawstart',
             function() {
                 _removeDoubleClickZoom(map);
         }));
+    }
+
+    function getMeasurements(geom, map){
+        if (geom instanceof ol.geom.Polygon) {
+            return formatArea(map, geom);
+        } else if (geom instanceof ol.geom.LineString) {
+            return formatLength(map, geom);
+        }
+    }
+
+    function getTooltipCoord(geom){
+        if (geom instanceof ol.geom.Polygon) {
+            return geom.getInteriorPoint().getCoordinates();
+        } else if (geom instanceof ol.geom.LineString) {
+            return geom.getLastCoordinate();
+        }
     }
 
     function setSelectedStyle (feature){
