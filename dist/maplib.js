@@ -4057,6 +4057,7 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler){
     var guidCreator = new ISY.Utils.Guid();
     var selectedFeatureId;
     var selectedFeature;
+    var showMeasurements;
 
 
     function addEventHandlers(map, showMeasurements) {
@@ -4100,23 +4101,45 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler){
                 }, this));
         }
         if(showMeasurements) {
-            createMeasureTooltip(map);
             eventHandlers['draw'].push(draw.on('drawstart',
                 function(evt) {
-                    // set sketch
-                    sketch = evt.feature;
-                    listener = sketch.getGeometry().on('change', function(evt) {
-                        var output= getMeasurements(evt.target, map);
-                        sketch.setProperties({measurement: output});
-                        measureTooltipElement.innerHTML = output;
-                        measureTooltip.setPosition(getTooltipCoord(evt.target));
-                    });
+                    showTooltip(evt, map);
                 }, this));
+            eventHandlers['draw'].push(draw.on('drawend',
+                function() {
+                    removeMeasureTooltip(map);
+                }, this));
+            if (modify) {
+                eventHandlers['modify'].push(modify.on('modifystart',
+                    function (evt) {
+                        showTooltip(evt, map);
+                    }, this));
+                eventHandlers['modify'].push(modify.on('modifyend',
+                    function () {
+                        removeMeasureTooltip(map);
+                    }, this));
+            }
         }
         eventHandlers['draw'].push(draw.on('drawstart',
             function() {
                 _removeDoubleClickZoom(map);
         }));
+        eventHandlers['draw'].push(draw.on('drawend',
+            function(evt) {
+                evt.feature.setProperties({measurement: getMeasurements(evt.feature.getGeometry(), map)});
+            }));
+    }
+
+    function showTooltip(evt, map){
+        createMeasureTooltip(map);
+        // set sketch
+        sketch = evt.feature||evt.features.getArray()[0];
+        listener = sketch.getGeometry().on('change', function(evt) {
+            var output=getMeasurements(evt.target, map);
+            sketch.setProperties({measurement: output});
+            measureTooltipElement.innerHTML = output;
+            measureTooltip.setPosition(getTooltipCoord(evt.target));
+        });
     }
 
     function getMeasurements(geom, map){
@@ -4424,11 +4447,61 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler){
     }
 
     function styleFunction(feature) {
-        var featureStyle = feature.getProperties().style;
-        if(!featureStyle){
-            return style;
+        jsonStyleFetcher.GetStyle(feature);
+        if(showMeasurements){
+            var measurement=feature.getProperties().measurement;
+            switch(feature.getGeometry().getType()){
+                case('Point'):
+                    return;
+                case('LineString'):
+                    return addMeasurementsToLinestringStyle(feature, measurement);
+                case('Polygon'):
+                    return addMeasurementsToPolygonStyle(feature, measurement);
+            }
         }
-        return jsonStyleFetcher.GetStyle(feature);
+    }
+
+    function addMeasurementsToLinestringStyle(feature, measurement){
+        var featureStyle=feature.getStyle()[0];
+        var newFeatureStyle=new ol.style.Style({
+            stroke: featureStyle.getStroke(),
+            text: new ol.style.Text({
+                    font: style.getText().font,
+                    text: measurement,
+                    fill: new ol.style.Fill({
+                        color: '#000000'
+                    }),
+                    stroke: new ol.style.Stroke({
+                        color: 'rgba(255,255,255,1)',
+                        width: 10
+                    })
+                }
+            )
+        });
+        feature.setStyle(newFeatureStyle);
+        return newFeatureStyle;
+    }
+
+    function addMeasurementsToPolygonStyle(feature, measurement){
+        var featureStyle=feature.getStyle()[0];
+        var newFeatureStyle=new ol.style.Style({
+            fill: featureStyle.getFill(),
+            stroke: featureStyle.getStroke(),
+            text: new ol.style.Text({
+                    font: style.getText().font,
+                    text: measurement,
+                    fill: new ol.style.Fill({
+                        color: '#000000'
+                    }),
+                    stroke: new ol.style.Stroke({
+                        color: 'rgba(255,255,255,1)',
+                        width: 10
+                    })
+                }
+            )
+        });
+        feature.setStyle(newFeatureStyle);
+        return newFeatureStyle;
     }
 
     var formatLength = function(map, line) {
@@ -4470,18 +4543,16 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler){
         var output;
         if (area > 10000) {
             output = (Math.round(area / 1000000 * 100) / 100) +
-                ' ' + 'km<sup>2</sup>';
+                ' ' + 'km2';
         } else {
             output = (Math.round(area * 100) / 100) +
-                ' ' + 'm<sup>2</sup>';
+                ' ' + 'm2';
         }
         return output;
     };
 
     function createMeasureTooltip(map) {
-        if (measureTooltipElement) {
-            measureTooltipElement.parentNode.removeChild(measureTooltipElement);
-        }
+        removeMeasureTooltip(map);
         measureTooltipElement = document.createElement('div');
         measureTooltipElement.className = 'tooltip tooltip-measure';
         measureTooltip = new ol.Overlay({
@@ -4490,6 +4561,13 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler){
             positioning: 'bottom-center'
         });
         map.addOverlay(measureTooltip);
+    }
+
+    function removeMeasureTooltip(map){
+        if (measureTooltipElement && measureTooltipElement.parentNode) {
+            measureTooltipElement.parentNode.removeChild(measureTooltipElement);
+        }
+        map.removeOverlay(measureTooltip);
     }
 
     var _removeDoubleClickZoom = function (map) {
@@ -4511,6 +4589,7 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler){
     function activate(map, options) {
         isActive = true;
         text=false;
+        showMeasurements=options.showMeasurements;
         if(!options.style && !style) {
             style=drawStyle.Styles();
         }
@@ -4571,7 +4650,6 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler){
             addEventHandlers(map, options.showMeasurements);
         }
         drawFeatureEnd();
-        // _removeDoubleClickZoom(map);
     }
 
     function deactivate(map){
