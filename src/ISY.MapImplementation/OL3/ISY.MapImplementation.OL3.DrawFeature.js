@@ -111,6 +111,10 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler){
             //         ol.Observable.unByKey(listener);
             //     }, this));
         }
+        eventHandlers['draw'].push(draw.on('drawstart',
+            function() {
+                _removeDoubleClickZoom(map);
+        }));
     }
 
     function setSelectedStyle (feature){
@@ -549,7 +553,7 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler){
             addEventHandlers(map, options.showMeasurements);
         }
         drawFeatureEnd();
-        _removeDoubleClickZoom(map);
+        // _removeDoubleClickZoom(map);
     }
 
     function deactivate(map){
