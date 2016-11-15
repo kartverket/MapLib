@@ -4212,22 +4212,13 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler){
     }
 
     function setSelectedPolygonStyle(featureStyle, selectedColor) {
-        return [featureStyle, new ol.style.Style({
-            fill: new ol.style.Fill({
-                color: 'rgba(0,0,0,0)'
-
-            }),
+        return [new ol.style.Style({
+            fill: featureStyle.getFill(),
             stroke: new ol.style.Stroke({
                 color: selectedColor,
                 width: 7
             })
-        }),
-            new ol.style.Style({
-                fill: new ol.style.Fill({
-                    color: 'rgba(255,255,255,255)'
-
-                })
-            }) ];
+        })];
     }
 
     function setSelectedTextStyle(featureStyle, selectedColor) {
