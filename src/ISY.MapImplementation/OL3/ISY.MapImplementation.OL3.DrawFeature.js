@@ -468,7 +468,7 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler){
             stroke: featureStyle.getStroke(),
             text: new ol.style.Text({
                     font: style.getText().font,
-                    text: measurement,
+                    text: superscriptLabel(measurement),
                     fill: new ol.style.Fill({
                         color: '#000000'
                     }),
@@ -481,6 +481,22 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler){
         });
         feature.setStyle(newFeatureStyle);
         return newFeatureStyle;
+    }
+
+    function superscriptLabel(measurement){
+        var htmlElem = document.createElement('span');
+        htmlElem.innerHTML = measurement;
+        for (var i=0;i<htmlElem.children.length;i++) {
+            var child = htmlElem.children[i];
+            if (child.tagName === 'SUP') {
+                if (child.textContent <= 3 && child.textContent > 1) {
+                    child.textContent = String.fromCharCode(child.textContent.charCodeAt(0) + 128);
+                } else if (child.textContent > 3 && child.textContent <= 9) {
+                    child.textContent = String.fromCharCode(child.textContent.charCodeAt(0) + 8256);
+                }
+            }
+        }
+        return htmlElem.textContent;
     }
 
     var formatLength = function(map, line) {
@@ -522,10 +538,10 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler){
         var output;
         if (area > 10000) {
             output = (Math.round(area / 1000000 * 100) / 100) +
-                ' ' + 'km2';
+                ' ' + 'km<sup>2</sup>';
         } else {
             output = (Math.round(area * 100) / 100) +
-                ' ' + 'm2';
+                ' ' + 'm<sup>2</sup>';
         }
         return output;
     };
