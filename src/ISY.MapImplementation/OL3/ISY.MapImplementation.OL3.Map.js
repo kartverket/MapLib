@@ -449,6 +449,14 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
         } else {
             switch(isySubLayer.source){
                 case ISY.Domain.SubLayer.SOURCES.wmts:
+                    if (isySubLayer.gatekeeper && isySubLayer.tiled && ((offline === undefined) ? true : !offline.IsActive())){
+                        if(parameters){
+                            parameters['gkt']= _getToken();
+                        }
+                        else{
+                            parameters={'gkt': _getToken()};
+                        }
+                    }
                     source = new ISY.MapImplementation.OL3.Sources.Wmts(isySubLayer, parameters);
                     break;
                 case ISY.Domain.SubLayer.SOURCES.proxyWmts:

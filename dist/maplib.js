@@ -1,5 +1,5 @@
 /**
- * maplib - v0.0.1 - 2016-11-15
+ * maplib - v0.0.1 - 2016-11-17
  * http://localhost
  *
  * Copyright (c) 2016 
@@ -5937,6 +5937,14 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
         } else {
             switch(isySubLayer.source){
                 case ISY.Domain.SubLayer.SOURCES.wmts:
+                    if (isySubLayer.gatekeeper && isySubLayer.tiled && ((offline === undefined) ? true : !offline.IsActive())){
+                        if(parameters){
+                            parameters['gkt']= _getToken();
+                        }
+                        else{
+                            parameters={'gkt': _getToken()};
+                        }
+                    }
                     source = new ISY.MapImplementation.OL3.Sources.Wmts(isySubLayer, parameters);
                     break;
                 case ISY.Domain.SubLayer.SOURCES.proxyWmts:
@@ -10818,7 +10826,7 @@ ISY.MapImplementation.OL3.Sources.Wmts = function(isySubLayer, parameters){
     };
 
     var projectionExtent = projection.getExtent();
-    var size = isySubLayer.matrixPrefix ? ol.extent.getWidth(projectionExtent) / 256 : 4096;
+    var size = ol.extent.getWidth(projectionExtent) / 256;
     var resolutions = new Array(isySubLayer.numZoomLevels);
     var matrixIds = new Array(isySubLayer.numZoomLevels);
     var matrixSet = isySubLayer.matrixSet;

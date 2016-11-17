@@ -20,7 +20,7 @@ ISY.MapImplementation.OL3.Sources.Wmts = function(isySubLayer, parameters){
     };
 
     var projectionExtent = projection.getExtent();
-    var size = isySubLayer.matrixPrefix ? ol.extent.getWidth(projectionExtent) / 256 : 4096;
+    var size = ol.extent.getWidth(projectionExtent) / 256;
     var resolutions = new Array(isySubLayer.numZoomLevels);
     var matrixIds = new Array(isySubLayer.numZoomLevels);
     var matrixSet = isySubLayer.matrixSet;
