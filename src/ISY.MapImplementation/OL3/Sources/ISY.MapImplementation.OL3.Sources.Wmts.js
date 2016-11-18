@@ -12,9 +12,9 @@ ISY.MapImplementation.OL3.Sources.Wmts = function(isySubLayer, parameters){
     var getUrlParameter = function(){
         var urlParameter = '';
         if (parameters) {
-            for (var index in parameters) {
-                urlParameter += '&' + index + '=' + parameters[index];
-            }
+            parameters.forEach(function (index){
+                urlParameter += parameters[index] ? '&' + index + '=' + parameters[index] : '';
+            });
         }
         return urlParameter;
     };

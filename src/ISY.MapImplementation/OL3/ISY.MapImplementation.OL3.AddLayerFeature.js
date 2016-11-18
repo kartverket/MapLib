@@ -57,10 +57,12 @@ ISY.MapImplementation.OL3.AddLayerFeature = function(eventHandler){
     var drawLayer;
     var modify;
     var snapping;
+    var source = new ol.source.Vector();
+    var drawStyle = new ISY.MapImplementation.OL3.Styles.Default();
+    var features;
 
-    function addInteraction(map) {
-        var source = new ol.source.Vector();
-        var drawStyle = new ISY.MapImplementation.OL3.Styles.Measure();
+    function addInteraction(map, features) {
+
 
         if (typeObject === "Line"){
             typeObject = "LineString";
@@ -71,13 +73,9 @@ ISY.MapImplementation.OL3.AddLayerFeature = function(eventHandler){
             style: drawStyle.Styles(),
             type: /** @type {ol.geom.GeometryType} */ (typeObject)
         });
-        drawLayer = new ol.layer.Vector({
-            source: source,
-            style: drawStyle.DrawStyles()
-        });
 
         map.addInteraction(draw);
-        map.addLayer(drawLayer);
+        addLayer(map, features);
 
         //var snappingFeaturesCollection = new ol.Collection(snappingFeatures);
         //snapping = new ol.interaction.Snap({
@@ -125,9 +123,12 @@ ISY.MapImplementation.OL3.AddLayerFeature = function(eventHandler){
                 ol.Observable.unByKey(listener);
 
                 sketch = evt.feature;
-                var newFeatures = new ol.Collection([sketch]);
+                if(!features){
+                    features=new ol.Collection([sketch]);
+                }
+                //var newFeatures = new ol.Collection([sketch]);
                 modify = new ol.interaction.Modify({
-                    features: newFeatures,
+                    features: features,
 
                     deleteCondition: function(event) {
                         return ol.events.condition.shiftKeyOnly(event) &&
@@ -152,6 +153,28 @@ ISY.MapImplementation.OL3.AddLayerFeature = function(eventHandler){
                 map.removeInteraction(draw);
 
             }, this);
+    }
+
+    function addLayer(map, gpx){
+        if(gpx){
+            var format = new ol.format.GPX({
+                    dataProjection: 'EPSG:4326',
+                    featureProjection: 'EPSG:25833'
+                }
+            );
+            features=format.readFeatures(gpx);
+            features[0].getGeometry().transform('EPSG:4326', 'EPSG:25833');
+            var featureCollection=new ol.Collection(features);
+            source = new ol.source.Vector({features: featureCollection});
+        }
+        drawLayer = new ol.layer.Vector({
+            source: source,
+            style: drawStyle.Styles()
+        });
+        map.addLayer(drawLayer);
+        if(gpx){
+            eventHandler.TriggerEvent(ISY.Events.EventTypes.AddLayerFeatureEnd, features[0]);
+        }
     }
 
     function initSnapping(map){
@@ -197,7 +220,7 @@ ISY.MapImplementation.OL3.AddLayerFeature = function(eventHandler){
         );
     };
 
-    function  activate(map, options){
+    function activate(map, options){
         isActive = true;
         translate = options.translate;
         typeObject = options.toolType;//type;
@@ -209,7 +232,8 @@ ISY.MapImplementation.OL3.AddLayerFeature = function(eventHandler){
         $(map.getViewport()).on('mouseout', function() {
             $(helpTooltipElement).addClass('hidden');
         });
-        addInteraction(map);
+        var features=options.features;
+        addInteraction(map, features);
         _removeDoubleClickZoom(map);
     }
 
