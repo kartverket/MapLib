@@ -10860,7 +10860,7 @@ ISY.MapImplementation.OL3.Sources.Wmts = function(isySubLayer, parameters){
         matrixSet: matrixSet,
         crossOrigin: isySubLayer.crossOrigin,
         tileGrid: new ol.tilegrid.WMTS({
-            origin: ol.extent.getTopLeft(projectionExtent),
+            origin: isySubLayer.topLeftCorner ? isySubLayer.topLeftCorner.split(' ') : ol.extent.getTopLeft(projectionExtent),
             resolutions: resolutions,
             matrixIds: matrixIds
         }),
