@@ -3844,16 +3844,7 @@ ISY.MapImplementation.OL3.AddLayerFeature = function(eventHandler){
 
         map.addInteraction(draw);
         addLayer(map, features);
-
-        //var snappingFeaturesCollection = new ol.Collection(snappingFeatures);
-        //snapping = new ol.interaction.Snap({
-        //    features: snappingFeaturesCollection
-        //});
-        //
-        //map.addInteraction(snapping);
         initSnapping(map);
-
-        //createMeasureTooltip(map);
         createHelpTooltip(map);
 
         var listener;
@@ -3868,15 +3859,13 @@ ISY.MapImplementation.OL3.AddLayerFeature = function(eventHandler){
                     var geom = evt.target;
                     var output;
                     if (geom instanceof ol.geom.Polygon) {
-                        output = "";//formatArea(/** @type {ol.geom.Polygon} */ (geom));
+                        output = "";
                         tooltipCoord = geom.getInteriorPoint().getCoordinates();
                     } else if (geom instanceof ol.geom.LineString) {
-                        output = "";//formatLength( /** @type {ol.geom.LineString} */ (geom));
+                        output = "";
                         tooltipCoord = geom.getLastCoordinate();
                     }
-                    //measureTooltipElement.innerHTML = output.string;
                     eventHandler.TriggerEvent(ISY.Events.EventTypes.MeasureMouseMove, output);
-                    //measureTooltip.setPosition(tooltipCoord);
                 });
 
 
@@ -3891,12 +3880,12 @@ ISY.MapImplementation.OL3.AddLayerFeature = function(eventHandler){
                 ol.Observable.unByKey(listener);
 
                 sketch = evt.feature;
-                if(!features){
-                    features=new ol.Collection([sketch]);
-                }
-                //var newFeatures = new ol.Collection([sketch]);
+                // if(!features){
+                //     features=new ol.Collection([sketch]);
+                // }
+                var newFeatures = new ol.Collection([sketch]);
                 modify = new ol.interaction.Modify({
-                    features: features,
+                    features: newFeatures,
 
                     deleteCondition: function(event) {
                         return ol.events.condition.shiftKeyOnly(event) &&
