@@ -15,7 +15,7 @@ ISY.MapImplementation.OL3.AddLayerFeature = function(eventHandler){
     var modify;
     var snapping;
     var source = new ol.source.Vector();
-    var drawStyle = new ISY.MapImplementation.OL3.Styles.Default();
+    var drawStyle = new ISY.MapImplementation.OL3.Styles.Measure();
     var features;
 
     function addInteraction(map, features) {
@@ -74,7 +74,12 @@ ISY.MapImplementation.OL3.AddLayerFeature = function(eventHandler){
         }
         drawLayer = new ol.layer.Vector({
             source: source,
-            style: drawStyle.Styles()
+            style: new ol.style.Style({
+                stroke: new ol.style.Stroke({
+                    color: 'rgba(255,0,255,255)',
+                    width: 5
+                })
+            })
         });
         map.addLayer(drawLayer);
         if(gpx){
