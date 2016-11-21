@@ -8,52 +8,9 @@ ISY.MapImplementation.OL3.AddLayerFeature = function(eventHandler){
     var translate;
     var typeObject;
     var snappingFeatures;
-
-    /**
-     * Currently drawn feature.
-     * @type {ol.Feature}
-     */
     var sketch;
-
-    /**
-     * The help tooltip element.
-     * @type {Element}
-     */
-    var helpTooltipElement;
-
-    /**
-     * Overlay to show the help messages.
-     * @type {ol.Overlay}
-     */
-    var helpTooltip;
-
-    /**
-     * Handle pointer move.
-     * @param {ol.MapBrowserEvent} evt
-     */
     var startModify = false;
-
-    var pointerMoveHandler = function(evt) {
-        //if (!startModify || !isActive) {
-        if (!isActive) {
-            return;
-        }
-        /** @type {string} */
-        var helpMsg = translate['add_layer_start_drawing'];//'Click to start drawing';
-
-        if (sketch && !startModify) {
-            helpMsg = translate['add_layer_continue_drawing'];//continuePolygonMsg;
-        }
-        if (startModify){
-            helpMsg = translate['add_layer_modify_object'];//'Click to start drawing';
-        }
-        helpTooltipElement.innerHTML = helpMsg;
-        helpTooltip.setPosition(evt.coordinate);
-
-        $(helpTooltipElement).removeClass('hidden');
-    };
-
-    var draw; // global so we can remove it later
+    var draw;
     var drawLayer;
     var modify;
     var snapping;
@@ -71,76 +28,35 @@ ISY.MapImplementation.OL3.AddLayerFeature = function(eventHandler){
         draw = new ol.interaction.Draw({
             source: source,
             style: drawStyle.Styles(),
-            type: /** @type {ol.geom.GeometryType} */ (typeObject)
+            type: (typeObject)
         });
 
-        map.addInteraction(draw);
+
         addLayer(map, features);
-        initSnapping(map);
-        createHelpTooltip(map);
+        if(!features) {
+            map.addInteraction(draw);
+            initSnapping(map);
+        }
 
-        var listener;
-        draw.on('drawstart',
-            function(evt) {
-                // set sketch
-                sketch = evt.feature;
-
-                var tooltipCoord = evt.coordinate;
-
-                listener = sketch.getGeometry().on('change', function(evt) {
-                    var geom = evt.target;
-                    var output;
-                    if (geom instanceof ol.geom.Polygon) {
-                        output = "";
-                        tooltipCoord = geom.getInteriorPoint().getCoordinates();
-                    } else if (geom instanceof ol.geom.LineString) {
-                        output = "";
-                        tooltipCoord = geom.getLastCoordinate();
-                    }
-                    eventHandler.TriggerEvent(ISY.Events.EventTypes.MeasureMouseMove, output);
-                });
-
-
-
-
-            }, this);
-
-        draw.on('drawend',
+         draw.on('drawend',
             function(evt) {
                 map.removeInteraction(snapping);
-                sketch = null;
-                ol.Observable.unByKey(listener);
-
                 sketch = evt.feature;
-                // if(!features){
-                //     features=new ol.Collection([sketch]);
-                // }
                 var newFeatures = new ol.Collection([sketch]);
                 modify = new ol.interaction.Modify({
-                    features: newFeatures,
-
-                    deleteCondition: function(event) {
-                        return ol.events.condition.shiftKeyOnly(event) &&
-                            ol.events.condition.singleClick(event);
-                    }
+                    features: newFeatures
                 });
-
                 map.addInteraction(modify);
-
                 initSnapping(map);
-
                 eventHandler.TriggerEvent(ISY.Events.EventTypes.AddLayerFeatureEnd, sketch);
-
                 startModify = true;
                 modify.on('modifyend',
                     function(evt) {
                         sketch = null;
-                        ol.Observable.unByKey(listener);
-                        sketch = evt.features.getArray()[0];  //evt.feature;
+                        sketch = evt.features.getArray()[0];
                         eventHandler.TriggerEvent(ISY.Events.EventTypes.AddLayerFeatureEnd, sketch);
                     }, this);
                 map.removeInteraction(draw);
-
             }, this);
     }
 
@@ -148,11 +64,11 @@ ISY.MapImplementation.OL3.AddLayerFeature = function(eventHandler){
         if(gpx){
             var format = new ol.format.GPX({
                     dataProjection: 'EPSG:4326',
-                    featureProjection: 'EPSG:25833'
+                    featureProjection: map.getView().getProjection()
                 }
             );
             features=format.readFeatures(gpx);
-            features[0].getGeometry().transform('EPSG:4326', 'EPSG:25833');
+            features[0].getGeometry().transform('EPSG:4326', map.getView().getProjection());
             var featureCollection=new ol.Collection(features);
             source = new ol.source.Vector({features: featureCollection});
         }
@@ -175,25 +91,6 @@ ISY.MapImplementation.OL3.AddLayerFeature = function(eventHandler){
         map.addInteraction(snapping);
     }
 
-    /**
-     * Creates a new help tooltip
-     */
-    function createHelpTooltip(map) {
-        if (helpTooltipElement) {
-            if (helpTooltipElement.parentNode !== null){
-                helpTooltipElement.parentNode.removeChild(helpTooltipElement);
-            }
-        }
-        helpTooltipElement = document.createElement('div');
-        helpTooltipElement.className = 'tooltip hidden';
-        helpTooltip = new ol.Overlay({
-            element: helpTooltipElement,
-            offset: [15, 0],
-            positioning: 'center-left'
-        });
-        map.addOverlay(helpTooltip);
-    }
-
     var _removeDoubleClickZoom = function (map) {
         map.getInteractions().forEach(function (interaction) {
             if (interaction instanceof ol.interaction.DoubleClickZoom) {
@@ -214,34 +111,9 @@ ISY.MapImplementation.OL3.AddLayerFeature = function(eventHandler){
         translate = options.translate;
         typeObject = options.toolType;//type;
         snappingFeatures = options.snappingFeatures;
-        //console.log(options.features);
-
-        map.on('pointermove', pointerMoveHandler);
-
-        $(map.getViewport()).on('mouseout', function() {
-            $(helpTooltipElement).addClass('hidden');
-        });
         var features=options.features;
         addInteraction(map, features);
         _removeDoubleClickZoom(map);
-    }
-
-    function _removeOverlays(map){
-
-        map.removeInteraction(draw);
-
-        map.removeOverlay(helpTooltip);
-        if (helpTooltipElement !== null) {
-            if (helpTooltipElement.parentNode !== null){
-                helpTooltipElement.parentNode.removeChild(helpTooltipElement);
-            }
-        }
-
-        var tooltipStaticElements = document.getElementsByClassName('tooltip tooltip-static');
-        while(tooltipStaticElements.length > 0){
-            var staticElement = tooltipStaticElements[0];
-            staticElement.parentNode.removeChild(staticElement);
-        }
     }
 
     function deactivate(map){
@@ -254,7 +126,7 @@ ISY.MapImplementation.OL3.AddLayerFeature = function(eventHandler){
                 map.removeLayer(drawLayer);
                 map.removeInteraction(modify);
                 map.removeInteraction(snapping);
-                _removeOverlays(map);
+                source = new ol.source.Vector();
             }
         }
     }
