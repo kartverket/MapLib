@@ -15,8 +15,33 @@ ISY.MapImplementation.OL3.AddLayerFeature = function(eventHandler){
     var modify;
     var snapping;
     var source = new ol.source.Vector();
-    var drawStyle = new ISY.MapImplementation.OL3.Styles.Measure();
     var features;
+    var mainColor='rgba(0,0,0,255)';
+    var secondaryColor='rgba(255,255,0,255)';
+    var elevationStyle= [ new ol.style.Style({
+        stroke:  new ol.style.Stroke({
+            color: mainColor,
+            width: 3
+        }),
+        image: new ol.style.Circle({
+            radius: 5,
+            fill: new ol.style.Fill({
+                color: mainColor
+            }),
+            stroke: new ol.style.Stroke({
+                color: secondaryColor ,
+                width: 2
+            })
+        })
+    }),
+        new ol.style.Style({
+            stroke:  new ol.style.Stroke({
+                color: secondaryColor,
+                width: 3,
+                lineDash: [ 15, 30 ]
+            })
+        })
+    ];
 
     function addInteraction(map, features) {
 
@@ -27,7 +52,7 @@ ISY.MapImplementation.OL3.AddLayerFeature = function(eventHandler){
 
         draw = new ol.interaction.Draw({
             source: source,
-            style: drawStyle.Styles(),
+            style: elevationStyle,
             type: (typeObject)
         });
 
@@ -63,12 +88,7 @@ ISY.MapImplementation.OL3.AddLayerFeature = function(eventHandler){
     function addLayer(map){
         drawLayer = new ol.layer.Vector({
             source: source,
-            style: new ol.style.Style({
-                stroke: new ol.style.Stroke({
-                    color: 'rgba(255,0,255,255)',
-                    width: 5
-                })
-            })
+            style: elevationStyle
         });
         map.addLayer(drawLayer);
     }
