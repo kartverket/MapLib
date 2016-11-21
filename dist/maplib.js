@@ -3828,18 +3828,7 @@ ISY.MapImplementation.OL3.AddLayerFeature = function(eventHandler){
             }, this);
     }
 
-    function addLayer(map, gpx){
-        if(gpx){
-            var format = new ol.format.GPX({
-                    dataProjection: 'EPSG:4326',
-                    featureProjection: map.getView().getProjection()
-                }
-            );
-            features=format.readFeatures(gpx);
-            features[0].getGeometry().transform('EPSG:4326', map.getView().getProjection());
-            var featureCollection=new ol.Collection(features);
-            source = new ol.source.Vector({features: featureCollection});
-        }
+    function addLayer(map){
         drawLayer = new ol.layer.Vector({
             source: source,
             style: new ol.style.Style({
@@ -3850,9 +3839,6 @@ ISY.MapImplementation.OL3.AddLayerFeature = function(eventHandler){
             })
         });
         map.addLayer(drawLayer);
-        if(gpx){
-            eventHandler.TriggerEvent(ISY.Events.EventTypes.AddLayerFeatureEnd, features[0]);
-        }
     }
 
     function initSnapping(map){
@@ -3879,14 +3865,34 @@ ISY.MapImplementation.OL3.AddLayerFeature = function(eventHandler){
         );
     };
 
+    var _readFeatures = function (map, gpx){
+        if(gpx){
+            var format = new ol.format.GPX({
+                    dataProjection: 'EPSG:4326',
+                    featureProjection: map.getView().getProjection()
+                }
+            );
+            var newFeatures=format.readFeatures(gpx);
+            newFeatures[0].getGeometry().transform('EPSG:4326', map.getView().getProjection());
+            var featureCollection=new ol.Collection(newFeatures);
+            source = new ol.source.Vector({features: featureCollection});
+            return newFeatures;
+        }
+        return undefined;
+    };
+
     function activate(map, options){
         isActive = true;
         translate = options.translate;
-        typeObject = options.toolType;//type;
+        typeObject = options.toolType;
         snappingFeatures = options.snappingFeatures;
-        var features=options.features;
+        features=_readFeatures(map, options.features);
         addInteraction(map, features);
         _removeDoubleClickZoom(map);
+        if(features){
+            var extent = features[0].getGeometry().getExtent();
+            map.getView().fit(extent,map.getSize());
+        }
     }
 
     function deactivate(map){
