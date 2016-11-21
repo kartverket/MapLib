@@ -3811,28 +3811,19 @@ ISY.MapImplementation.OL3.AddLayerFeature = function(eventHandler){
         })
     ];
 
-    function addInteraction(map, features) {
-
-
-        if (typeObject === "Line"){
+    function addInteraction(map) {
+        if (typeObject === "Line") {
             typeObject = "LineString";
         }
-
         draw = new ol.interaction.Draw({
             source: source,
             style: elevationStyle,
             type: (typeObject)
         });
-
-
-        addLayer(map, features);
-        if(!features) {
-            map.addInteraction(draw);
-            initSnapping(map);
-        }
-
-         draw.on('drawend',
-            function(evt) {
+        map.addInteraction(draw);
+        initSnapping(map);
+        draw.on('drawend',
+            function (evt) {
                 map.removeInteraction(snapping);
                 sketch = evt.feature;
                 var newFeatures = new ol.Collection([sketch]);
@@ -3844,7 +3835,7 @@ ISY.MapImplementation.OL3.AddLayerFeature = function(eventHandler){
                 eventHandler.TriggerEvent(ISY.Events.EventTypes.AddLayerFeatureEnd, sketch);
                 startModify = true;
                 modify.on('modifyend',
-                    function(evt) {
+                    function (evt) {
                         sketch = null;
                         sketch = evt.features.getArray()[0];
                         eventHandler.TriggerEvent(ISY.Events.EventTypes.AddLayerFeatureEnd, sketch);
@@ -3852,6 +3843,7 @@ ISY.MapImplementation.OL3.AddLayerFeature = function(eventHandler){
                 map.removeInteraction(draw);
             }, this);
     }
+
 
     function addLayer(map){
         drawLayer = new ol.layer.Vector({
@@ -3907,12 +3899,16 @@ ISY.MapImplementation.OL3.AddLayerFeature = function(eventHandler){
         typeObject = options.toolType;
         snappingFeatures = options.snappingFeatures;
         features=_readFeatures(map, options.features);
-        addInteraction(map, features);
-        _removeDoubleClickZoom(map);
-        if(features){
+        addLayer(map, features);
+        if (features) {
+            map.removeInteraction(draw);
             var extent = features[0].getGeometry().getExtent();
             map.getView().fit(extent,map.getSize());
         }
+        else {
+            addInteraction(map, features);
+        }
+        _removeDoubleClickZoom(map);
     }
 
     function deactivate(map){
@@ -3925,6 +3921,7 @@ ISY.MapImplementation.OL3.AddLayerFeature = function(eventHandler){
                 map.removeLayer(drawLayer);
                 map.removeInteraction(modify);
                 map.removeInteraction(snapping);
+                map.removeInteraction(draw);
                 source = new ol.source.Vector();
             }
         }
