@@ -1,5 +1,5 @@
 /**
- * maplib - v0.0.1 - 2016-11-21
+ * maplib - v0.0.1 - 2016-11-22
  * http://localhost
  *
  * Copyright (c) 2016 
@@ -4241,6 +4241,7 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler){
             source: source,
             style: styleFunction
         });
+        drawLayer.set('id', 'drawing');
     }
 
     function setFeatureDefaultValues(features){
@@ -4546,6 +4547,12 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler){
             selectedFeatureId=undefined;
             selectedFeature=undefined;
         }
+        map.getLayers().forEach(function(layer) {
+                if (layer.get('id') == 'drawing') {
+                    map.removeLayer(layer);
+                }
+            }
+        );
         map.addLayer(drawLayer);
         if(!options.onlyAddLayer) {
             switch (options.mode) {
@@ -4576,7 +4583,7 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler){
         if (isActive) {
             isActive = false;
             if (map !== undefined) {
-                map.removeLayer(drawLayer);
+                //map.removeLayer(drawLayer);
                 map.removeInteraction(draw);
                 map.removeInteraction(modify);
                 map.removeInteraction(snap);
