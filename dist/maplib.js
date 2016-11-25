@@ -1,5 +1,5 @@
 /**
- * maplib - v0.0.1 - 2016-11-22
+ * maplib - v0.0.1 - 2016-11-25
  * http://localhost
  *
  * Copyright (c) 2016 
@@ -5426,6 +5426,8 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
     var tokenHost = "";
     var gktLifetime = 3000;
     var lastGktCheck = 0;
+    var lastGlobalGktCheck = 0;
+    var globalGkt;
     var geolocation;
     var translateOptions;
     var isyToken;
@@ -5799,11 +5801,24 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
         if (!tokenHost){
             return null;
         }
-        return $.ajax({
-            type: "GET",
-            url: tokenHost,
-            async: false
-        }).responseText.trim().replace(/\"/g, "");
+        else if(!globalGkt || _checkGlobalGktTokenExpired()){
+            globalGkt=$.ajax({
+                type: "GET",
+                url: tokenHost,
+                async: false
+            }).responseText.trim().replace(/\"/g, "");
+            lastGlobalGktCheck = (new Date()).getTime();
+        }
+        return globalGkt;
+    }
+
+    function _checkGlobalGktTokenExpired() {
+        var currentTime = (new Date()).getTime();
+        if (currentTime < (lastGlobalGktCheck + (gktLifetime * 1000))) {
+            lastGlobalGktCheck = currentTime;
+            return false;
+        }
+        return true;
     }
 
     function _setLayerProperties(layer, isySubLayer){
