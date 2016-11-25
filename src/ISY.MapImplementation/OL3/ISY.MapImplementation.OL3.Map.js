@@ -393,7 +393,7 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
         if (!tokenHost){
             return null;
         }
-        else if(_checkGlobalGktTokenExpired()){
+        else if(!globalGkt || _checkGlobalGktTokenExpired()){
             globalGkt=$.ajax({
                 type: "GET",
                 url: tokenHost,
