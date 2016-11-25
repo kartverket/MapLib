@@ -399,6 +399,7 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
                 url: tokenHost,
                 async: false
             }).responseText.trim().replace(/\"/g, "");
+            lastGlobalGktCheck = (new Date()).getTime();
         }
         return globalGkt;
     }
@@ -409,7 +410,6 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
             lastGlobalGktCheck = currentTime;
             return false;
         }
-        lastGlobalGktCheck = currentTime;
         return true;
     }
 
