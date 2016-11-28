@@ -10745,13 +10745,13 @@ ISY.MapImplementation = ISY.MapImplementation || {};
 ISY.MapImplementation.OL3 = ISY.MapImplementation.OL3 || {};
 ISY.MapImplementation.OL3.Sources = ISY.MapImplementation.OL3.Sources || {};
 
-ISY.MapImplementation.OL3.Sources.Wmts = function(isySubLayer, parameters){
+ISY.MapImplementation.OL3.Sources.Wmts = function(isySubLayer, parameters) {
     var projection = new ol.proj.Projection({
         code: isySubLayer.coordinate_system,
         extent: isySubLayer.extent,
         units: isySubLayer.extentUnits
     });
-    var getUrlParameter = function(){
+    var getUrlParameter = function () {
         var urlParameter = '';
         if (parameters) {
             for (var index in parameters) {
@@ -10766,8 +10766,7 @@ ISY.MapImplementation.OL3.Sources.Wmts = function(isySubLayer, parameters){
     var resolutions = new Array(isySubLayer.numZoomLevels);
     var matrixIds = new Array(isySubLayer.numZoomLevels);
     var matrixSet = isySubLayer.matrixSet;
-    if (matrixSet === null || matrixSet === '' || matrixSet === undefined)
-    {
+    if (matrixSet === null || matrixSet === '' || matrixSet === undefined) {
         matrixSet = isySubLayer.matrixPrefix ? isySubLayer.coordinate_system : parseInt(isySubLayer.coordinate_system.substr(isySubLayer.coordinate_system.indexOf(':') + 1), 10);
     }
     for (var z = 0; z < isySubLayer.numZoomLevels; ++z) {
@@ -10782,51 +10781,54 @@ ISY.MapImplementation.OL3.Sources.Wmts = function(isySubLayer, parameters){
         url += getUrlParameter();
     } else {
         urls = isySubLayer.url;
-        for (var i = 0; i < urls.length; i++){
+        for (var i = 0; i < urls.length; i++) {
             urls[i] += getUrlParameter();
         }
     }
 
-    var source = new ol.source.WMTS({
-        url: url,
-        urls: urls,
-        layer: isySubLayer.name,
-        format: isySubLayer.format,
-        projection: projection,
-        matrixSet: matrixSet,
-        crossOrigin: isySubLayer.crossOrigin,
-        tileGrid: new ol.tilegrid.WMTS({
-            origin: isySubLayer.topLeftCorner ? isySubLayer.topLeftCorner.split(' ') : ol.extent.getTopLeft(projectionExtent),
-            resolutions: resolutions,
-            matrixIds: matrixIds
-        }),
-        style: 'default',
-        wrapX: true
-    });
+    var source;
+    if (isySubLayer.wmtsExtent) {
+        var capabilitiesUrl = url ? url.split('?')[0] : urls[0].split('?')[0];
+        capabilitiesUrl += '?Request=GetCapabilities&Service=WMTS&Version=1.0.0';
+        var capabilities = $.ajax({
+            type: "GET",
+            url: capabilitiesUrl,
+            async: false
+        }).responseText;
+        var parser = new ol.format.WMTSCapabilities();
+        capabilities=parser.read(capabilities);
+        capabilities.Contents.Layer.forEach(function(layer){
+            if(layer.Identifier==isySubLayer.name){
+                layer.WGS84BoundingBox=undefined;
+            }
+        });
+        var sourceOptions = ol.source.WMTS.optionsFromCapabilities(capabilities,
+            {layer: isySubLayer.name, matrixSet: matrixSet});
+        sourceOptions.projection.setExtent(isySubLayer.wmtsExtent.split(','));
+        source = new ol.source.WMTS(sourceOptions);
+    }
+    else {
+        source = new ol.source.WMTS({
+            url: url,
+            urls: urls,
+            layer: isySubLayer.name,
+            format: isySubLayer.format,
+            projection: projection,
+            matrixSet: matrixSet,
+            crossOrigin: isySubLayer.crossOrigin,
+            tileGrid: new ol.tilegrid.WMTS({
+                origin: ol.extent.getTopLeft(projectionExtent),
+                resolutions: resolutions,
+                matrixIds: matrixIds
+            }),
+            style: 'default',
+            wrapX: true
+        });
+    }
     source.set('type', 'ol.source.WMTS');
 
-    var oldTileLoadFunction = source.tileLoadFunction;
-
-    var newTileLoadFunction = function(extent, url){
-        var tmpurl = url.split('&');
-        var newurl = '';
-        for (var i = 0; i < tmpurl.length; i++){
-            var aurl = tmpurl[i].split('=');
-            if (i === 0) {
-                var pos = aurl[0].indexOf('?');
-                newurl = aurl[0].substr(0, pos + 1);
-                newurl += aurl[0].substr(pos + 1).toUpperCase();
-            } else {
-                newurl += '&' + aurl[0].toUpperCase();
-            }
-            newurl += '=' + aurl[1];
-        }
-        //console.log(newurl);
-        oldTileLoadFunction(extent, newurl);
-    };
-    source.tileLoadFunction = newTileLoadFunction;
-
     return source;
+
 };
 
 var ISY = ISY || {};
