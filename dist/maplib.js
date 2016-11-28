@@ -1,5 +1,5 @@
 /**
- * maplib - v0.0.1 - 2016-11-22
+ * maplib - v0.0.1 - 2016-11-28
  * http://localhost
  *
  * Copyright (c) 2016 
@@ -855,6 +855,7 @@ ISY.MapAPI.Layers = function(mapImplementation){
             var baseLayer = baseLayers[i];
             if(baseLayer.visibleOnLoad){
                 setBaseLayer(baseLayer);
+                isBaseLayerVisible = true;
             }else if(isBaseLayerVisible === false){
                 baseLayer.visibleOnLoad = true;
                 setBaseLayer(baseLayer);

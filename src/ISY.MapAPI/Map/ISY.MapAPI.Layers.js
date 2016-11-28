@@ -18,6 +18,7 @@ ISY.MapAPI.Layers = function(mapImplementation){
             var baseLayer = baseLayers[i];
             if(baseLayer.visibleOnLoad){
                 setBaseLayer(baseLayer);
+                isBaseLayerVisible = true;
             }else if(isBaseLayerVisible === false){
                 baseLayer.visibleOnLoad = true;
                 setBaseLayer(baseLayer);
