@@ -10767,17 +10767,15 @@ ISY.MapImplementation.OL3.Sources.Wmts = function(isySubLayer, parameters) {
     }
 
     var urls = isySubLayer.url;
-        for (var i = 0; i < urls.length; i++) {
-            urls[i] += getUrlParameter();
-        }
-
+    for (var i = 0; i < urls.length; i++) {
+        urls[i] += getUrlParameter();
+    }
 
     var source, sourceOptions;
-    var projectionExtent=projection.getExtent();
+    var projectionExtent = projection.getExtent();
     var wmtsExtent = isySubLayer.wmtsExtent ? isySubLayer.wmtsExtent.split(',') : projectionExtent;
-    if (isySubLayer.wmtsExtent) {
-        var capabilitiesUrl = urls[0];
-        capabilitiesUrl += '&Request=GetCapabilities&Service=WMTS&Version=1.0.0';
+    if (isySubLayer.getCapabilities) {
+        var capabilitiesUrl = urls[0] + '&Request=GetCapabilities&Service=WMTS&Version=1.0.0';
         var capabilities = $.ajax({
             type: "GET",
             url: capabilitiesUrl,
@@ -10792,7 +10790,6 @@ ISY.MapImplementation.OL3.Sources.Wmts = function(isySubLayer, parameters) {
         });
         sourceOptions = ol.source.WMTS.optionsFromCapabilities(capabilities,
             {layer: isySubLayer.name, matrixSet: matrixSet});
-        sourceOptions.projection = ol.proj.get('EPSG:32633'); // To avoid reprojection. TODO: Fetch this from map, parameterize or alias projections (EUREF - WGS) in some way
         sourceOptions.tileGrid = new ol.tilegrid.WMTS({
             extent: wmtsExtent,
             origin: sourceOptions.tileGrid.getOrigin(0),
@@ -10800,7 +10797,6 @@ ISY.MapImplementation.OL3.Sources.Wmts = function(isySubLayer, parameters) {
             matrixIds: sourceOptions.tileGrid.getMatrixIds(),
             tileSize: sourceOptions.tileGrid.getTileSize(0)
         });
-        sourceOptions.urls= urls;
     }
     else {
         var size = ol.extent.getWidth(projectionExtent) / 256;
@@ -10811,10 +10807,8 @@ ISY.MapImplementation.OL3.Sources.Wmts = function(isySubLayer, parameters) {
             matrixIds[z] = isySubLayer.matrixPrefix ? matrixSet + ":" + z : matrixIds[z] = z;
         }
         sourceOptions = {
-            urls: urls,
             layer: isySubLayer.name,
             format: isySubLayer.format,
-            projection: projection,
             matrixSet: matrixSet,
             crossOrigin: isySubLayer.crossOrigin,
             tileGrid: new ol.tilegrid.WMTS({
@@ -10827,11 +10821,12 @@ ISY.MapImplementation.OL3.Sources.Wmts = function(isySubLayer, parameters) {
             wrapX: true
         };
     }
+    sourceOptions.projection = projection;
+    sourceOptions.urls = urls;
     source = new ol.source.WMTS(sourceOptions);
     source.set('type', 'ol.source.WMTS');
 
     return source;
-
 };
 
 var ISY = ISY || {};
