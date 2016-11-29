@@ -10773,6 +10773,8 @@ ISY.MapImplementation.OL3.Sources.Wmts = function(isySubLayer, parameters) {
 
 
     var source, sourceOptions;
+    var projectionExtent=projection.getExtent();
+    var wmtsExtent = isySubLayer.wmtsExtent ? isySubLayer.wmtsExtent.split(',') : projectionExtent;
     if (isySubLayer.wmtsExtent) {
         var capabilitiesUrl = urls[0];
         capabilitiesUrl += '&Request=GetCapabilities&Service=WMTS&Version=1.0.0';
@@ -10792,7 +10794,7 @@ ISY.MapImplementation.OL3.Sources.Wmts = function(isySubLayer, parameters) {
             {layer: isySubLayer.name, matrixSet: matrixSet});
         sourceOptions.projection = ol.proj.get('EPSG:32633'); // To avoid reprojection. TODO: Fetch this from map, parameterize or alias projections (EUREF - WGS) in some way
         sourceOptions.tileGrid = new ol.tilegrid.WMTS({
-            extent: isySubLayer.wmtsExtent.split(','),
+            extent: wmtsExtent,
             origin: sourceOptions.tileGrid.getOrigin(0),
             resolutions: sourceOptions.tileGrid.getResolutions(),
             matrixIds: sourceOptions.tileGrid.getMatrixIds(),
@@ -10801,7 +10803,6 @@ ISY.MapImplementation.OL3.Sources.Wmts = function(isySubLayer, parameters) {
         sourceOptions.urls= urls;
     }
     else {
-        var projectionExtent=projection.getExtent();
         var size = ol.extent.getWidth(projectionExtent) / 256;
         var resolutions = new Array(isySubLayer.numZoomLevels);
         var matrixIds = new Array(isySubLayer.numZoomLevels);
@@ -10817,6 +10818,7 @@ ISY.MapImplementation.OL3.Sources.Wmts = function(isySubLayer, parameters) {
             matrixSet: matrixSet,
             crossOrigin: isySubLayer.crossOrigin,
             tileGrid: new ol.tilegrid.WMTS({
+                extent: wmtsExtent,
                 origin: ol.extent.getTopLeft(projectionExtent),
                 resolutions: resolutions,
                 matrixIds: matrixIds
