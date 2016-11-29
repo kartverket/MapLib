@@ -1,5 +1,5 @@
 /**
- * maplib - v0.0.1 - 2016-11-28
+ * maplib - v0.0.1 - 2016-11-29
  * http://localhost
  *
  * Copyright (c) 2016 
@@ -10804,7 +10804,14 @@ ISY.MapImplementation.OL3.Sources.Wmts = function(isySubLayer, parameters) {
         });
         var sourceOptions = ol.source.WMTS.optionsFromCapabilities(capabilities,
             {layer: isySubLayer.name, matrixSet: matrixSet});
-        sourceOptions.projection.setExtent(isySubLayer.wmtsExtent.split(','));
+        sourceOptions.projection=ol.proj.get('EPSG:32633'); // To avoid reprojection
+        sourceOptions.tileGrid=new ol.tilegrid.WMTS({
+            extent: isySubLayer.wmtsExtent.split(','),
+            origin: sourceOptions.tileGrid.getOrigin(0),
+            resolutions: sourceOptions.tileGrid.getResolutions(),
+            matrixIds: sourceOptions.tileGrid.getMatrixIds(),
+            tileSize: sourceOptions.tileGrid.getTileSize(0)
+        });
         source = new ol.source.WMTS(sourceOptions);
     }
     else {
