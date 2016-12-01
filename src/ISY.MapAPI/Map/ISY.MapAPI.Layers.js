@@ -150,11 +150,11 @@ ISY.MapAPI.Layers = function(mapImplementation){
         }
 
         isyLayer.isVisible = true;
-        //_recalculateMapLayerIndexes();
-        updateSortingIndex();
-        mapImplementation.UpdateLayerSortIndex(config.groups);
-        mapImplementation.SortLayerBySortIndex();
-        mapImplementation.RedrawMap();
+        ////_recalculateMapLayerIndexes();
+        // updateSortingIndex();
+        // mapImplementation.UpdateLayerSortIndex(config.groups);
+        // mapImplementation.SortLayerBySortIndex();
+        // mapImplementation.RedrawMap();
     }
 
     function hideLayer(isyLayer) {

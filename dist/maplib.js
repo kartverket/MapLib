@@ -1,5 +1,5 @@
 /**
- * maplib - v0.0.1 - 2016-11-29
+ * maplib - v0.0.1 - 2016-12-01
  * http://localhost
  *
  * Copyright (c) 2016 
@@ -988,10 +988,10 @@ ISY.MapAPI.Layers = function(mapImplementation){
 
         isyLayer.isVisible = true;
         //_recalculateMapLayerIndexes();
-        updateSortingIndex();
-        mapImplementation.UpdateLayerSortIndex(config.groups);
-        mapImplementation.SortLayerBySortIndex();
-        mapImplementation.RedrawMap();
+        // updateSortingIndex();
+        // mapImplementation.UpdateLayerSortIndex(config.groups);
+        // mapImplementation.SortLayerBySortIndex();
+        // mapImplementation.RedrawMap();
     }
 
     function hideLayer(isyLayer) {
