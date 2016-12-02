@@ -40,7 +40,8 @@ ISY.MapImplementation.OL3.Sources.Wms = function(isySubLayer, parameters){
             params: {
                 LAYERS: isySubLayer.name,
                 VERSION: "1.1.1",
-                FORMAT: isySubLayer.format
+                FORMAT: isySubLayer.format,
+                STYLES: isySubLayer.styles || ''
             },
             url: url,
             urls: urls,
@@ -56,7 +57,8 @@ ISY.MapImplementation.OL3.Sources.Wms = function(isySubLayer, parameters){
             params: {
                 LAYERS: isySubLayer.name,
                 VERSION: "1.1.1",
-                FORMAT: isySubLayer.format
+                FORMAT: isySubLayer.format,
+                STYLES: isySubLayer.styles || ''
             },
             ratio: 1,
             url: url,

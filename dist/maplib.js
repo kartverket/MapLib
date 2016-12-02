@@ -1,5 +1,5 @@
 /**
- * maplib - v0.0.1 - 2016-12-01
+ * maplib - v0.0.1 - 2016-12-02
  * http://localhost
  *
  * Copyright (c) 2016 
@@ -987,7 +987,7 @@ ISY.MapAPI.Layers = function(mapImplementation){
         }
 
         isyLayer.isVisible = true;
-        //_recalculateMapLayerIndexes();
+        ////_recalculateMapLayerIndexes();
         // updateSortingIndex();
         // mapImplementation.UpdateLayerSortIndex(config.groups);
         // mapImplementation.SortLayerBySortIndex();
@@ -10712,7 +10712,8 @@ ISY.MapImplementation.OL3.Sources.Wms = function(isySubLayer, parameters){
             params: {
                 LAYERS: isySubLayer.name,
                 VERSION: "1.1.1",
-                FORMAT: isySubLayer.format
+                FORMAT: isySubLayer.format,
+                STYLES: isySubLayer.styles || ''
             },
             url: url,
             urls: urls,
@@ -10728,7 +10729,8 @@ ISY.MapImplementation.OL3.Sources.Wms = function(isySubLayer, parameters){
             params: {
                 LAYERS: isySubLayer.name,
                 VERSION: "1.1.1",
-                FORMAT: isySubLayer.format
+                FORMAT: isySubLayer.format,
+                STYLES: isySubLayer.styles || ''
             },
             ratio: 1,
             url: url,
