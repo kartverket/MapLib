@@ -46,7 +46,9 @@ ISY.MapImplementation.OL3.Sources.Wms = function(isySubLayer, parameters){
             url: url,
             urls: urls,
             crossOrigin: isySubLayer.crossOrigin,
-            transparent: isySubLayer.transparent
+            transparent: isySubLayer.transparent,
+            minResolution: isySubLayer.minResolution,
+            maxResolution: isySubLayer.maxResolution
         });
         source.set('type', 'ol.source.TileWMS');
     } else {
@@ -63,7 +65,9 @@ ISY.MapImplementation.OL3.Sources.Wms = function(isySubLayer, parameters){
             ratio: 1,
             url: url,
             crossOrigin: isySubLayer.crossOrigin,
-            transparent: isySubLayer.transparent
+            transparent: isySubLayer.transparent,
+            minResolution: isySubLayer.minResolution,
+            maxResolution: isySubLayer.maxResolution
         });
         source.set('type', 'ol.source.ImageWMS');
     }
