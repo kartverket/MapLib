@@ -194,6 +194,21 @@ ISY.MapAPI.Tools.Tools = function(mapApi){
     var printBoxSelect = new ISY.MapAPI.Tools.Tool(printBoxSelectConfig);
     tools.push(printBoxSelect);
 
+    var addLayerUrlConfig = {
+        id: 'AddLayerUrl',
+        description: 'This tool lets the user add features from url to the map',
+        activate: function (options){
+            mapApi.ActivateAddLayerUrl(options);
+        },
+        deactivate: function (){
+            mapApi.DeactivateAddLayerUrl();
+        },
+        messageObject: []
+    };
+
+    var addLayerUrl = new ISY.MapAPI.Tools.Tool(addLayerUrlConfig);
+    tools.push(addLayerUrl);
+
     function getTools(){
         return tools;
     }

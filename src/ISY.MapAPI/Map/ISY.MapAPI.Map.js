@@ -526,7 +526,7 @@ ISY.MapAPI.Map = function(mapImplementation, eventHandler, featureInfo, layerHan
 
     /*
      PrintBoxSelect Start
-    */
+     */
     function activatePrintBoxSelect(options){
         mapImplementation.ActivatePrintBoxSelect(options);
     }
@@ -537,6 +537,21 @@ ISY.MapAPI.Map = function(mapImplementation, eventHandler, featureInfo, layerHan
 
     /*
      PrintBoxSelect End
+     */
+
+    /*
+     AddLayerUrl Start
+     */
+    function activateAddLayerUrl(options){
+        mapImplementation.ActivateAddLayerUrl(options);
+    }
+
+    function deactivateAddLayerUrl(){
+        mapImplementation.DeactivateAddLayerUrl();
+    }
+
+    /*
+     AddLayerUrl End
      */
 
     /*
@@ -889,6 +904,13 @@ ISY.MapAPI.Map = function(mapImplementation, eventHandler, featureInfo, layerHan
         ActivatePrintBoxSelect: activatePrintBoxSelect,
         DeactivatePrintBoxSelect: deactivatePrintBoxSelect,
         // PrintBoxSelect End
+
+        /***********************************/
+
+        // AddLayerUrl Start
+        ActivateAddLayerUrl: activateAddLayerUrl,
+        DeactivateAddLayerUrl: deactivateAddLayerUrl,
+        // AddLayerUrl End
 
         /***********************************/
 

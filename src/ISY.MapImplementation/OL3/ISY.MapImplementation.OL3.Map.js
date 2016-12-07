@@ -2,7 +2,7 @@ var ISY = ISY || {};
 ISY.MapImplementation = ISY.MapImplementation || {};
 ISY.MapImplementation.OL3 = ISY.MapImplementation.OL3 || {};
 
-ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, measure, featureInfo, mapExport, hoverInfo, measureLine, drawFeature, offline, addLayerFeature, modifyFeature, addFeatureGps, printBoxSelect){
+ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, measure, featureInfo, mapExport, hoverInfo, measureLine, drawFeature, offline, addLayerFeature, modifyFeature, addFeatureGps, printBoxSelect, addLayerUrl){
     var map;
     var layerPool = [];
     var isySubLayerPool = [];
@@ -1594,6 +1594,28 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
     } ;
 
     /*
+     PrintBoxSelect End
+     */
+
+
+    /*
+     AddLayerUrl Start
+     */
+    var activateAddLayerUrl = function (options){
+        addLayerUrl.Activate(map, options);
+    } ;
+
+    var deactivateAddLayerUrl = function (){
+        addLayerUrl.Deactivate(map);
+    } ;
+
+    /*
+     AddLayerUrl End
+     */
+
+
+
+    /*
         Utility functions start
      */
 
@@ -2124,6 +2146,14 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
         ActivatePrintBoxSelect: activatePrintBoxSelect,
         DeactivatePrintBoxSelect: deactivatePrintBoxSelect,
         // PrintBoxSelect End
+
+        /***********************************/
+
+
+        // AddLayerUrl Start
+        ActivateAddLayerUrl: activateAddLayerUrl,
+        DeactivateAddLayerUrl: deactivateAddLayerUrl,
+        // AddLayerUrl End
 
         /***********************************/
 

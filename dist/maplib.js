@@ -1,5 +1,5 @@
 /**
- * maplib - v0.0.1 - 2016-12-02
+ * maplib - v0.0.1 - 2016-12-06
  * http://localhost
  *
  * Copyright (c) 2016 
@@ -1666,7 +1666,7 @@ ISY.MapAPI.Map = function(mapImplementation, eventHandler, featureInfo, layerHan
 
     /*
      PrintBoxSelect Start
-    */
+     */
     function activatePrintBoxSelect(options){
         mapImplementation.ActivatePrintBoxSelect(options);
     }
@@ -1677,6 +1677,21 @@ ISY.MapAPI.Map = function(mapImplementation, eventHandler, featureInfo, layerHan
 
     /*
      PrintBoxSelect End
+     */
+
+    /*
+     AddLayerUrl Start
+     */
+    function activateAddLayerUrl(options){
+        mapImplementation.ActivateAddLayerUrl(options);
+    }
+
+    function deactivateAddLayerUrl(){
+        mapImplementation.DeactivateAddLayerUrl();
+    }
+
+    /*
+     AddLayerUrl End
      */
 
     /*
@@ -2029,6 +2044,13 @@ ISY.MapAPI.Map = function(mapImplementation, eventHandler, featureInfo, layerHan
         ActivatePrintBoxSelect: activatePrintBoxSelect,
         DeactivatePrintBoxSelect: deactivatePrintBoxSelect,
         // PrintBoxSelect End
+
+        /***********************************/
+
+        // AddLayerUrl Start
+        ActivateAddLayerUrl: activateAddLayerUrl,
+        DeactivateAddLayerUrl: deactivateAddLayerUrl,
+        // AddLayerUrl End
 
         /***********************************/
 
@@ -2681,6 +2703,21 @@ ISY.MapAPI.Tools.Tools = function(mapApi){
     };
     var printBoxSelect = new ISY.MapAPI.Tools.Tool(printBoxSelectConfig);
     tools.push(printBoxSelect);
+
+    var addLayerUrlConfig = {
+        id: 'AddLayerUrl',
+        description: 'This tool lets the user add features from url to the map',
+        activate: function (options){
+            mapApi.ActivateAddLayerUrl(options);
+        },
+        deactivate: function (){
+            mapApi.DeactivateAddLayerUrl();
+        },
+        messageObject: []
+    };
+
+    var addLayerUrl = new ISY.MapAPI.Tools.Tool(addLayerUrlConfig);
+    tools.push(addLayerUrl);
 
     function getTools(){
         return tools;
@@ -3925,6 +3962,68 @@ ISY.MapImplementation.OL3.AddLayerFeature = function(eventHandler){
                 map.removeInteraction(modify);
                 map.removeInteraction(snapping);
                 map.removeInteraction(draw);
+                source = new ol.source.Vector();
+            }
+        }
+    }
+
+    return {
+        Activate: activate,
+        Deactivate: deactivate
+    };
+};
+var ISY = ISY || {};
+ISY.MapImplementation = ISY.MapImplementation || {};
+ISY.MapImplementation.OL3 = ISY.MapImplementation.OL3 || {};
+
+ISY.MapImplementation.OL3.AddLayerUrl = function(){
+
+    var mapProjection;
+    var isActive = false;
+    var drawLayer;
+    var source = new ol.source.Vector();
+    var style;
+
+    function _addLayer(map){
+        drawLayer = new ol.layer.Vector({
+            source: source,
+            style: style
+        });
+        map.addLayer(drawLayer);
+    }
+
+    var _getSourceFromUrl = function(url, geometryName){
+        if(url) {
+            source = new ol.source.Vector({
+                format: new ol.format.GML(),
+                url: url
+            });
+            source.on('addfeature',
+                function(event){
+                    if(geometryName) {
+                        event.feature.setGeometryName(geometryName);
+                    }
+                    event.feature.getGeometry().transform('EPSG:4326', mapProjection);
+                }, this);
+        }
+        return source;
+    };
+
+    function activate(map, options) {
+        isActive = true;
+        mapProjection = map.getView().getProjection();
+        style = options.style ? options.style : defaultStyle;
+        source = _getSourceFromUrl(options.url, options.geometryName);
+        _addLayer(map);
+        // var extent = features[0].getGeometry().getExtent();
+        // map.getView().fit(extent,map.getSize());
+    }
+
+    function deactivate(map){
+        if (isActive) {
+            isActive = false;
+            if (map !== undefined) {
+                map.removeLayer(drawLayer);
                 source = new ol.source.Vector();
             }
         }
@@ -5413,7 +5512,7 @@ var ISY = ISY || {};
 ISY.MapImplementation = ISY.MapImplementation || {};
 ISY.MapImplementation.OL3 = ISY.MapImplementation.OL3 || {};
 
-ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, measure, featureInfo, mapExport, hoverInfo, measureLine, drawFeature, offline, addLayerFeature, modifyFeature, addFeatureGps, printBoxSelect){
+ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, measure, featureInfo, mapExport, hoverInfo, measureLine, drawFeature, offline, addLayerFeature, modifyFeature, addFeatureGps, printBoxSelect, addLayerUrl){
     var map;
     var layerPool = [];
     var isySubLayerPool = [];
@@ -7005,6 +7104,28 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
     } ;
 
     /*
+     PrintBoxSelect End
+     */
+
+
+    /*
+     AddLayerUrl Start
+     */
+    var activateAddLayerUrl = function (options){
+        addLayerUrl.Activate(map, options);
+    } ;
+
+    var deactivateAddLayerUrl = function (){
+        addLayerUrl.Deactivate(map);
+    } ;
+
+    /*
+     AddLayerUrl End
+     */
+
+
+
+    /*
         Utility functions start
      */
 
@@ -7535,6 +7656,14 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
         ActivatePrintBoxSelect: activatePrintBoxSelect,
         DeactivatePrintBoxSelect: deactivatePrintBoxSelect,
         // PrintBoxSelect End
+
+        /***********************************/
+
+
+        // AddLayerUrl Start
+        ActivateAddLayerUrl: activateAddLayerUrl,
+        DeactivateAddLayerUrl: deactivateAddLayerUrl,
+        // AddLayerUrl End
 
         /***********************************/
 
