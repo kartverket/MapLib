@@ -1,5 +1,5 @@
 /**
- * maplib - v0.0.1 - 2016-12-07
+ * maplib - v0.0.1 - 2016-12-19
  * http://localhost
  *
  * Copyright (c) 2016 
@@ -5584,6 +5584,7 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
             renderer: mapConfig.renderer,
             layers: [],
             loadTilesWhileAnimating: true, // Improve user experience by loading tiles while animating. Will make animations stutter on mobile or slow devices.
+            loadTilesWhileInteracting: true,
             view: new ol.View({
                 projection: sm,
                 //constrainRotation: 4,
