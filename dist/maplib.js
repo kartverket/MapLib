@@ -5581,6 +5581,8 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
             units: mapConfig.extentUnits
         });
 
+        var interactions = ol.interaction.defaults({altShiftDragRotate:false, pinchRotate:false});
+
         map = new ol.Map({
             target: targetId,
             renderer: mapConfig.renderer,
@@ -5598,7 +5600,8 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
                 numZoomLevels: numZoomLevels
             }),
             controls: [],
-            overlays: []
+            overlays: [],
+            interactions: interactions
         });
         //TODO: fix initOffline
         if (false){
