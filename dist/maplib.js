@@ -1,5 +1,5 @@
 /**
- * maplib - v0.0.1 - 2016-12-16
+ * maplib - v0.0.1 - 2016-12-19
  * http://localhost
  *
  * Copyright (c) 2016 
@@ -5599,7 +5599,10 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
             controls: [],
             overlays: []
         });
-        _initOffline();
+        //TODO: fix initOffline
+        if (false){
+            _initOffline();
+        }
 
         _registerMapCallbacks();
 
