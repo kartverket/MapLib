@@ -74,7 +74,10 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
             controls: [],
             overlays: []
         });
-        _initOffline();
+        //TODO: fix initOffline
+        if (false){
+            _initOffline();
+        }
 
         _registerMapCallbacks();
 

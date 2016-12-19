@@ -299,7 +299,8 @@ ISY.Events.EventTypes = {
     FeatureHasBeenDescribed: "FeatureHasBeenDescribed",
     GeolocationUpdated: "GeolocationUpdated",
     PrintBoxSelectReturnValue: "PrintBoxSelectReturnValue",
-    MapClickCoordinate: "MapClickCoordinate"
+    MapClickCoordinate: "MapClickCoordinate",
+    AddLayerUrlEnd: "AddLayerUrlEnd"
 };
 var ISY = ISY || {};
 ISY.Facade = ISY.Facade || {};
@@ -3976,7 +3977,7 @@ var ISY = ISY || {};
 ISY.MapImplementation = ISY.MapImplementation || {};
 ISY.MapImplementation.OL3 = ISY.MapImplementation.OL3 || {};
 
-ISY.MapImplementation.OL3.AddLayerUrl = function(){
+ISY.MapImplementation.OL3.AddLayerUrl = function(eventHandler){
 
     var mapProjection;
     var isActive = false;
@@ -4008,6 +4009,7 @@ ISY.MapImplementation.OL3.AddLayerUrl = function(){
                     event.feature.getGeometry().transform('EPSG:4326', mapProjection);
                     var extent = source.getExtent();
                     map.getView().fit(extent,map.getSize());
+                    eventHandler.TriggerEvent(ISY.Events.EventTypes.AddLayerUrlEnd, true);
                 }, this);
         }
         return source;
@@ -5598,7 +5600,10 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
             controls: [],
             overlays: []
         });
-        _initOffline();
+        //TODO: fix initOffline
+        if (false){
+            _initOffline();
+        }
 
         _registerMapCallbacks();
 

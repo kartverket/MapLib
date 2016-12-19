@@ -2,7 +2,7 @@ var ISY = ISY || {};
 ISY.MapImplementation = ISY.MapImplementation || {};
 ISY.MapImplementation.OL3 = ISY.MapImplementation.OL3 || {};
 
-ISY.MapImplementation.OL3.AddLayerUrl = function(){
+ISY.MapImplementation.OL3.AddLayerUrl = function(eventHandler){
 
     var mapProjection;
     var isActive = false;
@@ -34,6 +34,7 @@ ISY.MapImplementation.OL3.AddLayerUrl = function(){
                     event.feature.getGeometry().transform('EPSG:4326', mapProjection);
                     var extent = source.getExtent();
                     map.getView().fit(extent,map.getSize());
+                    eventHandler.TriggerEvent(ISY.Events.EventTypes.AddLayerUrlEnd, true);
                 }, this);
         }
         return source;

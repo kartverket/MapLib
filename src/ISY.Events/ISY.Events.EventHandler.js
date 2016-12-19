@@ -70,5 +70,6 @@ ISY.Events.EventTypes = {
     FeatureHasBeenDescribed: "FeatureHasBeenDescribed",
     GeolocationUpdated: "GeolocationUpdated",
     PrintBoxSelectReturnValue: "PrintBoxSelectReturnValue",
-    MapClickCoordinate: "MapClickCoordinate"
+    MapClickCoordinate: "MapClickCoordinate",
+    AddLayerUrlEnd: "AddLayerUrlEnd"
 };
