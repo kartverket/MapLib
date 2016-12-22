@@ -1,5 +1,5 @@
 /**
- * maplib - v0.0.1 - 2016-12-19
+ * maplib - v0.0.1 - 2016-12-22
  * http://localhost
  *
  * Copyright (c) 2016 
@@ -477,7 +477,7 @@ ISY.MapAPI.FeatureInfo = function(mapImplementation, httpHelper, eventHandler, f
                 includedFields.field = [includedFields.field];
             }
             includedFields.field.forEach(function (field) {
-                includedFieldsDict[field.name] = field.alias ? field.alias : field.name;
+                includedFieldsDict[field.name] = {"name":field.alias ? field.alias : field.name, "unit": field.unit ? field.unit : ""};
             });
         }
 
@@ -508,7 +508,8 @@ ISY.MapAPI.FeatureInfo = function(mapImplementation, httpHelper, eventHandler, f
             var fieldValue = feature.attributes[i][1];
             var newFieldName;
             if (Object.keys(includedFields).indexOf(fieldName) > 0 ) {
-                newFieldName = includedFields._capitalize ? includedFields[fieldName].toLowerCase().capitalizeFirstLetter() : includedFields[fieldName];
+                newFieldName = includedFields._capitalize ? includedFields[fieldName].name.toLowerCase().capitalizeFirstLetter() : includedFields[fieldName].name;                
+                fieldValue += includedFields[fieldName].unit;
             }
             else if(Object.keys(includedFields).length == 1){
                 newFieldName = includedFields._capitalize ? fieldName.toLowerCase().capitalizeFirstLetter() : fieldName;
@@ -528,7 +529,6 @@ ISY.MapAPI.FeatureInfo = function(mapImplementation, httpHelper, eventHandler, f
     function _handleGetInfoResponse(subLayer, result){
         var parsedResult;
         var exception;
-
         if (subLayer.featureInfo.supportsGetFeatureInfo && subLayer.source=='WMS'){
             var xmlFile = jQuery.parseXML(result);
             var jsonFile = xml.xmlToJSON(xmlFile);
@@ -2283,19 +2283,6 @@ var ISY = ISY || {};
 ISY.MapAPI = ISY.MapAPI || {};
 ISY.MapAPI.Parsers = ISY.MapAPI.Parsers || {};
 
-ISY.MapAPI.Parsers.GML = function() {
-    function parse(result) {
-        console.log(result);
-    }
-
-    return {
-        Parse: parse
-    };
-};
-var ISY = ISY || {};
-ISY.MapAPI = ISY.MapAPI || {};
-ISY.MapAPI.Parsers = ISY.MapAPI.Parsers || {};
-
 ISY.MapAPI.Parsers.GeoJSON = function() {
     function parse(result) {
         var responseFeatureCollection = [];
@@ -2353,6 +2340,19 @@ ISY.MapAPI.Parsers.GeoJSON = function() {
     };
 };
 
+var ISY = ISY || {};
+ISY.MapAPI = ISY.MapAPI || {};
+ISY.MapAPI.Parsers = ISY.MapAPI.Parsers || {};
+
+ISY.MapAPI.Parsers.GML = function() {
+    function parse(result) {
+        console.log(result);
+    }
+
+    return {
+        Parse: parse
+    };
+};
 // This part covers the ArcGIS Server at http://kart.klif.no/
 var ISY = ISY || {};
 ISY.MapAPI = ISY.MapAPI || {};
