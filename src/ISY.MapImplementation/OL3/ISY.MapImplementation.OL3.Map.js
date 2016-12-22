@@ -55,11 +55,14 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
             units: mapConfig.extentUnits
         });
 
+        var interactions = ol.interaction.defaults({altShiftDragRotate:false, pinchRotate:false});
+
         map = new ol.Map({
             target: targetId,
             renderer: mapConfig.renderer,
             layers: [],
             loadTilesWhileAnimating: true, // Improve user experience by loading tiles while animating. Will make animations stutter on mobile or slow devices.
+            loadTilesWhileInteracting: true,
             view: new ol.View({
                 projection: sm,
                 //constrainRotation: 4,
@@ -71,9 +74,13 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
                 numZoomLevels: numZoomLevels
             }),
             controls: [],
-            overlays: []
+            overlays: [],
+            interactions: interactions
         });
-        _initOffline();
+        //TODO: fix initOffline
+        if (false){
+            _initOffline();
+        }
 
         _registerMapCallbacks();
 
