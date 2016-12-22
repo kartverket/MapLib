@@ -529,7 +529,6 @@ ISY.MapAPI.FeatureInfo = function(mapImplementation, httpHelper, eventHandler, f
     function _handleGetInfoResponse(subLayer, result){
         var parsedResult;
         var exception;
-        //@TODO: Move feature info description json til et file og laste den inn.
         if (subLayer.featureInfo.supportsGetFeatureInfo && subLayer.source=='WMS'){
             var xmlFile = jQuery.parseXML(result);
             var jsonFile = xml.xmlToJSON(xmlFile);
