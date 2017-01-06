@@ -477,7 +477,21 @@ ISY.MapAPI.FeatureInfo = function(mapImplementation, httpHelper, eventHandler, f
                 includedFields.field = [includedFields.field];
             }
             includedFields.field.forEach(function (field) {
-                includedFieldsDict[field.name] = {"name":field.alias ? field.alias : field.name, "unit": field.unit ? field.unit : ""};
+                if(field.type == 'picture'){
+                    includedFieldsDict[field.name] = {
+                        name : field.alias ? field.alias : field.name,
+                        type : field.type
+                    };
+                    if(field.baseurl) {
+                        includedFieldsDict[field.name].baseurl = field.baseurl;
+                    }
+                }
+                else {
+                    includedFieldsDict[field.name] = {
+                        name : field.alias ? field.alias : field.name,
+                        unit : field.unit ? field.unit : ""
+                    };
+                }
             });
         }
 
@@ -507,9 +521,17 @@ ISY.MapAPI.FeatureInfo = function(mapImplementation, httpHelper, eventHandler, f
             var fieldName = feature.attributes[i][0];
             var fieldValue = feature.attributes[i][1];
             var newFieldName;
-            if (Object.keys(includedFields).indexOf(fieldName) > 0 ) {
-                newFieldName = includedFields._capitalize ? includedFields[fieldName].name.toLowerCase().capitalizeFirstLetter() : includedFields[fieldName].name;                
-                fieldValue += includedFields[fieldName].unit;
+            if (Object.keys(includedFields).indexOf(fieldName) > -1 ) {
+                newFieldName = includedFields._capitalize ? includedFields[fieldName].name.toLowerCase().capitalizeFirstLetter() : includedFields[fieldName].name;
+                if(includedFields[fieldName].type=='picture' && includedFields[fieldName].baseurl){
+                    fieldValue= {
+                        url : includedFields[fieldName].baseurl + fieldValue,
+                        type : includedFields[fieldName].type
+                    };
+                }
+                else if(includedFields[fieldName].unit) {
+                    fieldValue += includedFields[fieldName].unit;
+                }
             }
             else if(Object.keys(includedFields).length == 1){
                 newFieldName = includedFields._capitalize ? fieldName.toLowerCase().capitalizeFirstLetter() : fieldName;
