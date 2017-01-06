@@ -90,7 +90,7 @@ ISY.MapAPI.FeatureInfo = function(mapImplementation, httpHelper, eventHandler, f
             var fieldName = feature.attributes[i][0];
             var fieldValue = feature.attributes[i][1];
             var newFieldName;
-            if (Object.keys(includedFields).indexOf(fieldName) > 0 ) {
+            if (Object.keys(includedFields).indexOf(fieldName) > -1 ) {
                 newFieldName = includedFields._capitalize ? includedFields[fieldName].name.toLowerCase().capitalizeFirstLetter() : includedFields[fieldName].name;                
                 fieldValue += includedFields[fieldName].unit;
             }
