@@ -42,7 +42,7 @@ ISY.MapAPI.FeatureInfo = function(mapImplementation, httpHelper, eventHandler, f
         var callback = function (data) {
             _handleGetInfoResponse(subLayer, data);
         };
-        httpHelper.get(url).success(callback);
+        httpHelper.get(url).then(callback);
     }
 
     function _convertJSONtoArray(data) {
@@ -113,7 +113,7 @@ ISY.MapAPI.FeatureInfo = function(mapImplementation, httpHelper, eventHandler, f
         var parsedResult;
         var exception;
         if (subLayer.featureInfo.supportsGetFeatureInfo && subLayer.source=='WMS'){
-            var xmlFile = jQuery.parseXML(result);
+            var xmlFile = jQuery.parseXML(result.data);
             var jsonFile = xml.xmlToJSON(xmlFile);
             if (jsonFile.hasOwnProperty("msGMLOutput")){
                 if (jsonFile.msGMLOutput.hasOwnProperty(subLayer.providerName + "_layer")){

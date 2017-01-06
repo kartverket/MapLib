@@ -1,8 +1,8 @@
 /**
- * maplib - v0.0.1 - 2016-12-22
+ * maplib - v0.0.1 - 2017-01-06
  * http://localhost
  *
- * Copyright (c) 2016 
+ * Copyright (c) 2017 
  */
 var ISY = ISY || {};
 ISY.Domain = ISY.Domain || {};
@@ -459,7 +459,7 @@ ISY.MapAPI.FeatureInfo = function(mapImplementation, httpHelper, eventHandler, f
         var callback = function (data) {
             _handleGetInfoResponse(subLayer, data);
         };
-        httpHelper.get(url).success(callback);
+        httpHelper.get(url).then(callback);
     }
 
     function _convertJSONtoArray(data) {
@@ -530,7 +530,7 @@ ISY.MapAPI.FeatureInfo = function(mapImplementation, httpHelper, eventHandler, f
         var parsedResult;
         var exception;
         if (subLayer.featureInfo.supportsGetFeatureInfo && subLayer.source=='WMS'){
-            var xmlFile = jQuery.parseXML(result);
+            var xmlFile = jQuery.parseXML(result.data);
             var jsonFile = xml.xmlToJSON(xmlFile);
             if (jsonFile.hasOwnProperty("msGMLOutput")){
                 if (jsonFile.msGMLOutput.hasOwnProperty(subLayer.providerName + "_layer")){
@@ -2283,6 +2283,19 @@ var ISY = ISY || {};
 ISY.MapAPI = ISY.MapAPI || {};
 ISY.MapAPI.Parsers = ISY.MapAPI.Parsers || {};
 
+ISY.MapAPI.Parsers.GML = function() {
+    function parse(result) {
+        console.log(result);
+    }
+
+    return {
+        Parse: parse
+    };
+};
+var ISY = ISY || {};
+ISY.MapAPI = ISY.MapAPI || {};
+ISY.MapAPI.Parsers = ISY.MapAPI.Parsers || {};
+
 ISY.MapAPI.Parsers.GeoJSON = function() {
     function parse(result) {
         var responseFeatureCollection = [];
@@ -2340,19 +2353,6 @@ ISY.MapAPI.Parsers.GeoJSON = function() {
     };
 };
 
-var ISY = ISY || {};
-ISY.MapAPI = ISY.MapAPI || {};
-ISY.MapAPI.Parsers = ISY.MapAPI.Parsers || {};
-
-ISY.MapAPI.Parsers.GML = function() {
-    function parse(result) {
-        console.log(result);
-    }
-
-    return {
-        Parse: parse
-    };
-};
 // This part covers the ArcGIS Server at http://kart.klif.no/
 var ISY = ISY || {};
 ISY.MapAPI = ISY.MapAPI || {};
