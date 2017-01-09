@@ -1,5 +1,5 @@
 /**
- * maplib - v0.0.1 - 2017-01-06
+ * maplib - v0.0.1 - 2017-01-09
  * http://localhost
  *
  * Copyright (c) 2017 
@@ -517,15 +517,14 @@ ISY.MapAPI.FeatureInfo = function(mapImplementation, httpHelper, eventHandler, f
         var newFields = {
             attributes : []
         };
-        for (var i = 0; i < feature.attributes.length; i++) {
-            var fieldName = feature.attributes[i][0];
-            var fieldValue = feature.attributes[i][1];
+        for (var fieldName in includedFields) {      
+            var fieldValue = feature[fieldName];
             var newFieldName;
-            if (Object.keys(includedFields).indexOf(fieldName) > -1 ) {
+            if (Object.keys(feature).indexOf(fieldName) > -1 ) {
                 newFieldName = includedFields._capitalize ? includedFields[fieldName].name.toLowerCase().capitalizeFirstLetter() : includedFields[fieldName].name;
                 if(includedFields[fieldName].type=='picture' && includedFields[fieldName].baseurl){
                     fieldValue= {
-                        url : includedFields[fieldName].baseurl + fieldValue,
+                        url : includedFields[fieldName].baseurl + feature[fieldName],
                         type : includedFields[fieldName].type
                     };
                 }
@@ -533,8 +532,8 @@ ISY.MapAPI.FeatureInfo = function(mapImplementation, httpHelper, eventHandler, f
                     fieldValue += includedFields[fieldName].unit;
                 }
             }
-            else if(Object.keys(includedFields).length == 1){
-                newFieldName = includedFields._capitalize ? fieldName.toLowerCase().capitalizeFirstLetter() : fieldName;
+            else if(Object.keys(feature).length == 1){
+                newFieldName = feature._capitalize ? fieldName.toLowerCase().capitalizeFirstLetter() : fieldName;
             }
             else{
                 continue;
@@ -557,17 +556,12 @@ ISY.MapAPI.FeatureInfo = function(mapImplementation, httpHelper, eventHandler, f
             if (jsonFile.hasOwnProperty("msGMLOutput")){
                 if (jsonFile.msGMLOutput.hasOwnProperty(subLayer.providerName + "_layer")){
                     var getProperties = jsonFile.msGMLOutput[subLayer.providerName + "_layer"][subLayer.providerName + "_feature"];
-                    // var features = _convertJSONtoArray(getProperties);
                     parsedResult = [];
                     if (getProperties.constructor != Array){
                         getProperties=[getProperties];
                     }
                     for (var i = 0; i < getProperties.length; i++){
-                        var attr = {
-                            "attributes" : {}
-                        };
-                        attr.attributes = _convertJSONtoArray(getProperties[i]);
-                        parsedResult.push(attr);
+                        parsedResult.push(getProperties[i]);
                     }
                 }
             }
@@ -2305,19 +2299,6 @@ var ISY = ISY || {};
 ISY.MapAPI = ISY.MapAPI || {};
 ISY.MapAPI.Parsers = ISY.MapAPI.Parsers || {};
 
-ISY.MapAPI.Parsers.GML = function() {
-    function parse(result) {
-        console.log(result);
-    }
-
-    return {
-        Parse: parse
-    };
-};
-var ISY = ISY || {};
-ISY.MapAPI = ISY.MapAPI || {};
-ISY.MapAPI.Parsers = ISY.MapAPI.Parsers || {};
-
 ISY.MapAPI.Parsers.GeoJSON = function() {
     function parse(result) {
         var responseFeatureCollection = [];
@@ -2375,6 +2356,19 @@ ISY.MapAPI.Parsers.GeoJSON = function() {
     };
 };
 
+var ISY = ISY || {};
+ISY.MapAPI = ISY.MapAPI || {};
+ISY.MapAPI.Parsers = ISY.MapAPI.Parsers || {};
+
+ISY.MapAPI.Parsers.GML = function() {
+    function parse(result) {
+        console.log(result);
+    }
+
+    return {
+        Parse: parse
+    };
+};
 // This part covers the ArcGIS Server at http://kart.klif.no/
 var ISY = ISY || {};
 ISY.MapAPI = ISY.MapAPI || {};
