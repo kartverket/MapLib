@@ -31,8 +31,8 @@ describe('ISY.Repository.MapConfig', function() {
         expect(mapConf.center).toEqual([-1, 1]);
         expect(mapConf.zoom).toEqual(5);
         expect(mapConf.layers).toEqual([]);
-        expect(mapConf.coordinate_system).toEqual('EPSG:32633');
-        expect(mapConf.matrixSet).toEqual('EPSG:32633');
+        expect(mapConf.coordinate_system).toEqual('EPSG:25833');
+        expect(mapConf.matrixSet).toEqual('EPSG:25833');
         expect(mapConf.extent).toEqual([-1, -1, -1, -1]);
         expect(mapConf.extentUnits).toEqual('m');
         expect(mapConf.proxyHost).toEqual('');
