@@ -8,6 +8,7 @@ ISY.Domain.LegendGraphic = function(config){
         format : "image/png",
         request : "GetLegendGraphic",
         version : "1.0.0",
+        service : 'wms',
         layer : '',
         url : ''
     };
@@ -16,7 +17,7 @@ ISY.Domain.LegendGraphic = function(config){
 
     function getLegendGraphicUrl (){
         if (instance.url !== "?"){
-            return instance.url + "&Request=" + instance.request + "&Version=" + instance.version + "&Format=" + instance.format + "&Width=" + instance.width + "&Height=" + instance.height + "&Layer=" + instance.layer;
+            return instance.url + "Service=" + instance.service + "&Request=" + instance.request + "&Version=" + instance.version + "&Format=" + instance.format + "&Width=" + instance.width + "&Height=" + instance.height + "&Layer=" + instance.layer;
         }else{
             return "";
         }
