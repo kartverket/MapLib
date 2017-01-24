@@ -8716,7 +8716,7 @@ ISY.MapImplementation.OL3.Offline = function(){
 
     var getDatabase = function(index) {
         if (!pouchDB[index]) {
-            pouchDB[index] = new PouchDB(pouchTiles + index, {size: 50});
+            pouchDB[index] = new PouchDB(pouchTiles + index);
         }
         return pouchDB[index];
     };
