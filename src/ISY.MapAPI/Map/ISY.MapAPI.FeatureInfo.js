@@ -45,13 +45,13 @@ ISY.MapAPI.FeatureInfo = function (mapImplementation, httpHelper, eventHandler, 
         httpHelper.get(url).then(callback);
     }
 
-    function _convertJSONtoArray(data) {
-        var results = [];
-        Object.keys(data).forEach(function (key) {
-            results.push([key, data[key]]);
-        });
-        return results;
-    }
+    // function _convertJSONtoArray(data) {
+    //     var results = [];
+    //     Object.keys(data).forEach(function (key) {
+    //         results.push([key, data[key]]);
+    //     });
+    //     return results;
+    // }
 
     function readIncludedFields(includedFields) {
         var includedFieldsDict = {};
@@ -122,9 +122,9 @@ ISY.MapAPI.FeatureInfo = function (mapImplementation, httpHelper, eventHandler, 
                 newFields.attributes.push([newFieldName, fieldValue]);
             }
         } else {
-            for (var fieldName in feature) {
-                var tmpFieldName = feature._capitalize ? fieldName.toLowerCase().capitalizeFirstLetter() : fieldName;
-                newFields.attributes.push([tmpFieldName, feature[fieldName]]);
+            for (var fieldName1 in feature) {
+                var tmpFieldName = feature._capitalize ? fieldName1.toLowerCase().capitalizeFirstLetter() : fieldName1;
+                newFields.attributes.push([tmpFieldName, feature[fieldName1]]);
             }
         }
         return newFields;
