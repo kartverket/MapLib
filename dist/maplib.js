@@ -1,5 +1,5 @@
 /**
- * maplib - v0.0.1 - 2017-01-24
+ * maplib - v0.0.1 - 2017-01-29
  * http://localhost
  *
  * Copyright (c) 2017 
@@ -9796,6 +9796,8 @@ ISY.MapImplementation.OL3.PrintBoxSelect = function(eventHandler) {
         isActive = true;
         if (map !== undefined) {
             scale = options.scale;
+            cols = options.cols;
+            rows = options.rows;
             _applyNonKineticDragPan(map);
             _registerMouseEvents(map);
             _createFrame(map);

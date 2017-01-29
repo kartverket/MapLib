@@ -246,6 +246,8 @@ ISY.MapImplementation.OL3.PrintBoxSelect = function(eventHandler) {
         isActive = true;
         if (map !== undefined) {
             scale = options.scale;
+            cols = options.cols;
+            rows = options.rows;
             _applyNonKineticDragPan(map);
             _registerMouseEvents(map);
             _createFrame(map);
