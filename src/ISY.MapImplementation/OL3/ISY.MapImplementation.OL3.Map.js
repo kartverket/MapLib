@@ -1810,6 +1810,11 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
         map.addControl(zoomToExtent);
     }
 
+    function addScaleLine() {
+        var scaleLine = new ol.control.ScaleLine();
+        map.addControl(scaleLine);
+    }
+
     var getVectorLayers = function(isySubLayer, data){
         var vectors = [];
         var source = ISY.MapImplementation.OL3.Sources.Vector(isySubLayer.subLayers[0], map.getView().getProjection());
@@ -2171,6 +2176,7 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
         AddZoom: addZoom,
         AddZoomSlider: addZoomSlider,
         AddZoomToExtent: addZoomToExtent,
+        AddScaleLine: addScaleLine,
         ZoomToLayer: zoomToLayer,
         ZoomToLayers: zoomToLayers,
         FitExtent: fitExtent,

@@ -1,5 +1,5 @@
 /**
- * maplib - v0.0.1 - 2017-01-29
+ * maplib - v0.0.1 - 2017-01-31
  * http://localhost
  *
  * Copyright (c) 2017 
@@ -1766,6 +1766,10 @@ ISY.MapAPI.Map = function(mapImplementation, eventHandler, featureInfo, layerHan
         mapImplementation.AddZoomToExtent(extent);
     }
 
+    function addScaleLine() {
+        mapImplementation.AddScaleLine();
+    }
+
     /*function addVectorTestData(){
         var callback = function(data){
             showHighlightedFeatures(featureParser.Parse(data));
@@ -2084,6 +2088,7 @@ ISY.MapAPI.Map = function(mapImplementation, eventHandler, featureInfo, layerHan
         AddZoom: addZoom,
         AddZoomSlider: addZoomSlider,
         AddZoomToExtent: addZoomToExtent,
+        AddScaleLine: addScaleLine,
         ZoomToLayer: zoomToLayer,
         ZoomToLayers: zoomToLayers,
         FitExtent: fitExtent,
@@ -7357,6 +7362,11 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
         map.addControl(zoomToExtent);
     }
 
+    function addScaleLine() {
+        var scaleLine = new ol.control.ScaleLine();
+        map.addControl(scaleLine);
+    }
+
     var getVectorLayers = function(isySubLayer, data){
         var vectors = [];
         var source = ISY.MapImplementation.OL3.Sources.Vector(isySubLayer.subLayers[0], map.getView().getProjection());
@@ -7718,6 +7728,7 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
         AddZoom: addZoom,
         AddZoomSlider: addZoomSlider,
         AddZoomToExtent: addZoomToExtent,
+        AddScaleLine: addScaleLine,
         ZoomToLayer: zoomToLayer,
         ZoomToLayers: zoomToLayers,
         FitExtent: fitExtent,

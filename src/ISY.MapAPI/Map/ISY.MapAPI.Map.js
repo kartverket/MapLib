@@ -604,6 +604,10 @@ ISY.MapAPI.Map = function(mapImplementation, eventHandler, featureInfo, layerHan
         mapImplementation.AddZoomToExtent(extent);
     }
 
+    function addScaleLine() {
+        mapImplementation.AddScaleLine();
+    }
+
     /*function addVectorTestData(){
         var callback = function(data){
             showHighlightedFeatures(featureParser.Parse(data));
@@ -922,6 +926,7 @@ ISY.MapAPI.Map = function(mapImplementation, eventHandler, featureInfo, layerHan
         AddZoom: addZoom,
         AddZoomSlider: addZoomSlider,
         AddZoomToExtent: addZoomToExtent,
+        AddScaleLine: addScaleLine,
         ZoomToLayer: zoomToLayer,
         ZoomToLayers: zoomToLayers,
         FitExtent: fitExtent,
