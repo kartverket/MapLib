@@ -401,7 +401,6 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler) {
             fill: {
                 color: style.getText().getFill().getColor()
             }
-
         };
 
         if (style.getText().getStroke()) {
@@ -562,7 +561,7 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler) {
         map.getInteractions().forEach(function (interaction) {
             if (interaction instanceof ol.interaction.DoubleClickZoom) {
                 map.removeInteraction(interaction);
-                return;
+
             }
         });
     };

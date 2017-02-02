@@ -214,8 +214,7 @@ ISY.MapAPI.FeatureInfo = function (mapImplementation, httpHelper, eventHandler, 
 
     function parseGetCapabilities(getCapabilitiesXml) {
         var parser = new ol.format.WMSCapabilities();
-        var result = parser.read(getCapabilitiesXml);
-        return result;
+        return parser.read(getCapabilitiesXml);
     }
 
     /*
@@ -297,7 +296,7 @@ ISY.MapAPI.FeatureInfo = function (mapImplementation, httpHelper, eventHandler, 
         var crs = isySubLayer.featureInfo.getFeatureCrs;
         //var adaptedExtent = mapImplementation.TransformBox(isySubLayer.coordinate_system, isySubLayer.featureInfo.getFeatureCrs, boxExtent);
         //var extent = mapImplementation.GetCenterFromExtent(boxExtent);
-        var adaptedExtent = boxExtent;
+        //var adaptedExtent = boxExtent;
         //var url = "service=WFS&request=GetFeature&typeName=" + isySubLayer.name + "&srsName=" + crs + "&outputFormat=" + isySubLayer.featureInfo.getFeatureFormat + "&bbox=" + adaptedExtent;
         var url = "service=WMS&version=1.3.0&request=GetFeatureInfo&TRANSPARENT=" + isySubLayer.transparent + "&QUERY_LAYERS=" + isySubLayer.name + "&INFO_FORMAT=" + isySubLayer.featureInfo.getFeatureInfoFormat + "&SRS=" + crs + "&bbox=" + adaptedExtent + "&width=" + 400 + "&height=" + 400 + "&x=" + 150 + "&y=" + 150;
         url = decodeURIComponent(url);

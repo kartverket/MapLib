@@ -4,8 +4,7 @@ ISY.MapAPI.Parsers = ISY.MapAPI.Parsers || {};
 
 ISY.MapAPI.Parsers.Exception = function() {
     function parse(exception){
-        var message = exception.replace(/(<([^>]+)>)/ig, '');
-        throw message;
+        throw exception.replace(/(<([^>]+)>)/ig, '');
     }
 
     return {

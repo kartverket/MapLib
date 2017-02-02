@@ -68,7 +68,6 @@ ISY.MapImplementation.OL3.AddLayerFeature = function(eventHandler){
                 startModify = true;
                 modify.on('modifyend',
                     function (evt) {
-                        sketch = null;
                         sketch = evt.features.getArray()[0];
                         eventHandler.TriggerEvent(ISY.Events.EventTypes.AddLayerFeatureEnd, sketch);
                     }, this);

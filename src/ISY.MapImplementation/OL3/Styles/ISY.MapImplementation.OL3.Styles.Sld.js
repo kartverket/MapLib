@@ -1044,10 +1044,7 @@ ISY.MapImplementation.OL3.Styles.Sld = function () {
         }
         var maxScale = rule.maxScaleDenominator ? rule.maxScaleDenominator : Infinity;
         var minScale = rule.minScaleDenominator ? rule.minScaleDenominator : 1;
-        if (scale <= maxScale && scale >= minScale){
-            return true;
-        }
-        return false;
+        return scale <= maxScale && scale >= minScale;
     };
 
     //var _validateGeometryStyle = function(geometrytype, style){

@@ -88,11 +88,8 @@ ISY.MapImplementation.OL3.ModifyFeature = function(eventHandler){
         var listener;
         modify.on('modifyend',
             function(evt) {
-                sketch = null;
                 ol.Observable.unByKey(listener);
-
                 sketch = evt.features.getArray()[0];  //evt.feature;
-
                 eventHandler.TriggerEvent(ISY.Events.EventTypes.ModifyFeatureEnd, sketch);
             }, this);
 

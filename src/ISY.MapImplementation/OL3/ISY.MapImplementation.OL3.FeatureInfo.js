@@ -141,11 +141,7 @@ ISY.MapImplementation.OL3.FeatureInfo = function(){
             return false;
         }
         var maxResolution = mapLayer.getMaxResolution();
-        if (maxResolution !== Infinity && maxResolution < resolution){
-            return false;
-        }
-
-        return true;
+        return !(maxResolution !== Infinity && maxResolution < resolution);
     }
 
     function getFeaturesInExtent(extent, mapLayer, resolution){

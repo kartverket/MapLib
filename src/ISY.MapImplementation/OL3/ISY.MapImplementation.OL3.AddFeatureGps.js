@@ -147,7 +147,6 @@ ISY.MapImplementation.OL3.AddFeatureGps = function(eventHandler){
                 startModify = true;
                 modify.on('modifyend',
                     function(evt) {
-                        sketch = null;
                         ol.Observable.unByKey(listener);
                         sketch = evt.features.getArray()[0];  //evt.feature;
                         eventHandler.TriggerEvent(ISY.Events.EventTypes.AddLayerFeatureEnd, sketch);

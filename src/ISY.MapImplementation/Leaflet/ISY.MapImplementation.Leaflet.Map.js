@@ -570,23 +570,21 @@ ISY.MapImplementation.Leaflet.Map = function(repository, eventHandler, httpHelpe
     var _getUrlObject = function(){
 
         var center = map.getCenter();
-        var retVal = {
+        return {
             lon: center.lng,
             lat: center.lat,
             z: map.getZoom()
         };
-        return retVal;
     };
 
     var getCenter = function(){
         var center = map.getCenter();
         var zoom = map.getZoom();
-        var retVal = {
+        return {
             lon: center.lng,
             lat: center.lat,
             zoom: zoom
         };
-        return retVal;
     };
 
     function transformBox(fromCrs, toCrs, boxExtent){

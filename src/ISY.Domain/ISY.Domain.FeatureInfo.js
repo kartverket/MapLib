@@ -14,7 +14,6 @@ ISY.Domain.FeatureInfo = function(config){
         getFeatureFormat: 'application/json',
         getFeatureCrs: 'EPSG:4326'
     };
-    var instance =  $.extend({}, defaults, config);
 
-    return instance;
+    return $.extend({}, defaults, config);
 };

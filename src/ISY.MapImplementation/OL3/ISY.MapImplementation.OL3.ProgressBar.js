@@ -108,8 +108,7 @@ ISY.MapImplementation.OL3.ProgressBar = function(eventHandler){
      * Update the progress bar.
      */
     Progress.prototype.update = function() {
-        var width = (this.loaded / this.loading * 100).toFixed(1) + '%';
-        this.el.style.width = width;
+        this.el.style.width = (this.loaded / this.loading * 100).toFixed(1) + '%';
         if (this.loading === this.loaded) {
             this.loading = 0;
             this.loaded = 0;

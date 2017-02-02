@@ -393,8 +393,7 @@ ISY.MapImplementation.OL3.Sources.WfsT = function (url, featureType, featureNS, 
     function getLocalId(gmlId) {
         var startIndex = gmlId.indexOf('{');
         if (startIndex != -1) {
-            var localId = gmlId.substr(startIndex);
-            return localId;
+            return gmlId.substr(startIndex);
         }
         else {
             return "";
@@ -410,8 +409,7 @@ ISY.MapImplementation.OL3.Sources.WfsT = function (url, featureType, featureNS, 
         var startIndex = featureType.indexOf(':');
         if (startIndex != -1) {
             startIndex++;
-            var featureName = featureType.substr(startIndex);
-            return featureName;
+            return featureType.substr(startIndex);
         }
         else {
             return featureType;
@@ -426,8 +424,7 @@ ISY.MapImplementation.OL3.Sources.WfsT = function (url, featureType, featureNS, 
     function getFeatureNamespace(featureType) {
         var startIndex = featureType.indexOf(':');
         if (startIndex != -1) {
-            var featureNamespace = featureType.substr(0, startIndex);
-            return featureNamespace;
+            return featureType.substr(0, startIndex);
         }
         else {
             return "";
