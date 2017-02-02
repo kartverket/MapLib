@@ -1,5 +1,5 @@
 /**
- * maplib - v0.0.1 - 2017-01-31
+ * maplib - v0.0.1 - 2017-02-02
  * http://localhost
  *
  * Copyright (c) 2017 
@@ -45,9 +45,8 @@ ISY.Domain.FeatureInfo = function(config){
         getFeatureFormat: 'application/json',
         getFeatureCrs: 'EPSG:4326'
     };
-    var instance =  $.extend({}, defaults, config);
 
-    return instance;
+    return $.extend({}, defaults, config);
 };
 var ISY = ISY || {};
 ISY.Domain = ISY.Domain || {};
@@ -632,8 +631,7 @@ ISY.MapAPI.FeatureInfo = function (mapImplementation, httpHelper, eventHandler, 
 
     function parseGetCapabilities(getCapabilitiesXml) {
         var parser = new ol.format.WMSCapabilities();
-        var result = parser.read(getCapabilitiesXml);
-        return result;
+        return parser.read(getCapabilitiesXml);
     }
 
     /*
@@ -2199,8 +2197,7 @@ ISY.MapAPI.Parsers = ISY.MapAPI.Parsers || {};
 
 ISY.MapAPI.Parsers.Exception = function() {
     function parse(exception){
-        var message = exception.replace(/(<([^>]+)>)/ig, '');
-        throw message;
+        throw exception.replace(/(<([^>]+)>)/ig, '');
     }
 
     return {
@@ -2309,19 +2306,6 @@ var ISY = ISY || {};
 ISY.MapAPI = ISY.MapAPI || {};
 ISY.MapAPI.Parsers = ISY.MapAPI.Parsers || {};
 
-ISY.MapAPI.Parsers.GML = function() {
-    function parse(result) {
-        console.log(result);
-    }
-
-    return {
-        Parse: parse
-    };
-};
-var ISY = ISY || {};
-ISY.MapAPI = ISY.MapAPI || {};
-ISY.MapAPI.Parsers = ISY.MapAPI.Parsers || {};
-
 ISY.MapAPI.Parsers.GeoJSON = function() {
     function parse(result) {
         var responseFeatureCollection = [];
@@ -2379,6 +2363,19 @@ ISY.MapAPI.Parsers.GeoJSON = function() {
     };
 };
 
+var ISY = ISY || {};
+ISY.MapAPI = ISY.MapAPI || {};
+ISY.MapAPI.Parsers = ISY.MapAPI.Parsers || {};
+
+ISY.MapAPI.Parsers.GML = function() {
+    function parse(result) {
+        console.log(result);
+    }
+
+    return {
+        Parse: parse
+    };
+};
 // This part covers the ArcGIS Server at http://kart.klif.no/
 var ISY = ISY || {};
 ISY.MapAPI = ISY.MapAPI || {};
@@ -3326,23 +3323,21 @@ ISY.MapImplementation.Leaflet.Map = function(repository, eventHandler, httpHelpe
     var _getUrlObject = function(){
 
         var center = map.getCenter();
-        var retVal = {
+        return {
             lon: center.lng,
             lat: center.lat,
             z: map.getZoom()
         };
-        return retVal;
     };
 
     var getCenter = function(){
         var center = map.getCenter();
         var zoom = map.getZoom();
-        var retVal = {
+        return {
             lon: center.lng,
             lat: center.lat,
             zoom: zoom
         };
-        return retVal;
     };
 
     function transformBox(fromCrs, toCrs, boxExtent){
@@ -3719,7 +3714,6 @@ ISY.MapImplementation.OL3.AddFeatureGps = function(eventHandler){
                 startModify = true;
                 modify.on('modifyend',
                     function(evt) {
-                        sketch = null;
                         ol.Observable.unByKey(listener);
                         sketch = evt.features.getArray()[0];  //evt.feature;
                         eventHandler.TriggerEvent(ISY.Events.EventTypes.AddLayerFeatureEnd, sketch);
@@ -3903,7 +3897,6 @@ ISY.MapImplementation.OL3.AddLayerFeature = function(eventHandler){
                 startModify = true;
                 modify.on('modifyend',
                     function (evt) {
-                        sketch = null;
                         sketch = evt.features.getArray()[0];
                         eventHandler.TriggerEvent(ISY.Events.EventTypes.AddLayerFeatureEnd, sketch);
                     }, this);
@@ -4479,7 +4472,6 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler) {
             fill: {
                 color: style.getText().getFill().getColor()
             }
-
         };
 
         if (style.getText().getStroke()) {
@@ -4640,7 +4632,7 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler) {
         map.getInteractions().forEach(function (interaction) {
             if (interaction instanceof ol.interaction.DoubleClickZoom) {
                 map.removeInteraction(interaction);
-                return;
+
             }
         });
     };
@@ -5081,11 +5073,7 @@ ISY.MapImplementation.OL3.FeatureInfo = function(){
             return false;
         }
         var maxResolution = mapLayer.getMaxResolution();
-        if (maxResolution !== Infinity && maxResolution < resolution){
-            return false;
-        }
-
-        return true;
+        return !(maxResolution !== Infinity && maxResolution < resolution);
     }
 
     function getFeaturesInExtent(extent, mapLayer, resolution){
@@ -7201,7 +7189,12 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
     var zoomToLayer = function(isySubLayer){
         var layer = _getLayerFromPool(isySubLayer);
         if (layer){
-            var extent = layer.getSource().getExtent();
+            var extent;
+            if (typeof layer.getSource().getExtent !== "undefined") {
+              extent = layer.getSource().getExtent();
+            } else {
+              extent = layer.getSource().getTileGrid().getExtent();
+            }
             if (Array.isArray(extent) && extent[0] != Infinity) {
                 map.getView().fit(extent, map.getSize());
             }
@@ -8513,11 +8506,8 @@ ISY.MapImplementation.OL3.ModifyFeature = function(eventHandler){
         var listener;
         modify.on('modifyend',
             function(evt) {
-                sketch = null;
                 ol.Observable.unByKey(listener);
-
                 sketch = evt.features.getArray()[0];  //evt.feature;
-
                 eventHandler.TriggerEvent(ISY.Events.EventTypes.ModifyFeatureEnd, sketch);
             }, this);
 
@@ -9941,8 +9931,7 @@ ISY.MapImplementation.OL3.ProgressBar = function(eventHandler){
      * Update the progress bar.
      */
     Progress.prototype.update = function() {
-        var width = (this.loaded / this.loading * 100).toFixed(1) + '%';
-        this.el.style.width = width;
+        this.el.style.width = (this.loaded / this.loading * 100).toFixed(1) + '%';
         if (this.loading === this.loaded) {
             this.loading = 0;
             this.loaded = 0;
@@ -10808,8 +10797,7 @@ ISY.MapImplementation.OL3.Sources.WfsT = function (url, featureType, featureNS, 
     function getLocalId(gmlId) {
         var startIndex = gmlId.indexOf('{');
         if (startIndex != -1) {
-            var localId = gmlId.substr(startIndex);
-            return localId;
+            return gmlId.substr(startIndex);
         }
         else {
             return "";
@@ -10825,8 +10813,7 @@ ISY.MapImplementation.OL3.Sources.WfsT = function (url, featureType, featureNS, 
         var startIndex = featureType.indexOf(':');
         if (startIndex != -1) {
             startIndex++;
-            var featureName = featureType.substr(startIndex);
-            return featureName;
+            return featureType.substr(startIndex);
         }
         else {
             return featureType;
@@ -10841,8 +10828,7 @@ ISY.MapImplementation.OL3.Sources.WfsT = function (url, featureType, featureNS, 
     function getFeatureNamespace(featureType) {
         var startIndex = featureType.indexOf(':');
         if (startIndex != -1) {
-            var featureNamespace = featureType.substr(0, startIndex);
-            return featureNamespace;
+            return featureType.substr(0, startIndex);
         }
         else {
             return "";
@@ -12295,10 +12281,7 @@ ISY.MapImplementation.OL3.Styles.Sld = function () {
         }
         var maxScale = rule.maxScaleDenominator ? rule.maxScaleDenominator : Infinity;
         var minScale = rule.minScaleDenominator ? rule.minScaleDenominator : 1;
-        if (scale <= maxScale && scale >= minScale){
-            return true;
-        }
-        return false;
+        return scale <= maxScale && scale >= minScale;
     };
 
     //var _validateGeometryStyle = function(geometrytype, style){
