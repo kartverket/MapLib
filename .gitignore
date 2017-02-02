@@ -4,6 +4,8 @@
 .bower-registry/
 .bower-tmp/
 /build/
+/dist/src/
+/dist/vendor/
 node_modules/
 /vendor/
 .idea/
