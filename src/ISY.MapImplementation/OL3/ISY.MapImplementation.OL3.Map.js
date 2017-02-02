@@ -1649,7 +1649,12 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
     var zoomToLayer = function(isySubLayer){
         var layer = _getLayerFromPool(isySubLayer);
         if (layer){
-            var extent = layer.getSource().getExtent();
+            var extent;
+            if (typeof layer.getSource().getExtent !== "undefined") {
+              extent = layer.getSource().getExtent();
+            } else {
+              extent = layer.getSource().getTileGrid().getExtent();
+            }
             if (Array.isArray(extent) && extent[0] != Infinity) {
                 map.getView().fit(extent, map.getSize());
             }
