@@ -1,5 +1,5 @@
 /**
- * maplib - v0.0.1 - 2017-02-02
+ * maplib - v0.0.1 - 2017-02-03
  * http://localhost
  *
  * Copyright (c) 2017 
@@ -8940,7 +8940,7 @@ ISY.MapImplementation.OL3.Offline = function(){
     };
 
     var getConfigResource = function(url, contentType, callback) {
-        _getResource(url, contentType, callback, true);
+        _getResourceFromJson(url, contentType, callback, true);
     };
 
     var getResourceFromJson = function(url, contentType, callback){
@@ -8998,11 +8998,11 @@ ISY.MapImplementation.OL3.Offline = function(){
                 ).done(function(response){
                     addrevision = true;
                     projectXml = response;
-                    pouchAttachment = btoa(JSON.stringify(response));
+                    pouchAttachment = btoa(unescape(encodeURIComponent(JSON.stringify(response))));
                 }).error(function(){
                     addrevision = false;
                     _getOfflineResource(url, isConfig, callback);
-                    return;
+
                 });
                 //projectXml = $.ajax(
                 //    { type: 'GET', url: url, async: false }
