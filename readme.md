@@ -4,9 +4,9 @@ ISY maplib
 Fetching the code
 ----------------
 	1. Install nodejs and bower, make sure you can run the commands "node" and "bower" in your preferred command line
-	2. Run "bower install http://193.71.49.116:7990/scm/gi/maplib.git" (add "--save-dev" to save it to your bower.json)
+	2. Run "bower install https://github.com/kartverket/MapLib.git" (add "--save-dev" to save it to your bower.json)
 		or
-	add "maplib": "http://193.71.49.116:7990/scm/gi/maplib.git" to your bower.json dependencies and run "bower install"
+	add "maplib": "https://github.com/kartverket/MapLib.git" to your bower.json dependencies and run "bower install"
 
 Contributing
 ------------
