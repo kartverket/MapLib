@@ -14,7 +14,7 @@ module.exports = {
    * localDeployDir is the directory to which the localDeployDir copy task copies the dist directory.
    * It is useful for testing out changes made to maplib before pushing it to the repository
    */
-  localDeployDir: '../areamanagement/build/vendor/maplib',
+  localDeployDir: '../norgeskart3/build/vendor/maplib',
 
   /**
    * This is a collection of file patterns that refer to our app code (the
