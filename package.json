@@ -7,6 +7,7 @@
     "type": "git",
     "url": "http://193.71.49.116:7990/scm/gi/maplib.git"
   },
+  "main": "dist/maplib-min.js",
   "dependencies": {},
   "devDependencies": {
     "grunt": "~0.4.1",
