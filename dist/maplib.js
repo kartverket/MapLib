@@ -1,6 +1,6 @@
 /**
- * maplib - v0.0.1 - 2017-02-03
- * http://localhost
+ * maplib - v1.0.0 - 2017-02-06
+ * https://github.com/kartverket/MapLib
  *
  * Copyright (c) 2017 
  */
