@@ -1,5 +1,5 @@
 /**
- * maplib - v1.0.0 - 2017-02-06
+ * maplib - v1.0.0 - 2017-02-07
  * https://github.com/kartverket/MapLib
  *
  * Copyright (c) 2017 
@@ -7196,7 +7196,9 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
               extent = layer.getSource().getTileGrid().getExtent();
             }
             if (Array.isArray(extent) && extent[0] != Infinity) {
-                map.getView().fit(extent, map.getSize());
+                if (!ol.extent.containsCoordinate(extent, map.getView().getCenter())){
+                    map.getView().fit(extent, map.getSize());
+                }
             }
         }
     };
