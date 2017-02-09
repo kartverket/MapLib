@@ -1,5 +1,5 @@
 /**
- * maplib - v1.0.0 - 2017-02-07
+ * maplib - v1.0.2 - 2017-02-09
  * https://github.com/kartverket/MapLib
  *
  * Copyright (c) 2017 
@@ -9555,57 +9555,59 @@ var ISY = ISY || {};
 ISY.MapImplementation = ISY.MapImplementation || {};
 ISY.MapImplementation.OL3 = ISY.MapImplementation.OL3 || {};
 
-ISY.MapImplementation.OL3.PrintBoxSelect = function(eventHandler) {
+ISY.MapImplementation.OL3.PrintBoxSelect = function (eventHandler) {
 
     var isActive = false;
     var printBoxSelectionLayer;
     var oldCenter = {};
     var oldUTM = "";
     var scale = 25000;
-    var oldInteraction={};
+    var oldInteraction = {};
     var cols = 4;
     var rows = 3;
     var pageMargin = 1.7; // cm
     var pageWidth = 21 - (pageMargin * 2); // 21cm = A4 width
-    var pageHeight = 29.7 -(pageMargin * 2);
-    var eventKeys ={};
+    var pageHeight = 29.7 - (pageMargin * 2);
+    var eventKeys = {};
+    var orientation = 'portrait';
+    var rotation = true;
 
     function _UTMZoneNotChanged(map) {
         if (!isActive) {
             return;
         }
-        var mapCenterGeographic=_getMapCenterGeographic(_getMapCenter(map));
+        var mapCenterGeographic = _getMapCenterGeographic(_getMapCenter(map));
         var UTM = _getUTMZoneFromGeographicPoint(mapCenterGeographic.getCoordinates()[0], mapCenterGeographic.getCoordinates()[1]);
-        if (UTM != oldUTM){
+        if (UTM != oldUTM) {
             _createFrame(map);
             return false;
         }
         return true;
     }
 
-    var _deregisterMouseEvents = function(map){
-        for (var eventKey in eventKeys){
+    var _deregisterMouseEvents = function (map) {
+        for (var eventKey in eventKeys) {
             map.unByKey(eventKeys[eventKey]);
-            eventKeys[eventKey]=false;
+            eventKeys[eventKey] = false;
         }
     };
 
     var _registerMouseEvents = function (map) {
-        eventKeys['change_center']=map.getView().on('change:center', function() {
-            if(_UTMZoneNotChanged(map)) {
+        eventKeys['change_center'] = map.getView().on('change:center', function () {
+            if (_UTMZoneNotChanged(map)) {
                 var deltaCenter = _findDelta(map);
                 _moveLayer(map, deltaCenter);
             }
         });
 
-        eventKeys['moveend']=map.on('moveend', function() {
+        eventKeys['moveend'] = map.on('moveend', function () {
             _getExtentOfPrintBox(map);
         });
     };
 
     var _getExtentOfPrintBox = function (map) {
         var mapCenter = _getMapCenter(map);
-        var mapCenterActiveUTMZone =_getMapCenterActiveUTMZone(mapCenter);
+        var mapCenterActiveUTMZone = _getMapCenterActiveUTMZone(mapCenter);
         var printBox = _getPrintBox(mapCenterActiveUTMZone);
         var extent = {
             bbox: [printBox.left, printBox.bottom, printBox.right, printBox.top],
@@ -9617,13 +9619,15 @@ ISY.MapImplementation.OL3.PrintBoxSelect = function(eventHandler) {
         eventHandler.TriggerEvent(ISY.Events.EventTypes.PrintBoxSelectReturnValue, extent);
     };
 
-    var _getMapCenter = function (map){
+    var _getMapCenter = function (map) {
         return map.getView().getCenter();
     };
 
-    var _getMapCenterGeographic = function(mapCenter){
+    var _getMapCenterGeographic = function (mapCenter) {
         var mapCenterGeographic = new ol.geom.Point(mapCenter);
-        mapCenterGeographic.applyTransform(ol.proj.getTransform('EPSG:32633', 'EPSG:4326'));
+        if (rotation) {
+            mapCenterGeographic.applyTransform(ol.proj.getTransform('EPSG:32633', 'EPSG:4326'));
+        }
         return mapCenterGeographic;
     };
 
@@ -9637,49 +9641,62 @@ ISY.MapImplementation.OL3.PrintBoxSelect = function(eventHandler) {
         return deltaCenter;
     };
 
-    var _moveLayer = function(map, deltaCenter){
+    var _moveLayer = function (map, deltaCenter) {
         var source = printBoxSelectionLayer.getSource();
         var feature = source.getFeatures()[0];
-        feature.getGeometry().translate(deltaCenter[0],deltaCenter[1]);
+        feature.getGeometry().translate(deltaCenter[0], deltaCenter[1]);
     };
 
-    var _getUTMZoneFromGeographicPoint = function(lon, lat) {
+    var _getUTMZoneFromGeographicPoint = function (lon, lat) {
         // From emergencyPoster.js
-        var sone = "32V", localProj = "EPSG:32632";
+        var sone = "32V",
+            localProj = "EPSG:32632";
         if (lat > 72) {
             if (lon < 21) {
-                sone = "33X"; localProj = "EPSG:32633";
+                sone = "33X";
+                localProj = "EPSG:32633";
             } else {
-                sone = "35X"; localProj = "EPSG:32635";
+                sone = "35X";
+                localProj = "EPSG:32635";
             }
         } else if (lat > 64) {
             if (lon < 6) {
-                sone = "31W"; localProj = "EPSG:32631";
+                sone = "31W";
+                localProj = "EPSG:32631";
             } else if (lon < 12) {
-                sone = "32W"; localProj = "EPSG:32632";
+                sone = "32W";
+                localProj = "EPSG:32632";
             } else if (lon < 18) {
-                sone = "33W"; localProj = "EPSG:32633";
+                sone = "33W";
+                localProj = "EPSG:32633";
             } else if (lon < 24) {
-                sone = "34W"; localProj = "EPSG:32634";
+                sone = "34W";
+                localProj = "EPSG:32634";
             } else if (lon < 30) {
-                sone = "35W"; localProj = "EPSG:32635";
+                sone = "35W";
+                localProj = "EPSG:32635";
             } else {
-                sone = "36W"; localProj = "EPSG:32636";
+                sone = "36W";
+                localProj = "EPSG:32636";
             }
         } else {
             if (lon < 3) {
-                sone = "31V"; localProj = "EPSG:32631";
+                sone = "31V";
+                localProj = "EPSG:32631";
             } else if (lon >= 12) {
-                sone = "33V"; localProj = "EPSG:32633";
+                sone = "33V";
+                localProj = "EPSG:32633";
             }
         }
-        return {'sone':sone, 'localProj': localProj};
+        return {
+            'sone': sone,
+            'localProj': localProj
+        };
     };
 
-    var _createFrame = function(map){
+    var _createFrame = function (map) {
         _getExtentOfPrintBox(map);
-        if(printBoxSelectionLayer)
-        {
+        if (printBoxSelectionLayer) {
             map.removeLayer(printBoxSelectionLayer);
         }
         var mapCenter = _getMapCenter(map);
@@ -9695,7 +9712,7 @@ ISY.MapImplementation.OL3.PrintBoxSelect = function(eventHandler) {
         vectorSource.addFeature(feature);
 
         printBoxSelectionLayer = new ol.layer.Vector({
-            name:'PrintBoxSelect',
+            name: 'PrintBoxSelect',
             source: vectorSource,
             updateWhileAnimating: true,
             updateWhileInteracting: true
@@ -9707,7 +9724,7 @@ ISY.MapImplementation.OL3.PrintBoxSelect = function(eventHandler) {
     };
 
     var _getUTMZoneFromMapCenter = function (mapCenter) {
-        var mapCenterGeographic =_getMapCenterGeographic(mapCenter);
+        var mapCenterGeographic = _getMapCenterGeographic(mapCenter);
         var UTM = _getUTMZoneFromGeographicPoint(mapCenterGeographic.getCoordinates()[0], mapCenterGeographic.getCoordinates()[1]);
         oldUTM = UTM;
         return UTM;
@@ -9715,18 +9732,22 @@ ISY.MapImplementation.OL3.PrintBoxSelect = function(eventHandler) {
 
     var _getMultiPolygonGeometry = function (coordinates, mapCenter) {
         var multiPolygonGeometry = new ol.geom.MultiPolygon(coordinates);
-        multiPolygonGeometry.applyTransform(ol.proj.getTransform(_getUTMZoneFromMapCenter(mapCenter).localProj, 'EPSG:32633'));
+        if (rotation) {
+            multiPolygonGeometry.applyTransform(ol.proj.getTransform(_getUTMZoneFromMapCenter(mapCenter).localProj, 'EPSG:32633'));
+        }
         return multiPolygonGeometry;
     };
 
     var _getMapCenterActiveUTMZone = function (mapCenter) {
-        var mapCenterActiveUTMZone= new ol.geom.Point(mapCenter);
-        mapCenterActiveUTMZone.applyTransform(ol.proj.getTransform('EPSG:32633',_getUTMZoneFromMapCenter(mapCenter).localProj));
+        var mapCenterActiveUTMZone = new ol.geom.Point(mapCenter);
+        if (rotation) {
+            mapCenterActiveUTMZone.applyTransform(ol.proj.getTransform('EPSG:32633', _getUTMZoneFromMapCenter(mapCenter).localProj));
+        }
         return mapCenterActiveUTMZone;
     };
 
-    var _getPrintBox = function(mapCenterActiveUTMZone){
-        var printBoxSelect={};
+    var _getPrintBox = function (mapCenterActiveUTMZone) {
+        var printBoxSelect = {};
         printBoxSelect.width = (scale * pageWidth * cols) / 100;
         printBoxSelect.height = (scale * pageHeight * rows) / 100;
         printBoxSelect.left = mapCenterActiveUTMZone.getCoordinates()[0] - (printBoxSelect.width / 2);
@@ -9748,7 +9769,9 @@ ISY.MapImplementation.OL3.PrintBoxSelect = function(eventHandler) {
                 var upperLeft = new ol.geom.Point([tempLeft, tempTop]);
                 var upperRight = new ol.geom.Point([tempRight, tempTop]);
                 var lowerRight = new ol.geom.Point([tempRight, tempBottom]);
-                var tempBox =  new ol.geom.Polygon([[lowerLeft.getCoordinates(), upperLeft.getCoordinates(), upperRight.getCoordinates(), lowerRight.getCoordinates(), lowerLeft.getCoordinates()]]);
+                var tempBox = new ol.geom.Polygon([
+                    [lowerLeft.getCoordinates(), upperLeft.getCoordinates(), upperRight.getCoordinates(), lowerRight.getCoordinates(), lowerLeft.getCoordinates()]
+                ]);
                 coordinates.push(tempBox.getCoordinates());
                 tempBottom = tempTop;
             }
@@ -9776,21 +9799,23 @@ ISY.MapImplementation.OL3.PrintBoxSelect = function(eventHandler) {
         map.getInteractions().forEach(function (interaction) {
             if (interaction instanceof ol.interaction.DragPan) {
                 map.removeInteraction(interaction);
-                if(copyOld) {
+                if (copyOld) {
                     oldInteraction = interaction;
                 }
             }
         });
     };
 
-    var _applyNonKineticDragPan = function (map){
+    var _applyNonKineticDragPan = function (map) {
         _removeKineticDragPan(map, true);
         map.addInteraction(
-            new ol.interaction.DragPan({kinetic: false})
+            new ol.interaction.DragPan({
+                kinetic: false
+            })
         );
     };
 
-    var _applyOriginalInteraction = function(map) {
+    var _applyOriginalInteraction = function (map) {
         _removeKineticDragPan(map, false);
         map.addInteraction(oldInteraction);
     };
@@ -9801,6 +9826,8 @@ ISY.MapImplementation.OL3.PrintBoxSelect = function(eventHandler) {
             scale = options.scale;
             cols = options.cols;
             rows = options.rows;
+            orientation = options.orientation;
+            rotation = options.rotation;
             _applyNonKineticDragPan(map);
             _registerMouseEvents(map);
             _createFrame(map);
