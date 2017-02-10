@@ -1,5 +1,5 @@
 /**
- * maplib - v1.0.2 - 2017-02-09
+ * maplib - v1.0.3 - 2017-02-10
  * https://github.com/kartverket/MapLib
  *
  * Copyright (c) 2017 
@@ -9572,6 +9572,12 @@ ISY.MapImplementation.OL3.PrintBoxSelect = function (eventHandler) {
     var orientation = 'portrait';
     var rotation = true;
 
+    function _toggleOrientation() {
+        var tmpWidth = pageWidth;
+        pageWidth = pageHeight;
+        pageHeight = tmpWidth;
+    }
+
     function _UTMZoneNotChanged(map) {
         if (!isActive) {
             return;
@@ -9826,6 +9832,9 @@ ISY.MapImplementation.OL3.PrintBoxSelect = function (eventHandler) {
             scale = options.scale;
             cols = options.cols;
             rows = options.rows;
+            if (orientation !== options.orientation) {
+                _toggleOrientation();
+            }
             orientation = options.orientation;
             rotation = options.rotation;
             _applyNonKineticDragPan(map);
