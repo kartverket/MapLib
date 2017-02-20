@@ -191,7 +191,7 @@ ISY.MapAPI.Layers = function(mapImplementation){
     }
 
     function getLayerById(id) {
-        if (layer !== undefined) {
+        if (layers !== undefined) {
             for (var i = 0; i < layers.length; i++) {
                 var layer = layers[i];
                 if (layer.id.toString() === id.toString()) {

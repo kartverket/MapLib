@@ -1,5 +1,5 @@
 /**
- * maplib - v1.0.3 - 2017-02-10
+ * maplib - v1.0.4 - 2017-02-20
  * https://github.com/kartverket/MapLib
  *
  * Copyright (c) 2017 
@@ -1050,7 +1050,7 @@ ISY.MapAPI.Layers = function(mapImplementation){
     }
 
     function getLayerById(id) {
-        if (layer !== undefined) {
+        if (layers !== undefined) {
             for (var i = 0; i < layers.length; i++) {
                 var layer = layers[i];
                 if (layer.id.toString() === id.toString()) {
