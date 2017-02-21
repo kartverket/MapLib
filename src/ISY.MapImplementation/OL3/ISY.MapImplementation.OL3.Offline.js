@@ -184,7 +184,7 @@ ISY.MapImplementation.OL3.Offline = function(){
                 // handle response
                 log(response);
             }).catch(function (err) {
-                if (err && err.name == 'not_found') {
+                if (err && err.name === 'not_found') {
                     // Not found in database, add it
                     dbsInfo = status;
                     eventHandler.TriggerEvent(ISY.Events.EventTypes.StatusPouchDbChanged, dbsInfo);
@@ -225,7 +225,7 @@ ISY.MapImplementation.OL3.Offline = function(){
     //        // handle response
     //        log(response);
     //    }).catch(function (err) {
-    //        if (err && err.name == 'not_found') {
+    //        if (err && err.name === 'not_found') {
     //            // Not found in database, add it
     //            pouchTilesDB.put({
     //                _id: 'settings',
@@ -279,7 +279,7 @@ ISY.MapImplementation.OL3.Offline = function(){
         $.ajax({
             url: url
         }).done(function(response) {
-            if (typeof response == 'object'){
+            if (typeof response === 'object'){
                 if (response.firstChild.childElementCount === 0) {
                     return;
                 }
@@ -311,7 +311,7 @@ ISY.MapImplementation.OL3.Offline = function(){
         $.ajax({
             url: url
         }).done(function(response) {
-            if (typeof response == 'object'){
+            if (typeof response === 'object'){
                 if (response.firstChild.childElementCount === 0) {
                     return;
                 }
@@ -356,7 +356,7 @@ ISY.MapImplementation.OL3.Offline = function(){
         pouchDB[index].get(key).then(function (res) {
             // document is found OR no error , find the revision and update it
             pouchDB[index].getAttachment(key, name, function (err, attachmentRes) {
-                if (err && err.error == 'not_found' || !attachmentRes) {
+                if (err && err.error === 'not_found' || !attachmentRes) {
                     // attachment not found, but document do, add revision
                     // Add it!
                     _addPouchAttachmentWithRevision(key, name, url, index, res._rev, callback);
@@ -449,7 +449,7 @@ ISY.MapImplementation.OL3.Offline = function(){
                 // handle response
                 //log(response);
             }).catch(function (err) {
-                if (err && err.name == 'not_found') {
+                if (err && err.name === 'not_found') {
                     // Not found in database, add it
                     pouchDB[dbkey].put({
                         _id: url,
@@ -541,7 +541,7 @@ ISY.MapImplementation.OL3.Offline = function(){
             // handle response
             //log(response);
         }).catch(function (err) {
-            if (err && err.name == 'not_found') {
+            if (err && err.name === 'not_found') {
                 // Not found in database, add it
                 pouchDB[index].put({
                     _id: url,
@@ -598,7 +598,7 @@ ISY.MapImplementation.OL3.Offline = function(){
             eventHandler.TriggerEvent(ISY.Events.EventTypes.CachingProgress, _getCacheTileProgressCount());
             //var dLon = Math.floor(iter / (latTiles)) % (latTiles - (latTiles - lonTiles));
             //var dLat = iter % latTiles;
-            if (view.getZoom() != zoom + dZoom) {
+            if (view.getZoom() !== zoom + dZoom) {
                 view.setZoom(zoom + dZoom);
             }
             //var c1 = coord1[0] + (dLon * (coord2[0] - coord1[0]) / (lonTiles - 1));

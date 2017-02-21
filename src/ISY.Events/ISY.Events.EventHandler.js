@@ -13,7 +13,7 @@ ISY.Events.EventHandler = function(){
 
     function unRegisterEvent(eventType, callBack){
         for(var i = 0; i < callBacks.length; i++){
-            if(callBacks[i].eventType == eventType && callBacks[i].callBack == callBack){
+            if(callBacks[i].eventType === eventType && callBacks[i].callBack === callBack){
                 callBacks.splice(i, 1);
                 break;
             }
@@ -23,7 +23,7 @@ ISY.Events.EventHandler = function(){
     function triggerEvent(eventType, args){
         for(var i = 0; i < callBacks.length; i++){
             var callBack = callBacks[i];
-            if(callBack.eventType == eventType){
+            if(callBack.eventType === eventType){
                 callBack.callBack(args);
             }
         }

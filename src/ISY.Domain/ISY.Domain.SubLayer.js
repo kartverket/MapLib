@@ -34,7 +34,7 @@ ISY.Domain.SubLayer = function(config){
     };
     var instance =  $.extend({}, defaults, config); // subLayerInstance
 
-    if(instance.legendGraphicUrl.indexOf('?') == -1){
+    if(instance.legendGraphicUrl.indexOf('?') === -1){
         instance.legendGraphicUrl += '?';
     }
     if (instance.legendGraphicUrl !== '') {

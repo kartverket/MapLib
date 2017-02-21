@@ -74,7 +74,7 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler) {
                     // deSelectedFeatures.forEach(function(feature) {
                     //     feature.setStyle(jsonStyleFetcher.GetStyle(feature));
                     // });
-                    if (selectedFeatures.length == 1) {
+                    if (selectedFeatures.length === 1) {
                         eventHandler.TriggerEvent(ISY.Events.EventTypes.DrawFeatureSelect, selectedFeatures[0].getId());
                     }
                 }, this));
@@ -236,7 +236,7 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler) {
     }
 
     function addDrawInteraction(map, type) {
-        if (draw && draw.type == type) {
+        if (draw && draw.type === type) {
             return;
         }
         draw = new ol.interaction.Draw({
@@ -268,11 +268,11 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler) {
 
     function _checkForShiftKey(event) {
         return ol.events.condition.shiftKeyOnly(event) &&
-            event.type == 'pointerdown';
+            event.type === 'pointerdown';
     }
 
     function _checkForNoKeys(event) {
-        return event.type == 'pointerdown' &&
+        return event.type === 'pointerdown' &&
             ol.events.condition.noModifierKeys(event);
     }
 
@@ -584,7 +584,7 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler) {
             style = options.style;
         }
         if (options.GeoJSON) {
-            if (options.GeoJSON == 'remove') {
+            if (options.GeoJSON === 'remove') {
                 initiateDrawing();
             }
             else if (options.deleteFeature && options.selectedFeatureId) {
@@ -614,7 +614,7 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler) {
             selectedFeature = undefined;
         }
         map.getLayers().forEach(function (layer) {
-                if (layer.get('id') == 'drawing') {
+                if (layer.get('id') === 'drawing') {
                     map.removeLayer(layer);
                 }
             }
@@ -627,10 +627,10 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler) {
                 addModifyInteraction(map);
                 break;
             case('draw'):
-                if (options.type != 'Active') {
+                if (options.type !== 'Active') {
                     type = options.type;
                 }
-                if (options.type == 'Text') {
+                if (options.type === 'Text') {
                     type = 'Point';
                     text = true;
                 }

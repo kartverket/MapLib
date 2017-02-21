@@ -8,7 +8,7 @@ ISY.MapImplementation.OL3.Styles.Json = function (style) {
     var _zIndex = 0;
 
     function _createStyle(feature, jsonstyle, hover){
-        var jsonobject = (typeof jsonstyle == "object") ? jsonstyle : JSON.parse(jsonstyle);
+        var jsonobject = (typeof jsonstyle === "object") ? jsonstyle : JSON.parse(jsonstyle);
         var currentstyle = [];
         _zIndex++;
         currentstyle.push(new ol.style.Style({

@@ -31,7 +31,7 @@ ISY.MapImplementation.OL3.PrintBoxSelect = function (eventHandler) {
         }
         var mapCenterGeographic = _getMapCenterGeographic(_getMapCenter(map));
         var UTM = _getUTMZoneFromGeographicPoint(mapCenterGeographic.getCoordinates()[0], mapCenterGeographic.getCoordinates()[1]);
-        if (UTM != oldUTM) {
+        if (UTM !== oldUTM) {
             _createFrame(map);
             return false;
         }

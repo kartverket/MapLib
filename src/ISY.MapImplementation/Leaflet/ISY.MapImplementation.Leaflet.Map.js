@@ -251,7 +251,7 @@ ISY.MapImplementation.Leaflet.Map = function(repository, eventHandler, httpHelpe
         var source;
         var layerFromPool = _getLayerFromPool(isySubLayer);
 
-        if(layerFromPool != null){
+        if(layerFromPool !== null){
             layer = layerFromPool;
         }
         else{
@@ -323,7 +323,7 @@ ISY.MapImplementation.Leaflet.Map = function(repository, eventHandler, httpHelpe
     function _getLayerFromPool(isySubLayer){
         for(var i = 0; i < layerPool.length; i++){
             var layerInPool = layerPool[i];
-            if(layerInPool.guid == isySubLayer.id){
+            if(layerInPool.guid === isySubLayer.id){
                 return layerInPool;
             }
         }
@@ -376,7 +376,7 @@ ISY.MapImplementation.Leaflet.Map = function(repository, eventHandler, httpHelpe
         var layers = _getLayersWithGuid();
         for(var i = 0; i < layers.length; i++){
             var layer = layers[i];
-            if(layer.guid == guid){
+            if(layer.guid === guid){
                 return layer;
             }
         }
@@ -387,7 +387,7 @@ ISY.MapImplementation.Leaflet.Map = function(repository, eventHandler, httpHelpe
         var layers = _getLayersWithGuid();
         for(var i = 0; i < layers.length; i++){
             var layer = layers[i];
-            if(layer.guid == isySubLayer.id){
+            if(layer.guid === isySubLayer.id){
                 return i;
             }
         }
@@ -397,7 +397,7 @@ ISY.MapImplementation.Leaflet.Map = function(repository, eventHandler, httpHelpe
     function getLayerByName(layerTitle) {
         var layers = _getLayersWithGuid();
         for (var i = 0; i < layers.length; i++) {
-            if (layers[i].get('title') == layerTitle) {
+            if (layers[i].get('title') === layerTitle) {
                 return layers[i];
             }
         }

@@ -42,7 +42,7 @@ ISY.MapImplementation.OL3.AddLayerUrl = function(eventHandler){
 
     function _removeOldLayer(map){
         map.getLayers().forEach(function (layer) {
-                if (layer.get('id') == layerId) {
+                if (layer.get('id') === layerId) {
                     map.removeLayer(layer);
                 }
             }

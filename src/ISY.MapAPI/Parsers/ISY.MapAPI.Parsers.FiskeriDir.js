@@ -54,8 +54,8 @@ ISY.MapAPI.Parsers.FiskeriDir = function(mapApi){
         for(var i in properties){
             if(i.toLocaleLowerCase().indexOf(insteadOfGml) === -1){
                 attributes.push([i, properties[i]]);
-                if(i == 'x') { x = properties[i]; }
-                if(i == 'y') { y = properties[i]; }
+                if(i === 'x') { x = properties[i]; }
+                if(i === 'y') { y = properties[i]; }
             }
             else {
                 gmlObject = properties[i];

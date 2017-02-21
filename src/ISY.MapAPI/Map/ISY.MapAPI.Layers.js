@@ -273,7 +273,7 @@ ISY.MapAPI.Layers = function(mapImplementation){
         for(var i = 0; i < subLayers.length; i++){
             var subLayer = subLayers[i];
             var thisIndex = mapImplementation.GetLayerIndex(subLayer);
-            if(thisIndex != null){
+            if(thisIndex !== null){
                 indexes.push(thisIndex);
             }
         }

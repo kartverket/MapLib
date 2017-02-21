@@ -84,7 +84,7 @@ ISY.MapImplementation.OL3.MeasureLine = function(eventHandler){
     var draw; // global so we can remove it later
     var drawLayer;
     function addInteraction(map) {
-        var type ='LineString';// (typeSelect.value == 'area' ? 'Polygon' : 'LineString');
+        var type ='LineString';// (typeSelect.value === 'area' ? 'Polygon' : 'LineString');
         var source = new ol.source.Vector();
         draw = new ol.interaction.Draw({
             source: source,

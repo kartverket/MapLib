@@ -177,7 +177,7 @@ ISY.MapImplementation.OL3.Sources.WfsT = function (url, featureType, featureNS, 
                     okResult = false;
                     message += "Response parse error.";
                 }
-                else if (result && result.transactionSummary.totalUpdated != 1) {
+                else if (result && result.transactionSummary.totalUpdated !== 1) {
                     okResult = false;
                     message += "Feature not updated.";
                 }
@@ -338,7 +338,7 @@ ISY.MapImplementation.OL3.Sources.WfsT = function (url, featureType, featureNS, 
                 else if (result.transactionSummary === undefined){
                     okResult = false;
                 }
-                else if (result && result.transactionSummary.totalDeleted != 1) {
+                else if (result && result.transactionSummary.totalDeleted !== 1) {
                         okResult = false;
                         message += "Feature not deleted.";
                 }
@@ -368,7 +368,7 @@ ISY.MapImplementation.OL3.Sources.WfsT = function (url, featureType, featureNS, 
      */
     function readResponse(data) {
         var result;
-        if (window.Document && data instanceof Document && data.documentElement && data.documentElement.localName == 'ExceptionReport') {
+        if (window.Document && data instanceof Document && data.documentElement && data.documentElement.localName === 'ExceptionReport') {
             result = (data.getElementsByTagNameNS('http://www.opengis.net/ows', 'ExceptionText').item(0).textContent);
         }
         else {
@@ -392,7 +392,7 @@ ISY.MapImplementation.OL3.Sources.WfsT = function (url, featureType, featureNS, 
      */
     function getLocalId(gmlId) {
         var startIndex = gmlId.indexOf('{');
-        if (startIndex != -1) {
+        if (startIndex !== -1) {
             return gmlId.substr(startIndex);
         }
         else {
@@ -407,7 +407,7 @@ ISY.MapImplementation.OL3.Sources.WfsT = function (url, featureType, featureNS, 
      */
     function getFeatureName(featureType) {
         var startIndex = featureType.indexOf(':');
-        if (startIndex != -1) {
+        if (startIndex !== -1) {
             startIndex++;
             return featureType.substr(startIndex);
         }
@@ -423,7 +423,7 @@ ISY.MapImplementation.OL3.Sources.WfsT = function (url, featureType, featureNS, 
      */
     function getFeatureNamespace(featureType) {
         var startIndex = featureType.indexOf(':');
-        if (startIndex != -1) {
+        if (startIndex !== -1) {
             return featureType.substr(0, startIndex);
         }
         else {

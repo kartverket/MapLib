@@ -96,7 +96,7 @@ ISY.MapImplementation.OL3.Measure = function(eventHandler){
             updateWhileInteracting: true // optional, for instant visual feedback
         });
         //map.addOverlay(circleOverlay);
-        var type ='Polygon';// (typeSelect.value == 'area' ? 'Polygon' : 'LineString');
+        var type ='Polygon';// (typeSelect.value === 'area' ? 'Polygon' : 'LineString');
         var source = new ol.source.Vector();
         draw = new ol.interaction.Draw({
             source: source,
@@ -144,7 +144,7 @@ ISY.MapImplementation.OL3.Measure = function(eventHandler){
                         tooltipCoord = geom.getLastCoordinate();
                     }
                     var circleCoordinates = geom.getCoordinates()[0];
-                    if (circleCoordinates.length == 2){
+                    if (circleCoordinates.length === 2){
                         measureTooltipElement.innerHTML = circleArea.string;
                     }else{
                         measureTooltipElement.innerHTML = output.string;
@@ -170,7 +170,7 @@ ISY.MapImplementation.OL3.Measure = function(eventHandler){
 
     function _drawCircle(geom){
         var circleCoordinates = geom.getCoordinates()[0];
-        if (circleCoordinates.length == 2) {
+        if (circleCoordinates.length === 2) {
             circleFeature.getGeometry().setRadius(circleRadius);
             return Math.PI * Math.pow(circleRadius, 2);
         }

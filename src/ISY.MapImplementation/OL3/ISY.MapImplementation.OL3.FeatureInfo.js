@@ -233,9 +233,9 @@ ISY.MapImplementation.OL3.FeatureInfo = function(){
     }
 
     function _ensureHighlightLayer(map){
-        if(highLightLayer == null){
+        if(highLightLayer === null){
 
-            if(highlightStyle == null){
+            if(highlightStyle === null){
                 _setDefaultHighlightStyle();
             }
 

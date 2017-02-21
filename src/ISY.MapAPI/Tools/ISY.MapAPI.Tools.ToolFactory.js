@@ -28,7 +28,7 @@ ISY.MapAPI.Tools.ToolFactory = function(map, tools){
             var tool = externalTools[i];
             tool.deactivate();
 
-            if(tool.id == toolId){
+            if(tool.id === toolId){
                 if (!$.isEmptyObject(toolOptions)){
                     tool.activate(toolOptions);
                 }else{

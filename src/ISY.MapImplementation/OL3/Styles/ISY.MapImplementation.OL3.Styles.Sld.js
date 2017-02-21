@@ -254,7 +254,7 @@ ISY.MapImplementation.OL3.Styles.Sld = function () {
                                     lineDash: self.getStrokeDashstyle(linestyle.strokeDashstyle)
                                 });
                             }
-                            if (linestyle.graphic && linestyle.graphicName == 'circle'){
+                            if (linestyle.graphic && linestyle.graphicName === 'circle'){
                                 imagestyle = new ol.style.Circle({
                                     radius: parseInt(linestyle.pointRadius, 10),
                                     fill: fillstyle
@@ -278,7 +278,7 @@ ISY.MapImplementation.OL3.Styles.Sld = function () {
                 }
             },
             "IsDefault": function(node, style) {
-                if(this.getChildValue(node) == "1") {
+                if(this.getChildValue(node) === "1") {
                     style.isDefault = true;
                 }
             },
@@ -408,7 +408,7 @@ ISY.MapImplementation.OL3.Styles.Sld = function () {
             },
             "Radius": function(node, symbolizer) {
                 var radius = this.readers.ogc._expression.call(this, node);
-                if(radius != null) {
+                if(radius !== null) {
                     // radius is only used for halo
                     symbolizer.haloRadius = radius;
                 }
@@ -779,10 +779,10 @@ ISY.MapImplementation.OL3.Styles.Sld = function () {
     };
 
     var parseSld = function(response, zindex){
-        if (typeof response == 'undefined'){
+        if (typeof response === 'undefined'){
             return styles;
         }
-        if (typeof response == 'string'){
+        if (typeof response === 'string'){
             response = ol.xml.parse(response);
         }
 
@@ -823,10 +823,10 @@ ISY.MapImplementation.OL3.Styles.Sld = function () {
                 }
             }
         });
-        if (scales.maxScaleDenominator == 1){
+        if (scales.maxScaleDenominator === 1){
             scales.maxScaleDenominator = undefined;
         }
-        if (scales.minScaleDenominator == Infinity){
+        if (scales.minScaleDenominator === Infinity){
             scales.minScaleDenominator = undefined;
         }
         return scales;
@@ -848,11 +848,11 @@ ISY.MapImplementation.OL3.Styles.Sld = function () {
                     switch (typeof(featurevalue)) {
                         case 'string':
                             value = filter.value;
-                            condition = featurevalue == value;
+                            condition = featurevalue === value;
                             break;
                         case 'number':
                             value = parseInt(filter.value, 10);
-                            condition = parseInt(featurevalue, 10) == value;
+                            condition = parseInt(featurevalue, 10) === value;
                             break;
                     }
                     break;
@@ -876,11 +876,11 @@ ISY.MapImplementation.OL3.Styles.Sld = function () {
                     switch (typeof(featurevalue)) {
                         case 'string':
                             value = filter.value;
-                            condition = featurevalue != value;
+                            condition = featurevalue !== value;
                             break;
                         case 'number':
                             value = parseInt(filter.value, 10);
-                            condition = parseInt(featurevalue, 10) != value;
+                            condition = parseInt(featurevalue, 10) !== value;
                             break;
                     }
                     break;
@@ -891,7 +891,7 @@ ISY.MapImplementation.OL3.Styles.Sld = function () {
                             break;
                         case 'number':
                             value = parseInt(filter.value, 10);
-                            condition = parseInt(featurevalue, 10) != value;
+                            condition = parseInt(featurevalue, 10) !== value;
                             break;
                     }
                     break;
@@ -1119,7 +1119,7 @@ ISY.MapImplementation.OL3.Styles.Sld = function () {
             var child;
             for(var i=0, len=children.length; i<len; ++i) {
                 child = children[i];
-                if(child.nodeType == 1) {
+                if(child.nodeType === 1) {
                     this.readNode(child, obj);
                 }
             }
@@ -1156,7 +1156,7 @@ ISY.MapImplementation.OL3.Styles.Sld = function () {
         getCssProperty: function(sym) {
             var css = null;
             for(var prop in this.cssMap) {
-                if(this.cssMap[prop] == sym) {
+                if(this.cssMap[prop] === sym) {
                     css = prop;
                     break;
                 }
@@ -1172,10 +1172,10 @@ ISY.MapImplementation.OL3.Styles.Sld = function () {
                 var potentialNode, fullName;
                 for(var i=0, len=attributes.length; i<len; ++i) {
                     potentialNode = attributes[i];
-                    if(potentialNode.namespaceURI == uri) {
+                    if(potentialNode.namespaceURI === uri) {
                         fullName = (potentialNode.prefix) ?
                             (potentialNode.prefix + ":" + name) : name;
-                        if(fullName == potentialNode.nodeName) {
+                        if(fullName === potentialNode.nodeName) {
                             attributeNode = potentialNode;
                             break;
                         }

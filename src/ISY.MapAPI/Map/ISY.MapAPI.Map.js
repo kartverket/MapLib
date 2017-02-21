@@ -46,7 +46,7 @@ ISY.MapAPI.Map = function(mapImplementation, eventHandler, featureInfo, layerHan
     }
 
     function addCustomProj(code) {
-        if (typeof(ol) == "undefined") {
+        if (typeof(ol) === "undefined") {
             // TODO: Never create ol-stuff in general code!!!
             return;
         }
@@ -309,7 +309,7 @@ ISY.MapAPI.Map = function(mapImplementation, eventHandler, featureInfo, layerHan
     }
 
     function arrangeLayers(){
-        if (getConfigLayerCount() == getLayerCount()){
+        if (getConfigLayerCount() === getLayerCount()){
             layerHandler.ArrangeLayers();
         }
     }

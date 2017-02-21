@@ -199,7 +199,7 @@ ISY.Domain.SubLayer = function(config){
     };
     var instance =  $.extend({}, defaults, config); // subLayerInstance
 
-    if(instance.legendGraphicUrl.indexOf('?') == -1){
+    if(instance.legendGraphicUrl.indexOf('?') === -1){
         instance.legendGraphicUrl += '?';
     }
     if (instance.legendGraphicUrl !== '') {
@@ -242,7 +242,7 @@ ISY.Events.EventHandler = function(){
 
     function unRegisterEvent(eventType, callBack){
         for(var i = 0; i < callBacks.length; i++){
-            if(callBacks[i].eventType == eventType && callBacks[i].callBack == callBack){
+            if(callBacks[i].eventType === eventType && callBacks[i].callBack === callBack){
                 callBacks.splice(i, 1);
                 break;
             }
@@ -252,7 +252,7 @@ ISY.Events.EventHandler = function(){
     function triggerEvent(eventType, args){
         for(var i = 0; i < callBacks.length; i++){
             var callBack = callBacks[i];
-            if(callBack.eventType == eventType){
+            if(callBack.eventType === eventType){
                 callBack.callBack(args);
             }
         }
@@ -421,406 +421,406 @@ ISY.MapAPI.Map = ISY.MapAPI.Map || {};
 
 ISY.MapAPI.FeatureInfo = function (mapImplementation, httpHelper, eventHandler, featureParser) {
 
-    /*
-     The reference to document in this class is necessary due to offset.
-     When the marker is placed onto the map for the first time offset does not work unless the image is already present in the DOM.
-     A possible fix to this is to not use an image and instead use an icon.
+  /*
+   The reference to document in this class is necessary due to offset.
+   When the marker is placed onto the map for the first time offset does not work unless the image is already present in the DOM.
+   A possible fix to this is to not use an image and instead use an icon.
 
-     */
+   */
 
-    var infoMarker;
-    var infoMarkerPath = "assets/img/pin-md-orange.png"; // This path is possible to change by API call.
-    var useInfoMarker = false;
-    var pixelTolerance = 10;
+  var infoMarker;
+  var infoMarkerPath = "assets/img/pin-md-orange.png"; // This path is possible to change by API call.
+  var useInfoMarker = false;
+  var pixelTolerance = 10;
 
-    /*
-     Common feature info functions
-     */
+  /*
+   Common feature info functions
+   */
 
-    function _trigStartGetInfoRequest(layersToRequest) {
-        var responseFeatureCollections = _createResponseFeatureCollections(layersToRequest);
-        eventHandler.TriggerEvent(ISY.Events.EventTypes.FeatureInfoStart, responseFeatureCollections);
+  function _trigStartGetInfoRequest(layersToRequest) {
+    var responseFeatureCollections = _createResponseFeatureCollections(layersToRequest);
+    eventHandler.TriggerEvent(ISY.Events.EventTypes.FeatureInfoStart, responseFeatureCollections);
+  }
+
+  function _createResponseFeatureCollections(layersToRequest) {
+    var responseFeatureCollections = [];
+    for (var i = 0; i < layersToRequest.length; i++) {
+      var layerToRequest = layersToRequest[i];
+      var responseFeatureCollection = new ISY.Domain.LayerResponse();
+      responseFeatureCollection.id = layerToRequest.id;
+      responseFeatureCollection.name = layerToRequest.providerName;
+      responseFeatureCollection.isLoading = true;
+      responseFeatureCollections.push(responseFeatureCollection);
     }
+    return responseFeatureCollections;
+  }
 
-    function _createResponseFeatureCollections(layersToRequest) {
-        var responseFeatureCollections = [];
-        for (var i = 0; i < layersToRequest.length; i++) {
-            var layerToRequest = layersToRequest[i];
-            var responseFeatureCollection = new ISY.Domain.LayerResponse();
-            responseFeatureCollection.id = layerToRequest.id;
-            responseFeatureCollection.name = layerToRequest.providerName;
-            responseFeatureCollection.isLoading = true;
-            responseFeatureCollections.push(responseFeatureCollection);
-        }
-        return responseFeatureCollections;
-    }
+  function _handleGetInfoRequest(url, subLayer) {
+    var callback = function (data) {
+      _handleGetInfoResponse(subLayer, data);
+    };
+    httpHelper.get(url).then(callback);
+  }
 
-    function _handleGetInfoRequest(url, subLayer) {
-        var callback = function (data) {
-            _handleGetInfoResponse(subLayer, data);
-        };
-        httpHelper.get(url).then(callback);
-    }
+  // function _convertJSONtoArray(data) {
+  //     var results = [];
+  //     Object.keys(data).forEach(function (key) {
+  //         results.push([key, data[key]]);
+  //     });
+  //     return results;
+  // }
 
-    // function _convertJSONtoArray(data) {
-    //     var results = [];
-    //     Object.keys(data).forEach(function (key) {
-    //         results.push([key, data[key]]);
-    //     });
-    //     return results;
-    // }
-
-    function readIncludedFields(includedFields) {
-        var includedFieldsDict = {};
-        if (includedFields.field) {
-            if (includedFields.field.constructor != Array) {
-                includedFields.field = [includedFields.field];
-            }
-            includedFields.field.forEach(function (field) {
-                if (field.type == 'picture') {
-                    includedFieldsDict[field.name] = {
-                        name: field.alias ? field.alias : field.name,
-                        type: field.type
-                    };
-                    if (field.baseurl) {
-                        includedFieldsDict[field.name].baseurl = field.baseurl;
-                    }
-                } else {
-                    includedFieldsDict[field.name] = {
-                        name: field.alias ? field.alias : field.name,
-                        unit: field.unit ? field.unit : ""
-                    };
-                }
-            });
-        }
-
-        if (includedFields.capitalize == "true") {
-            includedFieldsDict['_capitalize'] = true;
-        }
-        return includedFieldsDict;
-    }
-
-    function applyIncludedFields(parsedResult, subLayer) {
-        if (!subLayer.featureInfo || !subLayer.featureInfo.includedFields) {
-            return parsedResult;
-        }
-        var includedFields = readIncludedFields(subLayer.featureInfo.includedFields);
-        var parsedResultsIncluded = [];
-        parsedResult.forEach(function (feature) {
-            parsedResultsIncluded.push(compareIncludedFields(includedFields, feature));
-        });
-        return parsedResultsIncluded;
-    }
-
-    function compareIncludedFields(includedFields, feature) {
-        var newFields = {
-            attributes: []
-        };
-        if (Object.keys(includedFields).length > 1) {
-            for (var fieldName in includedFields) {
-                if (typeof includedFields[fieldName] === 'object') {
-                    var fieldValue = feature[fieldName];
-                    var newFieldName;
-                    if (Object.keys(feature).indexOf(fieldName) > -1) {
-                        newFieldName = includedFields._capitalize ? includedFields[fieldName].name.toLowerCase().capitalizeFirstLetter() : includedFields[fieldName].name;
-                        if (includedFields[fieldName].type == 'picture' && includedFields[fieldName].baseurl) {
-                            fieldValue = {
-                                url: includedFields[fieldName].baseurl + feature[fieldName],
-                                type: includedFields[fieldName].type
-                            };
-                        } else if (includedFields[fieldName].unit) {
-                            fieldValue += includedFields[fieldName].unit;
-                        }
-                    } else if (Object.keys(feature).length == 1) {
-                        newFieldName = feature._capitalize ? fieldName.toLowerCase().capitalizeFirstLetter() : fieldName;
-                    } else {
-                        newFieldName = includedFields._capitalize ? includedFields[fieldName].name.toLowerCase().capitalizeFirstLetter() : includedFields[fieldName].name;
-                    }
-                    newFields.attributes.push([newFieldName, fieldValue]);
-                }
-            }
+  function readIncludedFields(includedFields) {
+    var includedFieldsDict = {};
+    if (includedFields.field) {
+      if (includedFields.field.constructor !== Array) {
+        includedFields.field = [includedFields.field];
+      }
+      includedFields.field.forEach(function (field) {
+        if (field.type === 'picture') {
+          includedFieldsDict[field.name] = {
+            name: field.alias ? field.alias : field.name,
+            type: field.type
+          };
+          if (field.baseurl) {
+            includedFieldsDict[field.name].baseurl = field.baseurl;
+          }
         } else {
-            for (var fieldName1 in feature) {
-                var tmpFieldName = feature._capitalize ? fieldName1.toLowerCase().capitalizeFirstLetter() : fieldName1;
-                newFields.attributes.push([tmpFieldName, feature[fieldName1]]);
-            }
+          includedFieldsDict[field.name] = {
+            name: field.alias ? field.alias : field.name,
+            unit: field.unit ? field.unit : ""
+          };
         }
-        return newFields;
+      });
     }
 
-    String.prototype.capitalizeFirstLetter = function () {
-        return this.charAt(0).toUpperCase() + this.slice(1);
+    if (includedFields.capitalize === "true") {
+      includedFieldsDict['_capitalize'] = true;
+    }
+    return includedFieldsDict;
+  }
+
+  function applyIncludedFields(parsedResult, subLayer) {
+    if (!subLayer.featureInfo || !subLayer.featureInfo.includedFields) {
+      return parsedResult;
+    }
+    var includedFields = readIncludedFields(subLayer.featureInfo.includedFields);
+    var parsedResultsIncluded = [];
+    parsedResult.forEach(function (feature) {
+      parsedResultsIncluded.push(compareIncludedFields(includedFields, feature));
+    });
+    return parsedResultsIncluded;
+  }
+
+  function compareIncludedFields(includedFields, feature) {
+    var newFields = {
+      attributes: []
+    };
+    if (Object.keys(includedFields).length > 1) {
+      for (var fieldName in includedFields) {
+        if (typeof includedFields[fieldName] === 'object') {
+          var fieldValue = feature[fieldName];
+          var newFieldName;
+          if (Object.keys(feature).indexOf(fieldName) > -1) {
+            newFieldName = includedFields._capitalize ? includedFields[fieldName].name.toLowerCase().capitalizeFirstLetter() : includedFields[fieldName].name;
+            if (includedFields[fieldName].type === 'picture' && includedFields[fieldName].baseurl) {
+              fieldValue = {
+                url: includedFields[fieldName].baseurl + feature[fieldName],
+                type: includedFields[fieldName].type
+              };
+            } else if (includedFields[fieldName].unit) {
+              fieldValue += includedFields[fieldName].unit;
+            }
+          } else if (Object.keys(feature).length === 1) {
+            newFieldName = feature._capitalize ? fieldName.toLowerCase().capitalizeFirstLetter() : fieldName;
+          } else {
+            newFieldName = includedFields._capitalize ? includedFields[fieldName].name.toLowerCase().capitalizeFirstLetter() : includedFields[fieldName].name;
+          }
+          newFields.attributes.push([newFieldName, fieldValue]);
+        }
+      }
+    } else {
+      for (var fieldName1 in feature) {
+        var tmpFieldName = feature._capitalize ? fieldName1.toLowerCase().capitalizeFirstLetter() : fieldName1;
+        newFields.attributes.push([tmpFieldName, feature[fieldName1]]);
+      }
+    }
+    return newFields;
+  }
+
+  String.prototype.capitalizeFirstLetter = function () {
+    return this.charAt(0).toUpperCase() + this.slice(1);
+  };
+
+  function _handleGetInfoResponse(subLayer, result) {
+    var parsedResult;
+    var exception;
+    if (subLayer.featureInfo.supportsGetFeatureInfo && subLayer.source === 'WMS') {
+      var xmlFile = jQuery.parseXML(result.data);
+      var jsonFile = xml.xmlToJSON(xmlFile);
+      if (jsonFile.hasOwnProperty("msGMLOutput")) {
+        if (jsonFile.msGMLOutput.hasOwnProperty(subLayer.providerName + "_layer")) {
+          var getProperties = jsonFile.msGMLOutput[subLayer.providerName + "_layer"][subLayer.providerName + "_feature"];
+          parsedResult = [];
+          if (getProperties.constructor !== Array) {
+            getProperties = [getProperties];
+          }
+          for (var i = 0; i < getProperties.length; i++) {
+            parsedResult.push(getProperties[i]);
+          }
+        }
+      }
+    } else {
+      try {
+        parsedResult = featureParser.Parse(result);
+      } catch (e) {
+        exception = e;
+      }
+    }
+
+    if (!parsedResult) {
+      return;
+    }
+
+    parsedResult = applyIncludedFields(parsedResult, subLayer);
+
+    var responseFeatureCollection = new ISY.Domain.LayerResponse();
+    responseFeatureCollection.id = subLayer.id;
+    responseFeatureCollection.name = subLayer.providerName;
+    responseFeatureCollection.isLoading = false;
+    responseFeatureCollection.features = parsedResult;
+    responseFeatureCollection.exception = exception;
+    responseFeatureCollection.featureInfoTitle = subLayer.featureInfoTitle;
+    if (subLayer.source === ISY.Domain.SubLayer.SOURCES.proxyWms || subLayer.source === ISY.Domain.SubLayer.SOURCES.proxyWmts ||
+      subLayer.source === ISY.Domain.SubLayer.SOURCES.wms || subLayer.source === ISY.Domain.SubLayer.SOURCES.wmts) {
+      responseFeatureCollection.wms = true;
+    }
+    responseFeatureCollection.featureInfoElement = subLayer.featureInfoElement;
+    responseFeatureCollection.showDialog = subLayer.showDialog;
+    responseFeatureCollection.openNewWindow = subLayer.openNewWindow;
+    responseFeatureCollection.openParentWindow = subLayer.openParentWindow;
+    responseFeatureCollection.windowWidth = subLayer.windowWidth;
+    responseFeatureCollection.editable = subLayer.editable;
+
+    eventHandler.TriggerEvent(ISY.Events.EventTypes.FeatureInfoEnd, responseFeatureCollection);
+  }
+
+  function _getSupportedFormatsForService(isySubLayer, service, callback) {
+    var parseCallback = function (data) {
+      var jsonCapabilities = parseGetCapabilities(data);
+      callback(jsonCapabilities);
     };
 
-    function _handleGetInfoResponse(subLayer, result) {
-        var parsedResult;
-        var exception;
-        if (subLayer.featureInfo.supportsGetFeatureInfo && subLayer.source == 'WMS') {
-            var xmlFile = jQuery.parseXML(result.data);
-            var jsonFile = xml.xmlToJSON(xmlFile);
-            if (jsonFile.hasOwnProperty("msGMLOutput")) {
-                if (jsonFile.msGMLOutput.hasOwnProperty(subLayer.providerName + "_layer")) {
-                    var getProperties = jsonFile.msGMLOutput[subLayer.providerName + "_layer"][subLayer.providerName + "_feature"];
-                    parsedResult = [];
-                    if (getProperties.constructor != Array) {
-                        getProperties = [getProperties];
-                    }
-                    for (var i = 0; i < getProperties.length; i++) {
-                        parsedResult.push(getProperties[i]);
-                    }
-                }
-            }
-        } else {
-            try {
-                parsedResult = featureParser.Parse(result);
-            } catch (e) {
-                exception = e;
-            }
-        }
-
-        if (!parsedResult) {
-            return;
-        }
-
-        parsedResult = applyIncludedFields(parsedResult, subLayer);
-
-        var responseFeatureCollection = new ISY.Domain.LayerResponse();
-        responseFeatureCollection.id = subLayer.id;
-        responseFeatureCollection.name = subLayer.providerName;
-        responseFeatureCollection.isLoading = false;
-        responseFeatureCollection.features = parsedResult;
-        responseFeatureCollection.exception = exception;
-        responseFeatureCollection.featureInfoTitle = subLayer.featureInfoTitle;
-        if (subLayer.source === ISY.Domain.SubLayer.SOURCES.proxyWms || subLayer.source == ISY.Domain.SubLayer.SOURCES.proxyWmts ||
-            subLayer.source === ISY.Domain.SubLayer.SOURCES.wms || subLayer.source === ISY.Domain.SubLayer.SOURCES.wmts) {
-            responseFeatureCollection.wms = true;
-        }
-        responseFeatureCollection.featureInfoElement = subLayer.featureInfoElement;
-        responseFeatureCollection.showDialog = subLayer.showDialog;
-        responseFeatureCollection.openNewWindow = subLayer.openNewWindow;
-        responseFeatureCollection.openParentWindow = subLayer.openParentWindow;
-        responseFeatureCollection.windowWidth = subLayer.windowWidth;
-        responseFeatureCollection.editable = subLayer.editable;
-
-        eventHandler.TriggerEvent(ISY.Events.EventTypes.FeatureInfoEnd, responseFeatureCollection);
+    // TODO: This replace is too specific
+    var wmsUrl = isySubLayer.url.replace('proxy/wms', 'proxy/');
+    var getCapabilitiesUrl;
+    var questionMark = '?';
+    var urlHasQuestionMark = wmsUrl.indexOf(questionMark) > -1;
+    if (!urlHasQuestionMark) {
+      wmsUrl = wmsUrl + encodeURIComponent(questionMark);
     }
 
-    function _getSupportedFormatsForService(isySubLayer, service, callback) {
-        var parseCallback = function (data) {
-            var jsonCapabilities = parseGetCapabilities(data);
-            callback(jsonCapabilities);
-        };
-
-        // TODO: This replace is too specific
-        var wmsUrl = isySubLayer.url.replace('proxy/wms', 'proxy/');
-        var getCapabilitiesUrl;
-        var questionMark = '?';
-        var urlHasQuestionMark = wmsUrl.indexOf(questionMark) > -1;
-        if (!urlHasQuestionMark) {
-            wmsUrl = wmsUrl + encodeURIComponent(questionMark);
-        }
-
-        var request = 'SERVICE=' + service + '&REQUEST=GETCAPABILITIES';
-        if (isySubLayer.source === ISY.Domain.SubLayer.SOURCES.proxyWms || isySubLayer.source == ISY.Domain.SubLayer.SOURCES.proxyWmts) {
-            request = encodeURIComponent(request);
-        }
-        getCapabilitiesUrl = wmsUrl + request;
-        httpHelper.get(getCapabilitiesUrl).success(parseCallback);
+    var request = 'SERVICE=' + service + '&REQUEST=GETCAPABILITIES';
+    if (isySubLayer.source === ISY.Domain.SubLayer.SOURCES.proxyWms || isySubLayer.source === ISY.Domain.SubLayer.SOURCES.proxyWmts) {
+      request = encodeURIComponent(request);
     }
+    getCapabilitiesUrl = wmsUrl + request;
+    httpHelper.get(getCapabilitiesUrl).success(parseCallback);
+  }
 
-    function parseGetCapabilities(getCapabilitiesXml) {
-        var parser = new ol.format.WMSCapabilities();
-        return parser.read(getCapabilitiesXml);
+  function parseGetCapabilities(getCapabilitiesXml) {
+    var parser = new ol.format.WMSCapabilities();
+    return parser.read(getCapabilitiesXml);
+  }
+
+  /*
+      Get Feature Info function
+   */
+
+  function handlePointSelect(coordinate, layersSupportingGetFeatureInfo) {
+    if (useInfoMarker === true) {
+      _showInfoMarker(coordinate);
     }
+    eventHandler.TriggerEvent(ISY.Events.EventTypes.MapClickCoordinate, coordinate);
+    _trigStartGetInfoRequest(layersSupportingGetFeatureInfo);
 
-    /*
-        Get Feature Info function
-     */
-
-    function handlePointSelect(coordinate, layersSupportingGetFeatureInfo) {
-        if (useInfoMarker === true) {
-            _showInfoMarker(coordinate);
-        }
-        eventHandler.TriggerEvent(ISY.Events.EventTypes.MapClickCoordinate, coordinate);
-        _trigStartGetInfoRequest(layersSupportingGetFeatureInfo);
-
-        for (var i = 0; i < layersSupportingGetFeatureInfo.length; i++) {
-            var subLayer = layersSupportingGetFeatureInfo[i];
-            switch (subLayer.source) {
-                case ISY.Domain.SubLayer.SOURCES.wmts:
-                case ISY.Domain.SubLayer.SOURCES.wms:
-                case ISY.Domain.SubLayer.SOURCES.proxyWms:
-                case ISY.Domain.SubLayer.SOURCES.proxyWmts:
-                    _sendGetFeatureInfoRequest(subLayer, coordinate);
-                    break;
-                case ISY.Domain.SubLayer.SOURCES.wfs:
-                case ISY.Domain.SubLayer.SOURCES.vector:
-                    var features = mapImplementation.GetFeaturesInExtent(subLayer, mapImplementation.GetExtentForCoordinate(coordinate, pixelTolerance));
-                    _handleGetInfoResponse(subLayer, features);
-                    break;
-            }
-        }
+    for (var i = 0; i < layersSupportingGetFeatureInfo.length; i++) {
+      var subLayer = layersSupportingGetFeatureInfo[i];
+      switch (subLayer.source) {
+        case ISY.Domain.SubLayer.SOURCES.wmts:
+        case ISY.Domain.SubLayer.SOURCES.wms:
+        case ISY.Domain.SubLayer.SOURCES.proxyWms:
+        case ISY.Domain.SubLayer.SOURCES.proxyWmts:
+          _sendGetFeatureInfoRequest(subLayer, coordinate);
+          break;
+        case ISY.Domain.SubLayer.SOURCES.wfs:
+        case ISY.Domain.SubLayer.SOURCES.vector:
+          var features = mapImplementation.GetFeaturesInExtent(subLayer, mapImplementation.GetExtentForCoordinate(coordinate, pixelTolerance));
+          _handleGetInfoResponse(subLayer, features);
+          break;
+      }
     }
+  }
 
-    function _sendGetFeatureInfoRequest(subLayer, coordinate) {
-        var infoUrl = mapImplementation.GetInfoUrl(subLayer, coordinate);
-        infoUrl = decodeURIComponent(infoUrl);
-        _handleGetInfoRequest(infoUrl, subLayer);
+  function _sendGetFeatureInfoRequest(subLayer, coordinate) {
+    var infoUrl = mapImplementation.GetInfoUrl(subLayer, coordinate);
+    infoUrl = decodeURIComponent(infoUrl);
+    _handleGetInfoRequest(infoUrl, subLayer);
+  }
+
+  function getSupportedGetFeatureInfoFormats(isySubLayer, callback) {
+    var service = 'WMS';
+    var getFormatCallback = function (jsonCapabilities) {
+      var formats = jsonCapabilities.Capability.Request.GetFeatureInfo.Format;
+      callback(formats);
+    };
+    _getSupportedFormatsForService(isySubLayer, service, getFormatCallback);
+  }
+
+  /*
+      Get Feature functions
+   */
+
+  function handleBoxSelect(boxExtent, layersSupportingGetFeature) {
+    _trigStartGetInfoRequest(layersSupportingGetFeature);
+
+    for (var i = 0; i < layersSupportingGetFeature.length; i++) {
+      var subLayer = layersSupportingGetFeature[i];
+      switch (subLayer.source) {
+        case ISY.Domain.SubLayer.SOURCES.wmts:
+        case ISY.Domain.SubLayer.SOURCES.wms:
+        case ISY.Domain.SubLayer.SOURCES.proxyWms:
+        case ISY.Domain.SubLayer.SOURCES.proxyWmts:
+          _sendBoxSelectRequest(subLayer, boxExtent);
+          break;
+        case ISY.Domain.SubLayer.SOURCES.wfs:
+        case ISY.Domain.SubLayer.SOURCES.vector:
+          var features = mapImplementation.GetFeaturesInExtent(subLayer, boxExtent);
+          _handleGetInfoResponse(subLayer, features);
+          break;
+      }
     }
+  }
 
-    function getSupportedGetFeatureInfoFormats(isySubLayer, callback) {
-        var service = 'WMS';
-        var getFormatCallback = function (jsonCapabilities) {
-            var formats = jsonCapabilities.Capability.Request.GetFeatureInfo.Format;
-            callback(formats);
-        };
-        _getSupportedFormatsForService(isySubLayer, service, getFormatCallback);
+  function _sendBoxSelectRequest(isySubLayer, boxExtent) {
+    var proxyHost = mapImplementation.GetProxyHost();
+    var infoUrl = proxyHost + _getFeatureUrl(isySubLayer, boxExtent);
+    _handleGetInfoRequest(infoUrl, isySubLayer);
+  }
+
+  function _getFeatureUrl(isySubLayer, boxExtent) {
+    var crs = isySubLayer.featureInfo.getFeatureCrs;
+    //var adaptedExtent = mapImplementation.TransformBox(isySubLayer.coordinate_system, isySubLayer.featureInfo.getFeatureCrs, boxExtent);
+    //var extent = mapImplementation.GetCenterFromExtent(boxExtent);
+    var adaptedExtent = boxExtent;
+    //var url = "service=WFS&request=GetFeature&typeName=" + isySubLayer.name + "&srsName=" + crs + "&outputFormat=" + isySubLayer.featureInfo.getFeatureFormat + "&bbox=" + adaptedExtent;
+    var url = "service=WMS&version=1.3.0&request=GetFeatureInfo&TRANSPARENT=" + isySubLayer.transparent + "&QUERY_LAYERS=" + isySubLayer.name + "&INFO_FORMAT=" + isySubLayer.featureInfo.getFeatureInfoFormat + "&SRS=" + crs + "&bbox=" + adaptedExtent + "&width=" + 400 + "&height=" + 400 + "&x=" + 150 + "&y=" + 150;
+    url = decodeURIComponent(url);
+    url = url.substring(url.lastIndexOf('?'), url.length);
+    url = url.replace('?', '');
+    url = encodeURIComponent(url);
+    // TODO: This replace is too specific
+    return isySubLayer.url[0].replace('proxy/wms', 'proxy/') + url;
+  }
+
+  function getSupportedGetFeatureFormats(isySubLayer, callback) {
+    //TODO: Handle namespace behaviour, when colon is present the parser fails....Meanwhile, do not use
+    var service = 'WFS';
+    var getFormatCallback = function (jsonCapabilities) {
+      var formats = jsonCapabilities.Capability.Request.GetFeature.Format;
+      callback(formats);
+    };
+    _getSupportedFormatsForService(isySubLayer, service, getFormatCallback);
+  }
+
+  /*
+      Marker functions for Get Feature info click
+   */
+
+  function createDefaultInfoMarker() {
+    infoMarker = document.createElement("img");
+    infoMarker.src = infoMarkerPath;
+    _hideInfoMarker();
+    _addInfoMarker();
+  }
+
+  function _showInfoMarker(coordinate) {
+    if (infoMarker === undefined) {
+      createDefaultInfoMarker();
     }
+    setInfoMarker(infoMarker, true);
+    infoMarker.style.visibility = "visible";
+    infoMarker.style.position = "absolute";
+    infoMarker.style.zIndex = "11";
+    mapImplementation.ShowInfoMarker(coordinate, infoMarker);
+  }
 
-    /*
-        Get Feature functions
-     */
+  function _showInfoMarkers(coordinates) {
+    mapImplementation.ShowInfoMarkers(coordinates, infoMarker);
+  }
 
-    function handleBoxSelect(boxExtent, layersSupportingGetFeature) {
-        _trigStartGetInfoRequest(layersSupportingGetFeature);
-
-        for (var i = 0; i < layersSupportingGetFeature.length; i++) {
-            var subLayer = layersSupportingGetFeature[i];
-            switch (subLayer.source) {
-                case ISY.Domain.SubLayer.SOURCES.wmts:
-                case ISY.Domain.SubLayer.SOURCES.wms:
-                case ISY.Domain.SubLayer.SOURCES.proxyWms:
-                case ISY.Domain.SubLayer.SOURCES.proxyWmts:
-                    _sendBoxSelectRequest(subLayer, boxExtent);
-                    break;
-                case ISY.Domain.SubLayer.SOURCES.wfs:
-                case ISY.Domain.SubLayer.SOURCES.vector:
-                    var features = mapImplementation.GetFeaturesInExtent(subLayer, boxExtent);
-                    _handleGetInfoResponse(subLayer, features);
-                    break;
-            }
-        }
-    }
-
-    function _sendBoxSelectRequest(isySubLayer, boxExtent) {
-        var proxyHost = mapImplementation.GetProxyHost();
-        var infoUrl = proxyHost + _getFeatureUrl(isySubLayer, boxExtent);
-        _handleGetInfoRequest(infoUrl, isySubLayer);
-    }
-
-    function _getFeatureUrl(isySubLayer, boxExtent) {
-        var crs = isySubLayer.featureInfo.getFeatureCrs;
-        //var adaptedExtent = mapImplementation.TransformBox(isySubLayer.coordinate_system, isySubLayer.featureInfo.getFeatureCrs, boxExtent);
-        //var extent = mapImplementation.GetCenterFromExtent(boxExtent);
-        var adaptedExtent = boxExtent;
-        //var url = "service=WFS&request=GetFeature&typeName=" + isySubLayer.name + "&srsName=" + crs + "&outputFormat=" + isySubLayer.featureInfo.getFeatureFormat + "&bbox=" + adaptedExtent;
-        var url = "service=WMS&version=1.3.0&request=GetFeatureInfo&TRANSPARENT=" + isySubLayer.transparent + "&QUERY_LAYERS=" + isySubLayer.name + "&INFO_FORMAT=" + isySubLayer.featureInfo.getFeatureInfoFormat + "&SRS=" + crs + "&bbox=" + adaptedExtent + "&width=" + 400 + "&height=" + 400 + "&x=" + 150 + "&y=" + 150;
-        url = decodeURIComponent(url);
-        url = url.substring(url.lastIndexOf('?'), url.length);
-        url = url.replace('?', '');
-        url = encodeURIComponent(url);
-        // TODO: This replace is too specific
-        return isySubLayer.url[0].replace('proxy/wms', 'proxy/') + url;
-    }
-
-    function getSupportedGetFeatureFormats(isySubLayer, callback) {
-        //TODO: Handle namespace behaviour, when colon is present the parser fails....Meanwhile, do not use
-        var service = 'WFS';
-        var getFormatCallback = function (jsonCapabilities) {
-            var formats = jsonCapabilities.Capability.Request.GetFeature.Format;
-            callback(formats);
-        };
-        _getSupportedFormatsForService(isySubLayer, service, getFormatCallback);
-    }
-
-    /*
-        Marker functions for Get Feature info click
-     */
-
-    function createDefaultInfoMarker() {
-        infoMarker = document.createElement("img");
-        infoMarker.src = infoMarkerPath;
-        _hideInfoMarker();
-        _addInfoMarker();
-    }
-
-    function _showInfoMarker(coordinate) {
+  function setInfoMarker(element, removeCurrent) {
+    if (useInfoMarker === true) {
+      if (removeCurrent === true) {
         if (infoMarker === undefined) {
-            createDefaultInfoMarker();
+          createDefaultInfoMarker();
         }
-        setInfoMarker(infoMarker, true);
-        infoMarker.style.visibility = "visible";
-        infoMarker.style.position = "absolute";
-        infoMarker.style.zIndex = "11";
-        mapImplementation.ShowInfoMarker(coordinate, infoMarker);
+        mapImplementation.RemoveInfoMarker(infoMarker);
+        _hideInfoMarker();
+        useInfoMarker = false;
+      }
+      infoMarker = element;
+      //_addInfoMarker();
     }
+  }
 
-    function _showInfoMarkers(coordinates) {
-        mapImplementation.ShowInfoMarkers(coordinates, infoMarker);
-    }
+  function _addInfoMarker() {
+    document.body.appendChild(infoMarker);
+    //useInfoMarker = true;
+  }
 
-    function setInfoMarker(element, removeCurrent) {
-        if (useInfoMarker === true) {
-            if (removeCurrent === true) {
-                if (infoMarker === undefined) {
-                    createDefaultInfoMarker();
-                }
-                mapImplementation.RemoveInfoMarker(infoMarker);
-                _hideInfoMarker();
-                useInfoMarker = false;
-            }
-            infoMarker = element;
-            //_addInfoMarker();
-        }
-    }
+  function removeInfoMarker() {
+    useInfoMarker = true;
+    setInfoMarker(infoMarker, true);
+  }
 
-    function _addInfoMarker() {
-        document.body.appendChild(infoMarker);
-        //useInfoMarker = true;
-    }
+  function removeInfoMarkers() {
+    mapImplementation.RemoveInfoMarkers(undefined);
+  }
 
-    function removeInfoMarker() {
-        useInfoMarker = true;
-        setInfoMarker(infoMarker, true);
-    }
+  function _hideInfoMarker() {
+    infoMarker.style.visibility = "hidden";
+  }
 
-    function removeInfoMarkers() {
-        mapImplementation.RemoveInfoMarkers(undefined);
-    }
+  function setInfoMarkerPath(path) {
+    infoMarkerPath = path;
+  }
 
-    function _hideInfoMarker() {
-        infoMarker.style.visibility = "hidden";
-    }
+  function showInfoMarker(coordinate) {
+    _showInfoMarker(coordinate);
+    //mapImplementation.ShowInfoMarker(coordinate);
+  }
 
-    function setInfoMarkerPath(path) {
-        infoMarkerPath = path;
-    }
+  function showInfoMarkers(coordinates) {
+    _showInfoMarkers(coordinates);
+    //mapImplementation.ShowInfoMarker(coordinate);
+  }
 
-    function showInfoMarker(coordinate) {
-        _showInfoMarker(coordinate);
-        //mapImplementation.ShowInfoMarker(coordinate);
-    }
-
-    function showInfoMarkers(coordinates) {
-        _showInfoMarkers(coordinates);
-        //mapImplementation.ShowInfoMarker(coordinate);
-    }
-
-    return {
-        HandlePointSelect: handlePointSelect,
-        HandleBoxSelect: handleBoxSelect,
-        CreateDefaultInfoMarker: createDefaultInfoMarker,
-        SetInfoMarker: setInfoMarker,
-        RemoveInfoMarker: removeInfoMarker,
-        RemoveInfoMarkers: removeInfoMarkers,
-        GetSupportedGetFeatureInfoFormats: getSupportedGetFeatureInfoFormats,
-        GetSupportedGetFeatureFormats: getSupportedGetFeatureFormats,
-        SetInfoMarkerPath: setInfoMarkerPath,
-        ShowInfoMarker: showInfoMarker,
-        ShowInfoMarkers: showInfoMarkers
-
-    };
+  return {
+    HandlePointSelect: handlePointSelect,
+    HandleBoxSelect: handleBoxSelect,
+    CreateDefaultInfoMarker: createDefaultInfoMarker,
+    SetInfoMarker: setInfoMarker,
+    RemoveInfoMarker: removeInfoMarker,
+    RemoveInfoMarkers: removeInfoMarkers,
+    GetSupportedGetFeatureInfoFormats: getSupportedGetFeatureInfoFormats,
+    GetSupportedGetFeatureFormats: getSupportedGetFeatureFormats,
+    SetInfoMarkerPath: setInfoMarkerPath,
+    ShowInfoMarker: showInfoMarker,
+    ShowInfoMarkers: showInfoMarkers
+  };
 };
+
 var ISY = ISY || {};
 ISY.MapAPI = ISY.MapAPI || {};
 
@@ -1132,7 +1132,7 @@ ISY.MapAPI.Layers = function(mapImplementation){
         for(var i = 0; i < subLayers.length; i++){
             var subLayer = subLayers[i];
             var thisIndex = mapImplementation.GetLayerIndex(subLayer);
-            if(thisIndex != null){
+            if(thisIndex !== null){
                 indexes.push(thisIndex);
             }
         }
@@ -1206,7 +1206,7 @@ ISY.MapAPI.Map = function(mapImplementation, eventHandler, featureInfo, layerHan
     }
 
     function addCustomProj(code) {
-        if (typeof(ol) == "undefined") {
+        if (typeof(ol) === "undefined") {
             // TODO: Never create ol-stuff in general code!!!
             return;
         }
@@ -1469,7 +1469,7 @@ ISY.MapAPI.Map = function(mapImplementation, eventHandler, featureInfo, layerHan
     }
 
     function arrangeLayers(){
-        if (getConfigLayerCount() == getLayerCount()){
+        if (getConfigLayerCount() === getLayerCount()){
             layerHandler.ArrangeLayers();
         }
     }
@@ -2141,7 +2141,7 @@ ISY.MapAPI.Parsers.Base = function(factory) {
         if (result === undefined) {
             return null;
         } else if(result.type){
-            if(result.type == "FeatureCollection"){
+            if(result.type === "FeatureCollection"){
                 parserName = 'geoJson';
             }
         }else if(result.length !== undefined){
@@ -2288,8 +2288,8 @@ ISY.MapAPI.Parsers.FiskeriDir = function(mapApi){
         for(var i in properties){
             if(i.toLocaleLowerCase().indexOf(insteadOfGml) === -1){
                 attributes.push([i, properties[i]]);
-                if(i == 'x') { x = properties[i]; }
-                if(i == 'y') { y = properties[i]; }
+                if(i === 'x') { x = properties[i]; }
+                if(i === 'y') { y = properties[i]; }
             }
             else {
                 gmlObject = properties[i];
@@ -2479,7 +2479,7 @@ ISY.MapAPI.Tools.ToolFactory = function(map, tools){
             var tool = externalTools[i];
             tool.deactivate();
 
-            if(tool.id == toolId){
+            if(tool.id === toolId){
                 if (!$.isEmptyObject(toolOptions)){
                     tool.activate(toolOptions);
                 }else{
@@ -3004,7 +3004,7 @@ ISY.MapImplementation.Leaflet.Map = function(repository, eventHandler, httpHelpe
         var source;
         var layerFromPool = _getLayerFromPool(isySubLayer);
 
-        if(layerFromPool != null){
+        if(layerFromPool !== null){
             layer = layerFromPool;
         }
         else{
@@ -3076,7 +3076,7 @@ ISY.MapImplementation.Leaflet.Map = function(repository, eventHandler, httpHelpe
     function _getLayerFromPool(isySubLayer){
         for(var i = 0; i < layerPool.length; i++){
             var layerInPool = layerPool[i];
-            if(layerInPool.guid == isySubLayer.id){
+            if(layerInPool.guid === isySubLayer.id){
                 return layerInPool;
             }
         }
@@ -3129,7 +3129,7 @@ ISY.MapImplementation.Leaflet.Map = function(repository, eventHandler, httpHelpe
         var layers = _getLayersWithGuid();
         for(var i = 0; i < layers.length; i++){
             var layer = layers[i];
-            if(layer.guid == guid){
+            if(layer.guid === guid){
                 return layer;
             }
         }
@@ -3140,7 +3140,7 @@ ISY.MapImplementation.Leaflet.Map = function(repository, eventHandler, httpHelpe
         var layers = _getLayersWithGuid();
         for(var i = 0; i < layers.length; i++){
             var layer = layers[i];
-            if(layer.guid == isySubLayer.id){
+            if(layer.guid === isySubLayer.id){
                 return i;
             }
         }
@@ -3150,7 +3150,7 @@ ISY.MapImplementation.Leaflet.Map = function(repository, eventHandler, httpHelpe
     function getLayerByName(layerTitle) {
         var layers = _getLayersWithGuid();
         for (var i = 0; i < layers.length; i++) {
-            if (layers[i].get('title') == layerTitle) {
+            if (layers[i].get('title') === layerTitle) {
                 return layers[i];
             }
         }
@@ -4036,7 +4036,7 @@ ISY.MapImplementation.OL3.AddLayerUrl = function(eventHandler){
 
     function _removeOldLayer(map){
         map.getLayers().forEach(function (layer) {
-                if (layer.get('id') == layerId) {
+                if (layer.get('id') === layerId) {
                     map.removeLayer(layer);
                 }
             }
@@ -4145,7 +4145,7 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler) {
                     // deSelectedFeatures.forEach(function(feature) {
                     //     feature.setStyle(jsonStyleFetcher.GetStyle(feature));
                     // });
-                    if (selectedFeatures.length == 1) {
+                    if (selectedFeatures.length === 1) {
                         eventHandler.TriggerEvent(ISY.Events.EventTypes.DrawFeatureSelect, selectedFeatures[0].getId());
                     }
                 }, this));
@@ -4307,7 +4307,7 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler) {
     }
 
     function addDrawInteraction(map, type) {
-        if (draw && draw.type == type) {
+        if (draw && draw.type === type) {
             return;
         }
         draw = new ol.interaction.Draw({
@@ -4339,11 +4339,11 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler) {
 
     function _checkForShiftKey(event) {
         return ol.events.condition.shiftKeyOnly(event) &&
-            event.type == 'pointerdown';
+            event.type === 'pointerdown';
     }
 
     function _checkForNoKeys(event) {
-        return event.type == 'pointerdown' &&
+        return event.type === 'pointerdown' &&
             ol.events.condition.noModifierKeys(event);
     }
 
@@ -4655,7 +4655,7 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler) {
             style = options.style;
         }
         if (options.GeoJSON) {
-            if (options.GeoJSON == 'remove') {
+            if (options.GeoJSON === 'remove') {
                 initiateDrawing();
             }
             else if (options.deleteFeature && options.selectedFeatureId) {
@@ -4685,7 +4685,7 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler) {
             selectedFeature = undefined;
         }
         map.getLayers().forEach(function (layer) {
-                if (layer.get('id') == 'drawing') {
+                if (layer.get('id') === 'drawing') {
                     map.removeLayer(layer);
                 }
             }
@@ -4698,10 +4698,10 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler) {
                 addModifyInteraction(map);
                 break;
             case('draw'):
-                if (options.type != 'Active') {
+                if (options.type !== 'Active') {
                     type = options.type;
                 }
-                if (options.type == 'Text') {
+                if (options.type === 'Text') {
                     type = 'Point';
                     text = true;
                 }
@@ -5165,9 +5165,9 @@ ISY.MapImplementation.OL3.FeatureInfo = function(){
     }
 
     function _ensureHighlightLayer(map){
-        if(highLightLayer == null){
+        if(highLightLayer === null){
 
-            if(highlightStyle == null){
+            if(highlightStyle === null){
                 _setDefaultHighlightStyle();
             }
 
@@ -6004,7 +6004,7 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
             _trigLayersChanged();
         };
 
-        if(layerFromPool != null){
+        if(layerFromPool !== null){
             layer = layerFromPool;
             // For caching, remember layer config
             layer.set('config', isySubLayer);
@@ -6061,7 +6061,7 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
 
             if(isySubLayer.source === ISY.Domain.SubLayer.SOURCES.vector){
                 if (isySubLayer.style) {
-                    if (typeof isySubLayer.style == "object" || isySubLayer.style.indexOf("http") < 0) {
+                    if (typeof isySubLayer.style === "object" || isySubLayer.style.indexOf("http") < 0) {
                         sldstyles[isySubLayer.id] = new ISY.MapImplementation.OL3.Styles.Json(isySubLayer.style);
                         layer = new ol.layer.Vector({
                             source: source,
@@ -6179,7 +6179,7 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
 
     function _loadVectorLayer(isySubLayer, source){
         var callback = function(data){
-            data = typeof data == 'object' ? data : JSON.parse(data);
+            data = typeof data === 'object' ? data : JSON.parse(data);
             var format = new ol.format.GeoJSON();
             for(var i = 0; i < data.features.length; i++) {
                 var feature = data.features[i];
@@ -6199,7 +6199,7 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
     function _getLayerFromPool(isySubLayer){
         for(var i = 0; i < layerPool.length; i++){
             var layerInPool = layerPool[i];
-            if(layerInPool.guid == isySubLayer.id){
+            if(layerInPool.guid === isySubLayer.id){
                 return layerInPool;
             }
         }
@@ -6209,7 +6209,7 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
     function _getLayerFromPoolByGuid(guid){
         for(var i = 0; i < layerPool.length; i++){
             var layerInPool = layerPool[i];
-            if(layerInPool.guid == guid){
+            if(layerInPool.guid === guid){
                 return layerInPool;
             }
         }
@@ -6293,10 +6293,10 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
         if (scale === undefined){
             scale = getScale();
         }
-        if (scale == 1) {
+        if (scale === 1) {
             return mapResolutions[mapResolutions.length - 1];
         }
-        if (scale == Infinity){
+        if (scale === Infinity){
             return undefined;
         }
         var zoomlevel = -1;
@@ -6357,7 +6357,7 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
         var layers = _getLayersWithGuid();
         for(var i = 0; i < layers.length; i++){
             var layer = layers[i];
-            if(layer.guid == guid){
+            if(layer.guid === guid){
                 return layer;
             }
         }
@@ -6368,7 +6368,7 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
         var layers = _getLayersWithGuid();
         for(var i = 0; i < layers.length; i++){
             var layer = layers[i];
-            if(layer.guid == isySubLayer.id){
+            if(layer.guid === isySubLayer.id){
                 return i;
             }
         }
@@ -6378,7 +6378,7 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
     function getLayerByName(layerTitle) {
         var layers = _getLayersWithGuid();
         for (var i = 0; i < layers.length; i++) {
-            if (layers[i].get('title') == layerTitle) {
+            if (layers[i].get('title') === layerTitle) {
                 return layers[i];
             }
         }
@@ -6725,7 +6725,7 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
             return false;
         }
         var layerFromPool = _getLayerFromPool(isySubLayer);
-        if (layerFromPool != null){
+        if (layerFromPool !== null){
             featureEditor.Init(
                 isySubLayer.url,
                 isySubLayer.name,
@@ -6788,7 +6788,7 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
 
         var featureNamespace = response.firstChild.getAttribute("targetNamespace");
 
-        if (typeof describedSource.format == 'undefined') {
+        if (typeof describedSource.format === 'undefined') {
             var gmlFormat;
             switch (describedSubLayer.version) {
                 case '1.0.0':
@@ -7195,7 +7195,7 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
             } else {
               extent = layer.getSource().getTileGrid().getExtent();
             }
-            if (Array.isArray(extent) && extent[0] != Infinity) {
+            if (Array.isArray(extent) && extent[0] !== Infinity) {
                 if (!ol.extent.containsCoordinate(extent, map.getView().getCenter())){
                     map.getView().fit(extent, map.getSize());
                 }
@@ -7223,12 +7223,12 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
             var layer = _getLayerFromPool(isySubLayer);
             if (layer){
                 var extent = layer.getSource().getExtent();
-                if (Array.isArray(extent) && extent[0] != Infinity) {
+                if (Array.isArray(extent) && extent[0] !== Infinity) {
                     setNewExtent(extent);
                 }
             }
         });
-        if (Array.isArray(layersExtent) && layersExtent[0] != Infinity) {
+        if (Array.isArray(layersExtent) && layersExtent[0] !== Infinity) {
             map.getView().fit(layersExtent, map.getSize());
         }
     };
@@ -7292,7 +7292,7 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
     };
 
     function transformEpsgCoordinate(coord, toCrs){
-        if(coord.epsg !== "" && toCrs !== "" && coord.epsg != toCrs){
+        if(coord.epsg !== "" && toCrs !== "" && coord.epsg !== toCrs){
             //var fromProj = ol.proj.get(coord.epsg);
             //var toProj = ol.proj.get(toCrs);
             var transformedCoord = ol.proj.transform([coord.lon, coord.lat], coord.epsg, toCrs);
@@ -7310,7 +7310,7 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
 
     function transformBox(fromCrs, toCrs, boxExtent){
         var returnExtent = boxExtent;
-        if(fromCrs !== "" && toCrs !== "" && fromCrs != toCrs){
+        if(fromCrs !== "" && toCrs !== "" && fromCrs !== toCrs){
             //var fromProj = ol.proj.get(fromCrs);
             //var toProj = ol.proj.get(toCrs);
             //var transformedExtent = ol.proj.transformExtent(boxExtent, fromProj, toProj);
@@ -7859,7 +7859,7 @@ ISY.MapImplementation.OL3.Measure = function(eventHandler){
             updateWhileInteracting: true // optional, for instant visual feedback
         });
         //map.addOverlay(circleOverlay);
-        var type ='Polygon';// (typeSelect.value == 'area' ? 'Polygon' : 'LineString');
+        var type ='Polygon';// (typeSelect.value === 'area' ? 'Polygon' : 'LineString');
         var source = new ol.source.Vector();
         draw = new ol.interaction.Draw({
             source: source,
@@ -7907,7 +7907,7 @@ ISY.MapImplementation.OL3.Measure = function(eventHandler){
                         tooltipCoord = geom.getLastCoordinate();
                     }
                     var circleCoordinates = geom.getCoordinates()[0];
-                    if (circleCoordinates.length == 2){
+                    if (circleCoordinates.length === 2){
                         measureTooltipElement.innerHTML = circleArea.string;
                     }else{
                         measureTooltipElement.innerHTML = output.string;
@@ -7933,7 +7933,7 @@ ISY.MapImplementation.OL3.Measure = function(eventHandler){
 
     function _drawCircle(geom){
         var circleCoordinates = geom.getCoordinates()[0];
-        if (circleCoordinates.length == 2) {
+        if (circleCoordinates.length === 2) {
             circleFeature.getGeometry().setRadius(circleRadius);
             return Math.PI * Math.pow(circleRadius, 2);
         }
@@ -8233,7 +8233,7 @@ ISY.MapImplementation.OL3.MeasureLine = function(eventHandler){
     var draw; // global so we can remove it later
     var drawLayer;
     function addInteraction(map) {
-        var type ='LineString';// (typeSelect.value == 'area' ? 'Polygon' : 'LineString');
+        var type ='LineString';// (typeSelect.value === 'area' ? 'Polygon' : 'LineString');
         var source = new ol.source.Vector();
         draw = new ol.interaction.Draw({
             source: source,
@@ -8784,7 +8784,7 @@ ISY.MapImplementation.OL3.Offline = function(){
                 // handle response
                 log(response);
             }).catch(function (err) {
-                if (err && err.name == 'not_found') {
+                if (err && err.name === 'not_found') {
                     // Not found in database, add it
                     dbsInfo = status;
                     eventHandler.TriggerEvent(ISY.Events.EventTypes.StatusPouchDbChanged, dbsInfo);
@@ -8825,7 +8825,7 @@ ISY.MapImplementation.OL3.Offline = function(){
     //        // handle response
     //        log(response);
     //    }).catch(function (err) {
-    //        if (err && err.name == 'not_found') {
+    //        if (err && err.name === 'not_found') {
     //            // Not found in database, add it
     //            pouchTilesDB.put({
     //                _id: 'settings',
@@ -8879,7 +8879,7 @@ ISY.MapImplementation.OL3.Offline = function(){
         $.ajax({
             url: url
         }).done(function(response) {
-            if (typeof response == 'object'){
+            if (typeof response === 'object'){
                 if (response.firstChild.childElementCount === 0) {
                     return;
                 }
@@ -8911,7 +8911,7 @@ ISY.MapImplementation.OL3.Offline = function(){
         $.ajax({
             url: url
         }).done(function(response) {
-            if (typeof response == 'object'){
+            if (typeof response === 'object'){
                 if (response.firstChild.childElementCount === 0) {
                     return;
                 }
@@ -8956,7 +8956,7 @@ ISY.MapImplementation.OL3.Offline = function(){
         pouchDB[index].get(key).then(function (res) {
             // document is found OR no error , find the revision and update it
             pouchDB[index].getAttachment(key, name, function (err, attachmentRes) {
-                if (err && err.error == 'not_found' || !attachmentRes) {
+                if (err && err.error === 'not_found' || !attachmentRes) {
                     // attachment not found, but document do, add revision
                     // Add it!
                     _addPouchAttachmentWithRevision(key, name, url, index, res._rev, callback);
@@ -9049,7 +9049,7 @@ ISY.MapImplementation.OL3.Offline = function(){
                 // handle response
                 //log(response);
             }).catch(function (err) {
-                if (err && err.name == 'not_found') {
+                if (err && err.name === 'not_found') {
                     // Not found in database, add it
                     pouchDB[dbkey].put({
                         _id: url,
@@ -9141,7 +9141,7 @@ ISY.MapImplementation.OL3.Offline = function(){
             // handle response
             //log(response);
         }).catch(function (err) {
-            if (err && err.name == 'not_found') {
+            if (err && err.name === 'not_found') {
                 // Not found in database, add it
                 pouchDB[index].put({
                     _id: url,
@@ -9198,7 +9198,7 @@ ISY.MapImplementation.OL3.Offline = function(){
             eventHandler.TriggerEvent(ISY.Events.EventTypes.CachingProgress, _getCacheTileProgressCount());
             //var dLon = Math.floor(iter / (latTiles)) % (latTiles - (latTiles - lonTiles));
             //var dLat = iter % latTiles;
-            if (view.getZoom() != zoom + dZoom) {
+            if (view.getZoom() !== zoom + dZoom) {
                 view.setZoom(zoom + dZoom);
             }
             //var c1 = coord1[0] + (dLon * (coord2[0] - coord1[0]) / (lonTiles - 1));
@@ -9584,7 +9584,7 @@ ISY.MapImplementation.OL3.PrintBoxSelect = function (eventHandler) {
         }
         var mapCenterGeographic = _getMapCenterGeographic(_getMapCenter(map));
         var UTM = _getUTMZoneFromGeographicPoint(mapCenterGeographic.getCoordinates()[0], mapCenterGeographic.getCoordinates()[1]);
-        if (UTM != oldUTM) {
+        if (UTM !== oldUTM) {
             _createFrame(map);
             return false;
         }
@@ -10253,7 +10253,7 @@ ISY.MapImplementation.OL3.Sources.Wfs = function(isySubLayer, offline, parameter
         source.dispatchEvent('vectorloadend');
         var featureNamespace;
 
-        if (typeof source.format == 'undefined') {
+        if (typeof source.format === 'undefined') {
             var gmlFormat;
             switch (isySubLayer.version) {
                 case '1.0.0':
@@ -10409,7 +10409,7 @@ ISY.MapImplementation.OL3.Sources.Wfs = function(isySubLayer, offline, parameter
                 $.ajax({
                     url: url
                 }).done(function(response) {
-                    if (typeof response == 'object'){
+                    if (typeof response === 'object'){
                         if (response.firstChild.childElementCount === 0) {
                             return;
                         }
@@ -10429,7 +10429,7 @@ ISY.MapImplementation.OL3.Sources.Wfs = function(isySubLayer, offline, parameter
     source.set('type', 'ol.source.Vector');
 
     //// v3.11.2 bugfix:
-    //if (source.getProjection() == null){
+    //if (source.getProjection() === null){
     //    if (source.setProjection) {
     //        source.setProjection(projection);
     //    } else if (source.f !== undefined) {
@@ -10619,7 +10619,7 @@ ISY.MapImplementation.OL3.Sources.WfsT = function (url, featureType, featureNS, 
                     okResult = false;
                     message += "Response parse error.";
                 }
-                else if (result && result.transactionSummary.totalUpdated != 1) {
+                else if (result && result.transactionSummary.totalUpdated !== 1) {
                     okResult = false;
                     message += "Feature not updated.";
                 }
@@ -10780,7 +10780,7 @@ ISY.MapImplementation.OL3.Sources.WfsT = function (url, featureType, featureNS, 
                 else if (result.transactionSummary === undefined){
                     okResult = false;
                 }
-                else if (result && result.transactionSummary.totalDeleted != 1) {
+                else if (result && result.transactionSummary.totalDeleted !== 1) {
                         okResult = false;
                         message += "Feature not deleted.";
                 }
@@ -10810,7 +10810,7 @@ ISY.MapImplementation.OL3.Sources.WfsT = function (url, featureType, featureNS, 
      */
     function readResponse(data) {
         var result;
-        if (window.Document && data instanceof Document && data.documentElement && data.documentElement.localName == 'ExceptionReport') {
+        if (window.Document && data instanceof Document && data.documentElement && data.documentElement.localName === 'ExceptionReport') {
             result = (data.getElementsByTagNameNS('http://www.opengis.net/ows', 'ExceptionText').item(0).textContent);
         }
         else {
@@ -10834,7 +10834,7 @@ ISY.MapImplementation.OL3.Sources.WfsT = function (url, featureType, featureNS, 
      */
     function getLocalId(gmlId) {
         var startIndex = gmlId.indexOf('{');
-        if (startIndex != -1) {
+        if (startIndex !== -1) {
             return gmlId.substr(startIndex);
         }
         else {
@@ -10849,7 +10849,7 @@ ISY.MapImplementation.OL3.Sources.WfsT = function (url, featureType, featureNS, 
      */
     function getFeatureName(featureType) {
         var startIndex = featureType.indexOf(':');
-        if (startIndex != -1) {
+        if (startIndex !== -1) {
             startIndex++;
             return featureType.substr(startIndex);
         }
@@ -10865,7 +10865,7 @@ ISY.MapImplementation.OL3.Sources.WfsT = function (url, featureType, featureNS, 
      */
     function getFeatureNamespace(featureType) {
         var startIndex = featureType.indexOf(':');
-        if (startIndex != -1) {
+        if (startIndex !== -1) {
             return featureType.substr(0, startIndex);
         }
         else {
@@ -11002,7 +11002,7 @@ ISY.MapImplementation.OL3.Sources.Wmts = function(isySubLayer, parameters) {
         var parser = new ol.format.WMTSCapabilities();
         capabilities = parser.read(capabilities);
         capabilities.Contents.Layer.forEach(function (layer) {
-            if (layer.Identifier == isySubLayer.name) {
+            if (layer.Identifier === isySubLayer.name) {
                 layer.WGS84BoundingBox = undefined;
             }
         });
@@ -11089,7 +11089,7 @@ ISY.MapImplementation.OL3.Styles.Json = function (style) {
     var _zIndex = 0;
 
     function _createStyle(feature, jsonstyle, hover){
-        var jsonobject = (typeof jsonstyle == "object") ? jsonstyle : JSON.parse(jsonstyle);
+        var jsonobject = (typeof jsonstyle === "object") ? jsonstyle : JSON.parse(jsonstyle);
         var currentstyle = [];
         _zIndex++;
         currentstyle.push(new ol.style.Style({
@@ -11529,7 +11529,7 @@ ISY.MapImplementation.OL3.Styles.Sld = function () {
                                     lineDash: self.getStrokeDashstyle(linestyle.strokeDashstyle)
                                 });
                             }
-                            if (linestyle.graphic && linestyle.graphicName == 'circle'){
+                            if (linestyle.graphic && linestyle.graphicName === 'circle'){
                                 imagestyle = new ol.style.Circle({
                                     radius: parseInt(linestyle.pointRadius, 10),
                                     fill: fillstyle
@@ -11553,7 +11553,7 @@ ISY.MapImplementation.OL3.Styles.Sld = function () {
                 }
             },
             "IsDefault": function(node, style) {
-                if(this.getChildValue(node) == "1") {
+                if(this.getChildValue(node) === "1") {
                     style.isDefault = true;
                 }
             },
@@ -11683,7 +11683,7 @@ ISY.MapImplementation.OL3.Styles.Sld = function () {
             },
             "Radius": function(node, symbolizer) {
                 var radius = this.readers.ogc._expression.call(this, node);
-                if(radius != null) {
+                if(radius !== null) {
                     // radius is only used for halo
                     symbolizer.haloRadius = radius;
                 }
@@ -12054,10 +12054,10 @@ ISY.MapImplementation.OL3.Styles.Sld = function () {
     };
 
     var parseSld = function(response, zindex){
-        if (typeof response == 'undefined'){
+        if (typeof response === 'undefined'){
             return styles;
         }
-        if (typeof response == 'string'){
+        if (typeof response === 'string'){
             response = ol.xml.parse(response);
         }
 
@@ -12098,10 +12098,10 @@ ISY.MapImplementation.OL3.Styles.Sld = function () {
                 }
             }
         });
-        if (scales.maxScaleDenominator == 1){
+        if (scales.maxScaleDenominator === 1){
             scales.maxScaleDenominator = undefined;
         }
-        if (scales.minScaleDenominator == Infinity){
+        if (scales.minScaleDenominator === Infinity){
             scales.minScaleDenominator = undefined;
         }
         return scales;
@@ -12123,11 +12123,11 @@ ISY.MapImplementation.OL3.Styles.Sld = function () {
                     switch (typeof(featurevalue)) {
                         case 'string':
                             value = filter.value;
-                            condition = featurevalue == value;
+                            condition = featurevalue === value;
                             break;
                         case 'number':
                             value = parseInt(filter.value, 10);
-                            condition = parseInt(featurevalue, 10) == value;
+                            condition = parseInt(featurevalue, 10) === value;
                             break;
                     }
                     break;
@@ -12151,11 +12151,11 @@ ISY.MapImplementation.OL3.Styles.Sld = function () {
                     switch (typeof(featurevalue)) {
                         case 'string':
                             value = filter.value;
-                            condition = featurevalue != value;
+                            condition = featurevalue !== value;
                             break;
                         case 'number':
                             value = parseInt(filter.value, 10);
-                            condition = parseInt(featurevalue, 10) != value;
+                            condition = parseInt(featurevalue, 10) !== value;
                             break;
                     }
                     break;
@@ -12166,7 +12166,7 @@ ISY.MapImplementation.OL3.Styles.Sld = function () {
                             break;
                         case 'number':
                             value = parseInt(filter.value, 10);
-                            condition = parseInt(featurevalue, 10) != value;
+                            condition = parseInt(featurevalue, 10) !== value;
                             break;
                     }
                     break;
@@ -12394,7 +12394,7 @@ ISY.MapImplementation.OL3.Styles.Sld = function () {
             var child;
             for(var i=0, len=children.length; i<len; ++i) {
                 child = children[i];
-                if(child.nodeType == 1) {
+                if(child.nodeType === 1) {
                     this.readNode(child, obj);
                 }
             }
@@ -12431,7 +12431,7 @@ ISY.MapImplementation.OL3.Styles.Sld = function () {
         getCssProperty: function(sym) {
             var css = null;
             for(var prop in this.cssMap) {
-                if(this.cssMap[prop] == sym) {
+                if(this.cssMap[prop] === sym) {
                     css = prop;
                     break;
                 }
@@ -12447,10 +12447,10 @@ ISY.MapImplementation.OL3.Styles.Sld = function () {
                 var potentialNode, fullName;
                 for(var i=0, len=attributes.length; i<len; ++i) {
                     potentialNode = attributes[i];
-                    if(potentialNode.namespaceURI == uri) {
+                    if(potentialNode.namespaceURI === uri) {
                         fullName = (potentialNode.prefix) ?
                             (potentialNode.prefix + ":" + name) : name;
-                        if(fullName == potentialNode.nodeName) {
+                        if(fullName === potentialNode.nodeName) {
                             attributeNode = potentialNode;
                             break;
                         }

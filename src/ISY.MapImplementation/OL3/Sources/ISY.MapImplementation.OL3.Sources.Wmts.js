@@ -42,7 +42,7 @@ ISY.MapImplementation.OL3.Sources.Wmts = function(isySubLayer, parameters) {
         var parser = new ol.format.WMTSCapabilities();
         capabilities = parser.read(capabilities);
         capabilities.Contents.Layer.forEach(function (layer) {
-            if (layer.Identifier == isySubLayer.name) {
+            if (layer.Identifier === isySubLayer.name) {
                 layer.WGS84BoundingBox = undefined;
             }
         });

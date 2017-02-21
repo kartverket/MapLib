@@ -29,7 +29,7 @@ ISY.MapImplementation.OL3.Sources.Wfs = function(isySubLayer, offline, parameter
         source.dispatchEvent('vectorloadend');
         var featureNamespace;
 
-        if (typeof source.format == 'undefined') {
+        if (typeof source.format === 'undefined') {
             var gmlFormat;
             switch (isySubLayer.version) {
                 case '1.0.0':
@@ -185,7 +185,7 @@ ISY.MapImplementation.OL3.Sources.Wfs = function(isySubLayer, offline, parameter
                 $.ajax({
                     url: url
                 }).done(function(response) {
-                    if (typeof response == 'object'){
+                    if (typeof response === 'object'){
                         if (response.firstChild.childElementCount === 0) {
                             return;
                         }
@@ -205,7 +205,7 @@ ISY.MapImplementation.OL3.Sources.Wfs = function(isySubLayer, offline, parameter
     source.set('type', 'ol.source.Vector');
 
     //// v3.11.2 bugfix:
-    //if (source.getProjection() == null){
+    //if (source.getProjection() === null){
     //    if (source.setProjection) {
     //        source.setProjection(projection);
     //    } else if (source.f !== undefined) {

@@ -464,7 +464,7 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
             _trigLayersChanged();
         };
 
-        if(layerFromPool != null){
+        if(layerFromPool !== null){
             layer = layerFromPool;
             // For caching, remember layer config
             layer.set('config', isySubLayer);
@@ -521,7 +521,7 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
 
             if(isySubLayer.source === ISY.Domain.SubLayer.SOURCES.vector){
                 if (isySubLayer.style) {
-                    if (typeof isySubLayer.style == "object" || isySubLayer.style.indexOf("http") < 0) {
+                    if (typeof isySubLayer.style === "object" || isySubLayer.style.indexOf("http") < 0) {
                         sldstyles[isySubLayer.id] = new ISY.MapImplementation.OL3.Styles.Json(isySubLayer.style);
                         layer = new ol.layer.Vector({
                             source: source,
@@ -639,7 +639,7 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
 
     function _loadVectorLayer(isySubLayer, source){
         var callback = function(data){
-            data = typeof data == 'object' ? data : JSON.parse(data);
+            data = typeof data === 'object' ? data : JSON.parse(data);
             var format = new ol.format.GeoJSON();
             for(var i = 0; i < data.features.length; i++) {
                 var feature = data.features[i];
@@ -659,7 +659,7 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
     function _getLayerFromPool(isySubLayer){
         for(var i = 0; i < layerPool.length; i++){
             var layerInPool = layerPool[i];
-            if(layerInPool.guid == isySubLayer.id){
+            if(layerInPool.guid === isySubLayer.id){
                 return layerInPool;
             }
         }
@@ -669,7 +669,7 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
     function _getLayerFromPoolByGuid(guid){
         for(var i = 0; i < layerPool.length; i++){
             var layerInPool = layerPool[i];
-            if(layerInPool.guid == guid){
+            if(layerInPool.guid === guid){
                 return layerInPool;
             }
         }
@@ -753,10 +753,10 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
         if (scale === undefined){
             scale = getScale();
         }
-        if (scale == 1) {
+        if (scale === 1) {
             return mapResolutions[mapResolutions.length - 1];
         }
-        if (scale == Infinity){
+        if (scale === Infinity){
             return undefined;
         }
         var zoomlevel = -1;
@@ -817,7 +817,7 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
         var layers = _getLayersWithGuid();
         for(var i = 0; i < layers.length; i++){
             var layer = layers[i];
-            if(layer.guid == guid){
+            if(layer.guid === guid){
                 return layer;
             }
         }
@@ -828,7 +828,7 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
         var layers = _getLayersWithGuid();
         for(var i = 0; i < layers.length; i++){
             var layer = layers[i];
-            if(layer.guid == isySubLayer.id){
+            if(layer.guid === isySubLayer.id){
                 return i;
             }
         }
@@ -838,7 +838,7 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
     function getLayerByName(layerTitle) {
         var layers = _getLayersWithGuid();
         for (var i = 0; i < layers.length; i++) {
-            if (layers[i].get('title') == layerTitle) {
+            if (layers[i].get('title') === layerTitle) {
                 return layers[i];
             }
         }
@@ -1185,7 +1185,7 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
             return false;
         }
         var layerFromPool = _getLayerFromPool(isySubLayer);
-        if (layerFromPool != null){
+        if (layerFromPool !== null){
             featureEditor.Init(
                 isySubLayer.url,
                 isySubLayer.name,
@@ -1248,7 +1248,7 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
 
         var featureNamespace = response.firstChild.getAttribute("targetNamespace");
 
-        if (typeof describedSource.format == 'undefined') {
+        if (typeof describedSource.format === 'undefined') {
             var gmlFormat;
             switch (describedSubLayer.version) {
                 case '1.0.0':
@@ -1655,7 +1655,7 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
             } else {
               extent = layer.getSource().getTileGrid().getExtent();
             }
-            if (Array.isArray(extent) && extent[0] != Infinity) {
+            if (Array.isArray(extent) && extent[0] !== Infinity) {
                 if (!ol.extent.containsCoordinate(extent, map.getView().getCenter())){
                     map.getView().fit(extent, map.getSize());
                 }
@@ -1683,12 +1683,12 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
             var layer = _getLayerFromPool(isySubLayer);
             if (layer){
                 var extent = layer.getSource().getExtent();
-                if (Array.isArray(extent) && extent[0] != Infinity) {
+                if (Array.isArray(extent) && extent[0] !== Infinity) {
                     setNewExtent(extent);
                 }
             }
         });
-        if (Array.isArray(layersExtent) && layersExtent[0] != Infinity) {
+        if (Array.isArray(layersExtent) && layersExtent[0] !== Infinity) {
             map.getView().fit(layersExtent, map.getSize());
         }
     };
@@ -1752,7 +1752,7 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
     };
 
     function transformEpsgCoordinate(coord, toCrs){
-        if(coord.epsg !== "" && toCrs !== "" && coord.epsg != toCrs){
+        if(coord.epsg !== "" && toCrs !== "" && coord.epsg !== toCrs){
             //var fromProj = ol.proj.get(coord.epsg);
             //var toProj = ol.proj.get(toCrs);
             var transformedCoord = ol.proj.transform([coord.lon, coord.lat], coord.epsg, toCrs);
@@ -1770,7 +1770,7 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
 
     function transformBox(fromCrs, toCrs, boxExtent){
         var returnExtent = boxExtent;
-        if(fromCrs !== "" && toCrs !== "" && fromCrs != toCrs){
+        if(fromCrs !== "" && toCrs !== "" && fromCrs !== toCrs){
             //var fromProj = ol.proj.get(fromCrs);
             //var toProj = ol.proj.get(toCrs);
             //var transformedExtent = ol.proj.transformExtent(boxExtent, fromProj, toProj);

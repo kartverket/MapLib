@@ -14,7 +14,7 @@ ISY.MapAPI.Parsers.Base = function(factory) {
         if (result === undefined) {
             return null;
         } else if(result.type){
-            if(result.type == "FeatureCollection"){
+            if(result.type === "FeatureCollection"){
                 parserName = 'geoJson';
             }
         }else if(result.length !== undefined){
