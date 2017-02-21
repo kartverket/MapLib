@@ -1,5 +1,5 @@
 /**
- * maplib - v1.0.4 - 2017-02-20
+ * maplib - v1.0.5 - 2017-02-21
  * https://github.com/kartverket/MapLib
  *
  * Copyright (c) 2017 
@@ -485,8 +485,7 @@ ISY.MapAPI.FeatureInfo = function (mapImplementation, httpHelper, eventHandler, 
                     if (field.baseurl) {
                         includedFieldsDict[field.name].baseurl = field.baseurl;
                     }
-                }
-                else {
+                } else {
                     includedFieldsDict[field.name] = {
                         name: field.alias ? field.alias : field.name,
                         unit: field.unit ? field.unit : ""
@@ -519,24 +518,26 @@ ISY.MapAPI.FeatureInfo = function (mapImplementation, httpHelper, eventHandler, 
         };
         if (Object.keys(includedFields).length > 1) {
             for (var fieldName in includedFields) {
-                var fieldValue = feature[fieldName];
-                var newFieldName;
-                if (Object.keys(feature).indexOf(fieldName) > -1) {
-                    newFieldName = includedFields._capitalize ? includedFields[fieldName].name.toLowerCase().capitalizeFirstLetter() : includedFields[fieldName].name;
-                    if (includedFields[fieldName].type == 'picture' && includedFields[fieldName].baseurl) {
-                        fieldValue = {
-                            url: includedFields[fieldName].baseurl + feature[fieldName],
-                            type: includedFields[fieldName].type
-                        };
-                    } else if (includedFields[fieldName].unit) {
-                        fieldValue += includedFields[fieldName].unit;
+                if (typeof includedFields[fieldName] === 'object') {
+                    var fieldValue = feature[fieldName];
+                    var newFieldName;
+                    if (Object.keys(feature).indexOf(fieldName) > -1) {
+                        newFieldName = includedFields._capitalize ? includedFields[fieldName].name.toLowerCase().capitalizeFirstLetter() : includedFields[fieldName].name;
+                        if (includedFields[fieldName].type == 'picture' && includedFields[fieldName].baseurl) {
+                            fieldValue = {
+                                url: includedFields[fieldName].baseurl + feature[fieldName],
+                                type: includedFields[fieldName].type
+                            };
+                        } else if (includedFields[fieldName].unit) {
+                            fieldValue += includedFields[fieldName].unit;
+                        }
+                    } else if (Object.keys(feature).length == 1) {
+                        newFieldName = feature._capitalize ? fieldName.toLowerCase().capitalizeFirstLetter() : fieldName;
+                    } else {
+                        newFieldName = includedFields._capitalize ? includedFields[fieldName].name.toLowerCase().capitalizeFirstLetter() : includedFields[fieldName].name;
                     }
-                } else if (Object.keys(feature).length == 1) {
-                    newFieldName = feature._capitalize ? fieldName.toLowerCase().capitalizeFirstLetter() : fieldName;
-                } else {
-                    continue;
+                    newFields.attributes.push([newFieldName, fieldValue]);
                 }
-                newFields.attributes.push([newFieldName, fieldValue]);
             }
         } else {
             for (var fieldName1 in feature) {
@@ -569,12 +570,10 @@ ISY.MapAPI.FeatureInfo = function (mapImplementation, httpHelper, eventHandler, 
                     }
                 }
             }
-
         } else {
             try {
                 parsedResult = featureParser.Parse(result);
-            }
-            catch(e){
+            } catch (e) {
                 exception = e;
             }
         }
@@ -774,6 +773,7 @@ ISY.MapAPI.FeatureInfo = function (mapImplementation, httpHelper, eventHandler, 
             //_addInfoMarker();
         }
     }
+
     function _addInfoMarker() {
         document.body.appendChild(infoMarker);
         //useInfoMarker = true;
