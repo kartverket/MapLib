@@ -68,8 +68,7 @@ ISY.MapAPI.FeatureInfo = function (mapImplementation, httpHelper, eventHandler, 
                     if (field.baseurl) {
                         includedFieldsDict[field.name].baseurl = field.baseurl;
                     }
-                }
-                else {
+                } else {
                     includedFieldsDict[field.name] = {
                         name: field.alias ? field.alias : field.name,
                         unit: field.unit ? field.unit : ""
@@ -117,7 +116,7 @@ ISY.MapAPI.FeatureInfo = function (mapImplementation, httpHelper, eventHandler, 
                 } else if (Object.keys(feature).length == 1) {
                     newFieldName = feature._capitalize ? fieldName.toLowerCase().capitalizeFirstLetter() : fieldName;
                 } else {
-                    continue;
+                    newFieldName = includedFields[fieldName].name.toLowerCase().capitalizeFirstLetter();
                 }
                 newFields.attributes.push([newFieldName, fieldValue]);
             }
@@ -139,7 +138,7 @@ ISY.MapAPI.FeatureInfo = function (mapImplementation, httpHelper, eventHandler, 
         var exception;
         if (subLayer.featureInfo.supportsGetFeatureInfo && subLayer.source == 'WMS') {
             var xmlFile = jQuery.parseXML(result.data);
-            var jsonFile = xml.xmlToJSON(xmlFile);
+            var jsonFile = xml.xmlToJSON(xmlFile, true);
             if (jsonFile.hasOwnProperty("msGMLOutput")) {
                 if (jsonFile.msGMLOutput.hasOwnProperty(subLayer.providerName + "_layer")) {
                     var getProperties = jsonFile.msGMLOutput[subLayer.providerName + "_layer"][subLayer.providerName + "_feature"];
@@ -152,12 +151,10 @@ ISY.MapAPI.FeatureInfo = function (mapImplementation, httpHelper, eventHandler, 
                     }
                 }
             }
-
         } else {
             try {
                 parsedResult = featureParser.Parse(result);
-            }
-            catch(e){
+            } catch (e) {
                 exception = e;
             }
         }
@@ -357,6 +354,7 @@ ISY.MapAPI.FeatureInfo = function (mapImplementation, httpHelper, eventHandler, 
             //_addInfoMarker();
         }
     }
+
     function _addInfoMarker() {
         document.body.appendChild(infoMarker);
         //useInfoMarker = true;
