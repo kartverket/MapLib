@@ -138,7 +138,7 @@ ISY.MapAPI.FeatureInfo = function (mapImplementation, httpHelper, eventHandler, 
         var exception;
         if (subLayer.featureInfo.supportsGetFeatureInfo && subLayer.source == 'WMS') {
             var xmlFile = jQuery.parseXML(result.data);
-            var jsonFile = xml.xmlToJSON(xmlFile, true);
+            var jsonFile = xml.xmlToJSON(xmlFile);
             if (jsonFile.hasOwnProperty("msGMLOutput")) {
                 if (jsonFile.msGMLOutput.hasOwnProperty(subLayer.providerName + "_layer")) {
                     var getProperties = jsonFile.msGMLOutput[subLayer.providerName + "_layer"][subLayer.providerName + "_feature"];
