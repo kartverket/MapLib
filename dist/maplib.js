@@ -1,5 +1,5 @@
 /**
- * maplib - v1.0.5 - 2017-02-21
+ * maplib - v1.0.6 - 2017-02-23
  * https://github.com/kartverket/MapLib
  *
  * Copyright (c) 2017 
@@ -58,6 +58,7 @@ ISY.Domain.FeatureResponse = function() {
         attributes: []
     };
 };
+
 var ISY = ISY || {};
 ISY.Domain = ISY.Domain || {};
 
@@ -572,7 +573,15 @@ ISY.MapAPI.FeatureInfo = function (mapImplementation, httpHelper, eventHandler, 
       }
     } else {
       try {
-        parsedResult = featureParser.Parse(result);
+        if (subLayer.featureInfo.includedFields) {
+          parsedResult = [];
+          var features = result.features;
+          for (var featuresCount = 0; featuresCount < features.length; featuresCount++) {
+            parsedResult.push(features[featuresCount].properties);
+          }
+        } else {
+          parsedResult = featureParser.Parse(result);
+        }
       } catch (e) {
         exception = e;
       }
@@ -2125,6 +2134,7 @@ ISY.MapAPI.Map = function(mapImplementation, eventHandler, featureInfo, layerHan
         // Utility end
     };
 };
+
 var ISY = ISY || {};
 ISY.MapAPI = ISY.MapAPI || {};
 ISY.MapAPI.Parsers = ISY.MapAPI.Parsers || {};

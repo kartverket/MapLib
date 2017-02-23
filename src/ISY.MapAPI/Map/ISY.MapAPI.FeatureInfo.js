@@ -155,7 +155,15 @@ ISY.MapAPI.FeatureInfo = function (mapImplementation, httpHelper, eventHandler, 
       }
     } else {
       try {
-        parsedResult = featureParser.Parse(result);
+        if (subLayer.featureInfo.includedFields) {
+          parsedResult = [];
+          var features = result.features;
+          for (var featuresCount = 0; featuresCount < features.length; featuresCount++) {
+            parsedResult.push(features[featuresCount].properties);
+          }
+        } else {
+          parsedResult = featureParser.Parse(result);
+        }
       } catch (e) {
         exception = e;
       }
