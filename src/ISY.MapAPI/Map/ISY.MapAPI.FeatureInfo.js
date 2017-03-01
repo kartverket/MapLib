@@ -12,7 +12,7 @@ ISY.MapAPI.FeatureInfo = function (mapImplementation, httpHelper, eventHandler, 
    */
 
   var infoMarker;
-  var infoMarkerPath = "assets/img/pin-md-orange.png"; // This path is possible to change by API call.
+  var infoMarkerPath = 'assets/img/pin-md-orange.png'; // This path is possible to change by API call.
   var useInfoMarker = false;
   var pixelTolerance = 10;
 
@@ -60,7 +60,7 @@ ISY.MapAPI.FeatureInfo = function (mapImplementation, httpHelper, eventHandler, 
         includedFields.field = [includedFields.field];
       }
       includedFields.field.forEach(function (field) {
-        if (field.type === 'picture') {
+        if (field.type === 'picture' || field.type === 'link') {
           includedFieldsDict[field.name] = {
             name: field.alias ? field.alias : field.name,
             type: field.type
@@ -71,13 +71,12 @@ ISY.MapAPI.FeatureInfo = function (mapImplementation, httpHelper, eventHandler, 
         } else {
           includedFieldsDict[field.name] = {
             name: field.alias ? field.alias : field.name,
-            unit: field.unit ? field.unit : ""
+            unit: field.unit ? field.unit : ''
           };
         }
       });
     }
-
-    if (includedFields.capitalize === "true") {
+    if (includedFields.capitalize === 'true') {
       includedFieldsDict['_capitalize'] = true;
     }
     return includedFieldsDict;
@@ -106,10 +105,11 @@ ISY.MapAPI.FeatureInfo = function (mapImplementation, httpHelper, eventHandler, 
           var newFieldName;
           if (Object.keys(feature).indexOf(fieldName) > -1) {
             newFieldName = includedFields._capitalize ? includedFields[fieldName].name.toLowerCase().capitalizeFirstLetter() : includedFields[fieldName].name;
-            if (includedFields[fieldName].type === 'picture' && includedFields[fieldName].baseurl) {
+            if ((includedFields[fieldName].type === 'picture' && includedFields[fieldName].baseurl) || (includedFields[fieldName].type === 'link' && includedFields[fieldName].baseurl)) {
               fieldValue = {
                 url: includedFields[fieldName].baseurl + feature[fieldName],
-                type: includedFields[fieldName].type
+                type: includedFields[fieldName].type,
+                name: feature[fieldName]
               };
             } else if (includedFields[fieldName].unit) {
               fieldValue += includedFields[fieldName].unit;
@@ -138,18 +138,34 @@ ISY.MapAPI.FeatureInfo = function (mapImplementation, httpHelper, eventHandler, 
   function _handleGetInfoResponse(subLayer, result) {
     var parsedResult;
     var exception;
+    var getProperties;
     if (subLayer.featureInfo.supportsGetFeatureInfo && subLayer.source === 'WMS') {
       var xmlFile = jQuery.parseXML(result.data);
       var jsonFile = xml.xmlToJSON(xmlFile);
-      if (jsonFile.hasOwnProperty("msGMLOutput")) {
-        if (jsonFile.msGMLOutput.hasOwnProperty(subLayer.providerName + "_layer")) {
-          var getProperties = jsonFile.msGMLOutput[subLayer.providerName + "_layer"][subLayer.providerName + "_feature"];
+
+      if (jsonFile.hasOwnProperty('msGMLOutput')) {
+        if (jsonFile.msGMLOutput.hasOwnProperty(subLayer.providerName + '_layer')) {
+          getProperties = jsonFile.msGMLOutput[subLayer.providerName + '_layer'][subLayer.providerName + '_feature'];
           parsedResult = [];
           if (getProperties.constructor !== Array) {
             getProperties = [getProperties];
           }
           for (var i = 0; i < getProperties.length; i++) {
             parsedResult.push(getProperties[i]);
+          }
+        } else {
+          for (var element in jsonFile.msGMLOutput) {
+            if (element.endsWith('layer')) {
+              var layername = element.substr(0, element.indexOf('layer'));
+              getProperties = jsonFile.msGMLOutput[element][layername + 'feature'];
+              parsedResult = [];
+              if (getProperties.constructor !== Array) {
+                getProperties = [getProperties];
+              }
+              for (var p = 0; p < getProperties.length; p++) {
+                parsedResult.push(getProperties[p]);
+              }
+            }
           }
         }
       }
@@ -305,7 +321,7 @@ ISY.MapAPI.FeatureInfo = function (mapImplementation, httpHelper, eventHandler, 
     //var extent = mapImplementation.GetCenterFromExtent(boxExtent);
     var adaptedExtent = boxExtent;
     //var url = "service=WFS&request=GetFeature&typeName=" + isySubLayer.name + "&srsName=" + crs + "&outputFormat=" + isySubLayer.featureInfo.getFeatureFormat + "&bbox=" + adaptedExtent;
-    var url = "service=WMS&version=1.3.0&request=GetFeatureInfo&TRANSPARENT=" + isySubLayer.transparent + "&QUERY_LAYERS=" + isySubLayer.name + "&INFO_FORMAT=" + isySubLayer.featureInfo.getFeatureInfoFormat + "&SRS=" + crs + "&bbox=" + adaptedExtent + "&width=" + 400 + "&height=" + 400 + "&x=" + 150 + "&y=" + 150;
+    var url = 'service=WMS&version=1.3.0&request=GetFeatureInfo&TRANSPARENT=' + isySubLayer.transparent + '&QUERY_LAYERS=' + isySubLayer.name + '&INFO_FORMAT=' + isySubLayer.featureInfo.getFeatureInfoFormat + '&SRS=' + crs + '&bbox=' + adaptedExtent + '&width=' + 400 + '&height=' + 400 + '&x=' + 150 + '&y=' + 150;
     url = decodeURIComponent(url);
     url = url.substring(url.lastIndexOf('?'), url.length);
     url = url.replace('?', '');
@@ -329,7 +345,7 @@ ISY.MapAPI.FeatureInfo = function (mapImplementation, httpHelper, eventHandler, 
    */
 
   function createDefaultInfoMarker() {
-    infoMarker = document.createElement("img");
+    infoMarker = document.createElement('img');
     infoMarker.src = infoMarkerPath;
     _hideInfoMarker();
     _addInfoMarker();
@@ -340,9 +356,9 @@ ISY.MapAPI.FeatureInfo = function (mapImplementation, httpHelper, eventHandler, 
       createDefaultInfoMarker();
     }
     setInfoMarker(infoMarker, true);
-    infoMarker.style.visibility = "visible";
-    infoMarker.style.position = "absolute";
-    infoMarker.style.zIndex = "11";
+    infoMarker.style.visibility = 'visible';
+    infoMarker.style.position = 'absolute';
+    infoMarker.style.zIndex = '11';
     mapImplementation.ShowInfoMarker(coordinate, infoMarker);
   }
 
@@ -380,7 +396,7 @@ ISY.MapAPI.FeatureInfo = function (mapImplementation, httpHelper, eventHandler, 
   }
 
   function _hideInfoMarker() {
-    infoMarker.style.visibility = "hidden";
+    infoMarker.style.visibility = 'hidden';
   }
 
   function setInfoMarkerPath(path) {
