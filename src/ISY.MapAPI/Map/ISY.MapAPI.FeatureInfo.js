@@ -60,13 +60,14 @@ ISY.MapAPI.FeatureInfo = function (mapImplementation, httpHelper, eventHandler, 
         includedFields.field = [includedFields.field];
       }
       includedFields.field.forEach(function (field) {
-        if (field.type === 'picture' || field.type === 'link') {
+        if (field.type === 'picture' || field.type === 'link' || field.type === 'symbol') {
           includedFieldsDict[field.name] = {
             name: field.alias ? field.alias : field.name,
             type: field.type
           };
           if (field.baseurl) {
             includedFieldsDict[field.name].baseurl = field.baseurl;
+            includedFieldsDict[field.name].filetype = field.filetype ? '.' + field.filetype : '';
           }
         } else {
           includedFieldsDict[field.name] = {
@@ -105,9 +106,11 @@ ISY.MapAPI.FeatureInfo = function (mapImplementation, httpHelper, eventHandler, 
           var newFieldName;
           if (Object.keys(feature).indexOf(fieldName) > -1) {
             newFieldName = includedFields._capitalize ? includedFields[fieldName].name.toLowerCase().capitalizeFirstLetter() : includedFields[fieldName].name;
-            if ((includedFields[fieldName].type === 'picture' && includedFields[fieldName].baseurl) || (includedFields[fieldName].type === 'link' && includedFields[fieldName].baseurl)) {
+            if ((includedFields[fieldName].type === 'symbol' && includedFields[fieldName].baseurl) ||
+            (includedFields[fieldName].type === 'picture' && includedFields[fieldName].baseurl) ||
+            (includedFields[fieldName].type === 'link' && includedFields[fieldName].baseurl)) {
               fieldValue = {
-                url: includedFields[fieldName].baseurl + feature[fieldName],
+                url: includedFields[fieldName].baseurl + feature[fieldName] + includedFields[fieldName].filetype,
                 type: includedFields[fieldName].type,
                 name: feature[fieldName]
               };
