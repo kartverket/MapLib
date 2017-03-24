@@ -1,5 +1,5 @@
 /**
- * maplib - v1.0.9 - 2017-03-14
+ * maplib - v1.0.10 - 2017-03-24
  * https://github.com/kartverket/MapLib
  *
  * Copyright (c) 2017 
@@ -48,7 +48,6 @@ ISY.Domain.FeatureInfo = function(config){
 
     return $.extend({}, defaults, config);
 };
-
 var ISY = ISY || {};
 ISY.Domain = ISY.Domain || {};
 
@@ -92,7 +91,6 @@ ISY.Domain.Layer = function(config){
 
     return layerInstance;
 };
-
 var ISY = ISY || {};
 ISY.Domain = ISY.Domain || {};
 
@@ -527,8 +525,8 @@ ISY.MapAPI.FeatureInfo = function (mapImplementation, httpHelper, eventHandler, 
           if (Object.keys(feature).indexOf(fieldName) > -1) {
             newFieldName = includedFields._capitalize ? includedFields[fieldName].name.toLowerCase().capitalizeFirstLetter() : includedFields[fieldName].name;
             if ((includedFields[fieldName].type === 'symbol' && includedFields[fieldName].baseurl) ||
-            (includedFields[fieldName].type === 'picture' && includedFields[fieldName].baseurl) ||
-            (includedFields[fieldName].type === 'link' && includedFields[fieldName].baseurl)) {
+              (includedFields[fieldName].type === 'picture' && includedFields[fieldName].baseurl) ||
+              (includedFields[fieldName].type === 'link' && includedFields[fieldName].baseurl)) {
               fieldValue = {
                 url: includedFields[fieldName].baseurl + feature[fieldName] + includedFields[fieldName].filetype,
                 type: includedFields[fieldName].type,
@@ -598,7 +596,11 @@ ISY.MapAPI.FeatureInfo = function (mapImplementation, httpHelper, eventHandler, 
           parsedResult = [];
           var features = result.features;
           for (var featuresCount = 0; featuresCount < features.length; featuresCount++) {
-            parsedResult.push(features[featuresCount].properties);
+            var tmpFeatures = features[featuresCount].properties;
+            if (features[featuresCount].id) {
+              tmpFeatures.id = features[featuresCount].id;
+            }
+            parsedResult.push(tmpFeatures);
           }
         } else {
           parsedResult = featureParser.Parse(result);
@@ -2263,7 +2265,6 @@ ISY.MapAPI.Parsers.Factory = function(geoJson, gml, kartKlifNo, fiskeriDir){
         CreateParser: createParser
     };
 };
-
 var ISY = ISY || {};
 ISY.MapAPI = ISY.MapAPI || {};
 ISY.MapAPI.Parsers = ISY.MapAPI.Parsers || {};
@@ -2334,7 +2335,6 @@ ISY.MapAPI.Parsers.FiskeriDir = function(mapApi){
         Parse: parse
     };
 };
-
 var ISY = ISY || {};
 ISY.MapAPI = ISY.MapAPI || {};
 ISY.MapAPI.Parsers = ISY.MapAPI.Parsers || {};
@@ -3495,7 +3495,6 @@ ISY.MapImplementation.Leaflet.Map.RENDERERS = {
     canvas: 'canvas',
     webgl: 'webgl'
 };
-
 /**
  * Created by to on 2015-01-29.
  */
@@ -5278,7 +5277,6 @@ ISY.MapImplementation.OL3.FeatureInfo = function(){
         GetFeaturesInMap: getFeaturesInMap
     };
 };
-
  ISY = ISY || {};
 ISY.MapImplementation = ISY.MapImplementation || {};
 ISY.MapImplementation.OL3 = ISY.MapImplementation.OL3 || {};
@@ -12798,7 +12796,6 @@ ISY.Repository.StaticRepository = function() {
         GetMapConfig: _getMapConfig
     };
 };
-
 var ISY = ISY || {};
 ISY.Utils = ISY.Utils || {};
 

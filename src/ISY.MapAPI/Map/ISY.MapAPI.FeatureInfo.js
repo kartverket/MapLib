@@ -107,8 +107,8 @@ ISY.MapAPI.FeatureInfo = function (mapImplementation, httpHelper, eventHandler, 
           if (Object.keys(feature).indexOf(fieldName) > -1) {
             newFieldName = includedFields._capitalize ? includedFields[fieldName].name.toLowerCase().capitalizeFirstLetter() : includedFields[fieldName].name;
             if ((includedFields[fieldName].type === 'symbol' && includedFields[fieldName].baseurl) ||
-            (includedFields[fieldName].type === 'picture' && includedFields[fieldName].baseurl) ||
-            (includedFields[fieldName].type === 'link' && includedFields[fieldName].baseurl)) {
+              (includedFields[fieldName].type === 'picture' && includedFields[fieldName].baseurl) ||
+              (includedFields[fieldName].type === 'link' && includedFields[fieldName].baseurl)) {
               fieldValue = {
                 url: includedFields[fieldName].baseurl + feature[fieldName] + includedFields[fieldName].filetype,
                 type: includedFields[fieldName].type,
@@ -178,7 +178,11 @@ ISY.MapAPI.FeatureInfo = function (mapImplementation, httpHelper, eventHandler, 
           parsedResult = [];
           var features = result.features;
           for (var featuresCount = 0; featuresCount < features.length; featuresCount++) {
-            parsedResult.push(features[featuresCount].properties);
+            var tmpFeatures = features[featuresCount].properties;
+            if (features[featuresCount].id) {
+              tmpFeatures.id = features[featuresCount].id;
+            }
+            parsedResult.push(tmpFeatures);
           }
         } else {
           parsedResult = featureParser.Parse(result);
