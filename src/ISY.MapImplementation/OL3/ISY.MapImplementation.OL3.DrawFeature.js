@@ -224,7 +224,7 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler) {
 
     function removeSpecificEventHandlers(interaction, name) {
         for (var sourceEvent = 0; sourceEvent < eventHandlers[name].length; sourceEvent++) {
-            interaction.unByKey(eventHandlers[name][sourceEvent]);
+            ol.Observable.unByKey(eventHandlers[name][sourceEvent]);
         }
     }
 

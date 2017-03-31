@@ -1,12 +1,12 @@
 {
   "name": "maplib",
-  "version": "1.0.10",
+  "version": "1.0.11",
   "main": [],
   "ignore": [],
   "devDependencies": {},
   "dependencies": {
     "jquery": "2.2.4",
-    "openlayers3": "https://github.com/openlayers/ol3/releases/download/v3.12.1/v3.12.1-dist.zip",
+    "openlayers3": "https://github.com/openlayers/openlayers/releases/download/v4.0.1/v4.0.1-dist.zip",
     "xml2json": "*",
     "proj4": "*",
     "jasmine-ajax": "*",

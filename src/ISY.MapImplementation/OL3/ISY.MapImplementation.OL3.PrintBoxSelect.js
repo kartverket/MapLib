@@ -38,9 +38,9 @@ ISY.MapImplementation.OL3.PrintBoxSelect = function (eventHandler) {
     return true;
   }
 
-  var _deregisterMouseEvents = function (map) {
+  var _deregisterMouseEvents = function () {
     for (var eventKey in eventKeys) {
-      map.unByKey(eventKeys[eventKey]);
+      ol.Observable.unByKey(eventKeys[eventKey]);
       eventKeys[eventKey] = false;
     }
   };
@@ -297,7 +297,7 @@ ISY.MapImplementation.OL3.PrintBoxSelect = function (eventHandler) {
       isActive = false;
       if (map !== undefined) {
         map.removeLayer(printBoxSelectionLayer);
-        _deregisterMouseEvents(map);
+        _deregisterMouseEvents();
         _applyOriginalInteraction(map);
       }
     }

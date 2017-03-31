@@ -23,7 +23,7 @@ ISY.MapImplementation.OL3.Export = function(){
         exportActive = false;
         if (mapExportEvents) {
             for (var i = 0; i < mapExportEvents.length; i++) {
-                mapExportEvents[i].src.unByKey(mapExportEvents[i]);
+                ol.Observable.unByKey(mapExportEvents[i]);
             }
             redrawFunction();
         }

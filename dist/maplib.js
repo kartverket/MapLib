@@ -1,5 +1,5 @@
 /**
- * maplib - v1.0.10 - 2017-03-24
+ * maplib - v1.0.11 - 2017-03-31
  * https://github.com/kartverket/MapLib
  *
  * Copyright (c) 2017 
@@ -4328,7 +4328,7 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler) {
 
     function removeSpecificEventHandlers(interaction, name) {
         for (var sourceEvent = 0; sourceEvent < eventHandlers[name].length; sourceEvent++) {
-            interaction.unByKey(eventHandlers[name][sourceEvent]);
+            ol.Observable.unByKey(eventHandlers[name][sourceEvent]);
         }
     }
 
@@ -4768,6 +4768,7 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler) {
         Deactivate: deactivate
     };
 };
+
 var ISY = ISY || {};
 ISY.MapImplementation = ISY.MapImplementation || {};
 ISY.MapImplementation.OL3 = ISY.MapImplementation.OL3 || {};
@@ -4793,7 +4794,7 @@ ISY.MapImplementation.OL3.Export = function(){
         exportActive = false;
         if (mapExportEvents) {
             for (var i = 0; i < mapExportEvents.length; i++) {
-                mapExportEvents[i].src.unByKey(mapExportEvents[i]);
+                ol.Observable.unByKey(mapExportEvents[i]);
             }
             redrawFunction();
         }
@@ -4922,11 +4923,9 @@ ISY.MapImplementation.OL3.FeatureEditor = function(eventHandler) {
         }
     }
 
-    function deactivateEditSelect(map){
-        if (map !== undefined){
-            map.unByKey(editKey_);
+    function deactivateEditSelect(){
+            ol.Observable.unByKey(editKey_);
             editKey_ = "";
-        }
     }
 
     function handlePointSelect(coordinate) {
@@ -5075,11 +5074,9 @@ ISY.MapImplementation.OL3.FeatureInfo = function(){
     }
     }
 
-    function deactivateInfoClick(map){
-        if (map !== undefined){
-        map.unByKey(infoKey);
+    function deactivateInfoClick(){
+        ol.Observable.unByKey(infoKey);
         infoKey = "";
-    }
     }
 
     function activateBoxSelect(callback, map){
@@ -5277,6 +5274,7 @@ ISY.MapImplementation.OL3.FeatureInfo = function(){
         GetFeaturesInMap: getFeaturesInMap
     };
 };
+
  ISY = ISY || {};
 ISY.MapImplementation = ISY.MapImplementation || {};
 ISY.MapImplementation.OL3 = ISY.MapImplementation.OL3 || {};
@@ -9626,9 +9624,9 @@ ISY.MapImplementation.OL3.PrintBoxSelect = function (eventHandler) {
     return true;
   }
 
-  var _deregisterMouseEvents = function (map) {
+  var _deregisterMouseEvents = function () {
     for (var eventKey in eventKeys) {
-      map.unByKey(eventKeys[eventKey]);
+      ol.Observable.unByKey(eventKeys[eventKey]);
       eventKeys[eventKey] = false;
     }
   };
@@ -9885,7 +9883,7 @@ ISY.MapImplementation.OL3.PrintBoxSelect = function (eventHandler) {
       isActive = false;
       if (map !== undefined) {
         map.removeLayer(printBoxSelectionLayer);
-        _deregisterMouseEvents(map);
+        _deregisterMouseEvents();
         _applyOriginalInteraction(map);
       }
     }

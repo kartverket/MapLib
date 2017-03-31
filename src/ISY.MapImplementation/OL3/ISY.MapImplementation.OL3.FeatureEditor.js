@@ -26,11 +26,9 @@ ISY.MapImplementation.OL3.FeatureEditor = function(eventHandler) {
         }
     }
 
-    function deactivateEditSelect(map){
-        if (map !== undefined){
-            map.unByKey(editKey_);
+    function deactivateEditSelect(){
+            ol.Observable.unByKey(editKey_);
             editKey_ = "";
-        }
     }
 
     function handlePointSelect(coordinate) {

@@ -110,11 +110,9 @@ ISY.MapImplementation.OL3.FeatureInfo = function(){
     }
     }
 
-    function deactivateInfoClick(map){
-        if (map !== undefined){
-        map.unByKey(infoKey);
+    function deactivateInfoClick(){
+        ol.Observable.unByKey(infoKey);
         infoKey = "";
-    }
     }
 
     function activateBoxSelect(callback, map){
