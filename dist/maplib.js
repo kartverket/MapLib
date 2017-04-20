@@ -1,5 +1,5 @@
 /**
- * maplib - v1.0.11 - 2017-03-31
+ * maplib - v1.0.12 - 2017-04-20
  * https://github.com/kartverket/MapLib
  *
  * Copyright (c) 2017 
@@ -508,12 +508,12 @@ ISY.MapAPI.FeatureInfo = function (mapImplementation, httpHelper, eventHandler, 
     var includedFields = readIncludedFields(subLayer.featureInfo.includedFields);
     var parsedResultsIncluded = [];
     parsedResult.forEach(function (feature) {
-      parsedResultsIncluded.push(compareIncludedFields(includedFields, feature));
+      parsedResultsIncluded.push(compareIncludedFields(includedFields, feature, subLayer.featureInfo.featureDict));
     });
     return parsedResultsIncluded;
   }
 
-  function compareIncludedFields(includedFields, feature) {
+  function compareIncludedFields(includedFields, feature, featureDict) {
     var newFields = {
       attributes: []
     };
@@ -539,6 +539,13 @@ ISY.MapAPI.FeatureInfo = function (mapImplementation, httpHelper, eventHandler, 
             newFieldName = feature._capitalize ? fieldName.toLowerCase().capitalizeFirstLetter() : fieldName;
           } else {
             newFieldName = includedFields._capitalize ? includedFields[fieldName].name.toLowerCase().capitalizeFirstLetter() : includedFields[fieldName].name;
+          }
+          if (featureDict !== undefined) {
+            for (var dict in featureDict) {
+              if (newFieldName === dict) {
+                fieldValue = featureDict[dict][fieldValue];
+              }
+            }
           }
           newFields.attributes.push([newFieldName, fieldValue]);
         }
