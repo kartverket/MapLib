@@ -1,5 +1,5 @@
 /**
- * maplib - v1.0.12 - 2017-04-20
+ * maplib - v1.0.13 - 2017-04-21
  * https://github.com/kartverket/MapLib
  *
  * Copyright (c) 2017 
@@ -5594,10 +5594,15 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
 
     var proxyHost = "";
     var tokenHost = "";
+    var ticketHost = "";
     var gktLifetime = 3000;
+    var ticketLifetime = 3000;
     var lastGktCheck = 0;
+    var lastTicketCheck = 0;
     var lastGlobalGktCheck = 0;
+    var lastGlobalTicketCheck = 0;
     var globalGkt;
+    var globalTicket;
     var geolocation;
     var translateOptions;
     var isyToken;
@@ -5615,6 +5620,7 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
     function initMap(targetId, mapConfig){
         proxyHost = mapConfig.proxyHost;
         tokenHost = mapConfig.tokenHost;
+        ticketHost = mapConfig.ticketHost;
         mapGroups = mapConfig.groups;
         hoverOptions = mapConfig.hoverOptions;
         var numZoomLevels = mapConfig.numZoomLevels;
@@ -5686,6 +5692,7 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
 
         var mapMoveend = function(){
             _checkGktToken();
+            _checkTicket();
             var mapViewChangedObj = _getUrlObject();
             eventHandler.TriggerEvent(ISY.Events.EventTypes.MapMoveend, mapViewChangedObj);
         };
@@ -5811,11 +5818,41 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
         }
     }
 
+    function _checkTicket(){
+        var currentTime = (new Date()).getTime();
+        if (currentTime < (lastTicketCheck + 60000)) {
+            // check if token has expired each minute
+            return;
+        }
+        lastTicketCheck = currentTime;
+        if (map.getLayers()) {
+            map.getLayers().forEach(function (layer) {
+                var source = layer.getSource();
+                if (source && source.getParams){
+                    var params = source.getParams();
+                    if (params && params.ticket) {
+                        var initTime = source.get("timestamp");
+                        if (initTime) {
+                            var elapsedTime = Math.round((currentTime - initTime)/1000);
+                            if (elapsedTime > ticketLifetime) {
+                                _setTicket(source);
+                            }
+                        }
+                    }
+                }
+            });
+        }
+    }
     // Adds GKT-token to existing source
     function _setToken(source){
         //console.log("updating token");
         //console.log(layer.typename + ' - ' + source.get("timestamp") + ' - ' + params.GKT);
         source.updateParams({GKT: _getToken()});
+        source.set("timestamp", (new Date()).getTime());
+    }
+
+    function _setTicket(source){
+        source.updateParams({ticket: _getTicket()});
         source.set("timestamp", (new Date()).getTime());
     }
 
@@ -5989,10 +6026,35 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
         return globalGkt;
     }
 
+    function _getTicket(){
+        if (!ticketHost){
+            return null;
+        }
+        else if(!globalTicket || _checkGlobalTicketExpired()){
+            globalTicket=$.ajax({
+                type: "GET",
+                url: ticketHost,
+                async: false
+            }).responseText.trim().replace(/\"/g, "");
+            lastGlobalTicketCheck = (new Date()).getTime();
+        }
+        return globalTicket;
+    }
+
+
     function _checkGlobalGktTokenExpired() {
         var currentTime = (new Date()).getTime();
         if (currentTime < (lastGlobalGktCheck + (gktLifetime * 1000))) {
             lastGlobalGktCheck = currentTime;
+            return false;
+        }
+        return true;
+    }
+
+    function _checkGlobalTicketExpired() {
+        var currentTime = (new Date()).getTime();
+        if (currentTime < (lastGlobalTicketCheck + (ticketLifetime * 1000))) {
+            lastGlobalTicketCheck = currentTime;
             return false;
         }
         return true;
@@ -6067,6 +6129,9 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
                     source = new ISY.MapImplementation.OL3.Sources.Wms(isySubLayer, parameters);
                     if (isySubLayer.gatekeeper && isySubLayer.tiled && ((offline === undefined) ? true : !offline.IsActive())){
                         _setToken(source);
+                    }
+                    if (isySubLayer.ticket && ((offline === undefined) ? true : !offline.IsActive())){
+                        _setTicket(source);
                     }
                     break;
                 case ISY.Domain.SubLayer.SOURCES.proxyWms:
