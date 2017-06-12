@@ -1,5 +1,5 @@
 /**
- * maplib - v1.0.13 - 2017-04-21
+ * maplib - v1.0.14 - 2017-06-12
  * https://github.com/kartverket/MapLib
  *
  * Copyright (c) 2017 
@@ -9720,11 +9720,13 @@ ISY.MapImplementation.OL3.PrintBoxSelect = function (eventHandler) {
     var mapCenter = _getMapCenter(map);
     var mapCenterActiveUTMZone = _getMapCenterActiveUTMZone(mapCenter);
     var printBox = _getPrintBox(mapCenterActiveUTMZone);
+    var biSone = getBiSone(printBox, oldUTM.sone);
     var extent = {
       bbox: [printBox.left, printBox.bottom, printBox.right, printBox.top],
       center: mapCenterActiveUTMZone.getCoordinates(),
       projection: oldUTM.localProj,
       sone: oldUTM.sone,
+      biSone: biSone,
       scale: scale
     };
     eventHandler.TriggerEvent(ISY.Events.EventTypes.PrintBoxSelectReturnValue, extent);
@@ -9804,7 +9806,36 @@ ISY.MapImplementation.OL3.PrintBoxSelect = function (eventHandler) {
       'localProj': localProj
     };
   };
+  var getBiSone = function (geometry, sone) {
+    var lonLatBL = new ol.geom.Point([geometry.left, geometry.bottom]);
+    lonLatBL.applyTransform(ol.proj.getTransform('EPSG:32633', 'EPSG:4326'));
+    var soneBL = _getUTMZoneFromGeographicPoint(lonLatBL.getCoordinates()[0], lonLatBL.getCoordinates()[1]).sone;
+    if (soneBL !== sone) {
+      return soneBL;
+    }
 
+    var lonLatTL = new ol.geom.Point([geometry.right, geometry.top]);
+    lonLatTL.applyTransform(ol.proj.getTransform('EPSG:32633', 'EPSG:4326'));
+    var soneTL = _getUTMZoneFromGeographicPoint(lonLatTL.getCoordinates()[0], lonLatTL.getCoordinates()[1]).sone;
+    if (soneTL !== sone) {
+      return soneTL;
+    }
+
+    var lonLatBR = new ol.geom.Point([geometry.right, geometry.bottom]);
+    lonLatBR.applyTransform(ol.proj.getTransform('EPSG:32633', 'EPSG:4326'));
+    var soneBR = _getUTMZoneFromGeographicPoint(lonLatBR.getCoordinates()[0], lonLatBR.getCoordinates()[1]).sone;
+    if (soneBR !== sone) {
+      return soneBR;
+    }
+
+    var lonLatTR = new ol.geom.Point([geometry.right, geometry.top]);
+    lonLatTR.applyTransform(ol.proj.getTransform('EPSG:32633', 'EPSG:4326'));
+    var soneTR = _getUTMZoneFromGeographicPoint(lonLatTR.getCoordinates()[0], lonLatTR.getCoordinates()[1]).sone;
+    if (soneTR !== sone) {
+      return soneTR;
+    }
+    return '';
+  };
   var _createFrame = function (map) {
     _getExtentOfPrintBox(map);
     if (printBoxSelectionLayer) {
