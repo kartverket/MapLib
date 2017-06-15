@@ -62,7 +62,7 @@ ISY.MapImplementation.OL3.PrintBoxSelect = function (eventHandler) {
     var mapCenter = _getMapCenter(map);
     var mapCenterActiveUTMZone = _getMapCenterActiveUTMZone(mapCenter);
     var printBox = _getPrintBox(mapCenterActiveUTMZone);
-    var biSone = getBiSone(printBox, oldUTM.sone);
+    var biSone = getBiSone(printBox, oldUTM);
     var extent = {
       bbox: [printBox.left, printBox.bottom, printBox.right, printBox.top],
       center: mapCenterActiveUTMZone.getCoordinates(),
@@ -150,30 +150,30 @@ ISY.MapImplementation.OL3.PrintBoxSelect = function (eventHandler) {
   };
   var getBiSone = function (geometry, sone) {
     var lonLatBL = new ol.geom.Point([geometry.left, geometry.bottom]);
-    lonLatBL.applyTransform(ol.proj.getTransform('EPSG:32633', 'EPSG:4326'));
+    lonLatBL.applyTransform(ol.proj.getTransform(sone.localProj, 'EPSG:4326'));
     var soneBL = _getUTMZoneFromGeographicPoint(lonLatBL.getCoordinates()[0], lonLatBL.getCoordinates()[1]).sone;
-    if (soneBL !== sone) {
+    if (soneBL !== sone.sone) {
       return soneBL;
     }
 
     var lonLatTL = new ol.geom.Point([geometry.right, geometry.top]);
-    lonLatTL.applyTransform(ol.proj.getTransform('EPSG:32633', 'EPSG:4326'));
+    lonLatTL.applyTransform(ol.proj.getTransform(sone.localProj, 'EPSG:4326'));
     var soneTL = _getUTMZoneFromGeographicPoint(lonLatTL.getCoordinates()[0], lonLatTL.getCoordinates()[1]).sone;
-    if (soneTL !== sone) {
+    if (soneTL !== sone.sone) {
       return soneTL;
     }
 
     var lonLatBR = new ol.geom.Point([geometry.right, geometry.bottom]);
-    lonLatBR.applyTransform(ol.proj.getTransform('EPSG:32633', 'EPSG:4326'));
+    lonLatBR.applyTransform(ol.proj.getTransform(sone.localProj, 'EPSG:4326'));
     var soneBR = _getUTMZoneFromGeographicPoint(lonLatBR.getCoordinates()[0], lonLatBR.getCoordinates()[1]).sone;
-    if (soneBR !== sone) {
+    if (soneBR !== sone.sone) {
       return soneBR;
     }
 
     var lonLatTR = new ol.geom.Point([geometry.right, geometry.top]);
-    lonLatTR.applyTransform(ol.proj.getTransform('EPSG:32633', 'EPSG:4326'));
+    lonLatTR.applyTransform(ol.proj.getTransform(sone.localProj, 'EPSG:4326'));
     var soneTR = _getUTMZoneFromGeographicPoint(lonLatTR.getCoordinates()[0], lonLatTR.getCoordinates()[1]).sone;
-    if (soneTR !== sone) {
+    if (soneTR !== sone.sone) {
       return soneTR;
     }
     return '';
