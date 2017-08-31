@@ -47,7 +47,7 @@ ISY.MapImplementation.OL3.Sources.Wmts = function(isySubLayer, parameters) {
             }
         });
         sourceOptions = ol.source.WMTS.optionsFromCapabilities(capabilities,
-            {layer: isySubLayer.name, matrixSet: matrixSet});
+            {layer: isySubLayer.name, matrixSet: matrixSet, requestEncoding: 'KVP'});
         sourceOptions.tileGrid = new ol.tilegrid.WMTS({
             extent: wmtsExtent,
             origin: sourceOptions.tileGrid.getOrigin(0),
