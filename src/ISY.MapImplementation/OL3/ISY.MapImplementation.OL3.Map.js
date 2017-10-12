@@ -97,6 +97,8 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
             _registerMousePositionControl(mapConfig.mouseProjectionPrefix);
         }
         _registerMessageHandler();
+        //Make ol.map accessible
+        ISY.MapImplementation.OL3.olMap = map;
     }
 
     function _registerMapCallbacks(){

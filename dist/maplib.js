@@ -1,5 +1,5 @@
 /**
- * maplib - v1.0.18 - 2017-09-21
+ * maplib - v1.0.19 - 2017-10-12
  * https://github.com/kartverket/MapLib
  *
  * Copyright (c) 2017 
@@ -5677,6 +5677,8 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
             _registerMousePositionControl(mapConfig.mouseProjectionPrefix);
         }
         _registerMessageHandler();
+        //Make ol.map accessible
+        ISY.MapImplementation.OL3.olMap = map;
     }
 
     function _registerMapCallbacks(){
