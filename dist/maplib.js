@@ -1,5 +1,5 @@
 /**
- * maplib - v1.0.19 - 2017-10-12
+ * maplib - v1.0.20 - 2017-10-18
  * https://github.com/kartverket/MapLib
  *
  * Copyright (c) 2017 
@@ -12920,3 +12920,4 @@ ISY.Utils.Guid = function() {
     };
 };
 
+module.exports = ISY;
