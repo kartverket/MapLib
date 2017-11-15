@@ -6,7 +6,7 @@
   "devDependencies": {},
   "dependencies": {
     "jquery": "2.2.4",
-    "openlayers3": "https://github.com/kartverket/ol/releases/download/v4.3.3-kv/v4.3.3-kv.zip",
+    "openlayers3": "https://github.com/kartverket/ol/releases/download/v4.5.0-kv/v4.5.0-kv.zip",
     "xml2json": "*",
     "proj4": "*",
     "jasmine-ajax": "*",
