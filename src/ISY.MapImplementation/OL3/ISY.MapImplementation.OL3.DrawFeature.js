@@ -519,15 +519,7 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler) {
         // } else {
         //     area = polygon.getArea();
         // }
-        var output;
-        if (area > 10000) {
-            output = (Math.round(area / 1000000 * 100) / 100) +
-                ' ' + 'km<sup>2</sup>';
-        } else {
-            output = (Math.round(area * 100) / 100) +
-                ' ' + 'm<sup>2</sup>';
-        }
-        return output;
+        return area < 10000 ? Math.round(area) + ' m&sup2;' : (area / 1000000).toFixed(4) + ' km&sup2;';
     };
 
     function createMeasureTooltip(map) {
