@@ -1,8 +1,8 @@
 /**
- * maplib - v1.0.19 - 2017-10-12
+ * maplib - v1.0.20 - 2018-02-13
  * https://github.com/kartverket/MapLib
  *
- * Copyright (c) 2017 
+ * Copyright (c) 2018 
  */
 var ISY = ISY || {};
 ISY.Domain = ISY.Domain || {};
@@ -4618,15 +4618,7 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler) {
         // } else {
         //     length = Math.round(line.getLength() * 100) / 100;
         // }
-        var output;
-        if (length > 100) {
-            output = (Math.round(length / 1000 * 100) / 100) +
-                ' ' + 'km';
-        } else {
-            output = (Math.round(length * 100) / 100) +
-                ' ' + 'm';
-        }
-        return output;
+        return length < 1000 ? length.toFixed(2) + ' m' : (length / 1000).toFixed(3) + ' km';
     };
 
     var formatArea = function (map, polygon) {

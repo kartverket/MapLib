@@ -505,15 +505,7 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler) {
         // } else {
         //     length = Math.round(line.getLength() * 100) / 100;
         // }
-        var output;
-        if (length > 100) {
-            output = (Math.round(length / 1000 * 100) / 100) +
-                ' ' + 'km';
-        } else {
-            output = (Math.round(length * 100) / 100) +
-                ' ' + 'm';
-        }
-        return output;
+        return length < 1000 ? length.toFixed(2) + ' m' : (length / 1000).toFixed(3) + ' km';
     };
 
     var formatArea = function (map, polygon) {
