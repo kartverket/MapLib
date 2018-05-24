@@ -537,7 +537,7 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler) {
         for (var i = 0, ii = coordinates.length - 1; i < ii; ++i) {
             var c1 = ol.proj.transform(coordinates[i], sourceProj, 'EPSG:4326');
             var c2 = ol.proj.transform(coordinates[i + 1], sourceProj, 'EPSG:4326');
-            length += ol.Sphere.getDistance(c1, c2);
+            length += ol.sphere.getDistance(c1, c2);
         }
         // } else {
         //     length = Math.round(line.getLength() * 100) / 100;
@@ -552,7 +552,7 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler) {
         var geom = (polygon.clone().transform(
             sourceProj, 'EPSG:4326'));
         var coordinates = geom.getLinearRing(0).getCoordinates();
-        area = Math.abs(ol.Sphere.getArea(coordinates));
+        area = Math.abs(ol.sphere.getArea(coordinates));
         // } else {
         //     area = polygon.getArea();
         // }
