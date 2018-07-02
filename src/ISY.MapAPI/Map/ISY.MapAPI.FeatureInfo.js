@@ -60,7 +60,7 @@ ISY.MapAPI.FeatureInfo = function (mapImplementation, httpHelper, eventHandler, 
         includedFields.field = [includedFields.field];
       }
       includedFields.field.forEach(function (field) {
-        if (field.type === 'picture' || field.type === 'link' || field.type === 'symbol') {
+        if (field.type === 'picture' || field.type === 'link' || field.type === 'symbol' || field.type === 'boolean') {
           includedFieldsDict[field.name] = {
             name: field.alias ? field.alias : field.name,
             type: field.type
@@ -116,6 +116,8 @@ ISY.MapAPI.FeatureInfo = function (mapImplementation, httpHelper, eventHandler, 
               };
             } else if (includedFields[fieldName].unit) {
               fieldValue += includedFields[fieldName].unit;
+            } else if (includedFields[fieldName].type === 'boolean') {
+              fieldValue = fieldValue === 't' ? 'Ja' : 'Nei';
             }
           } else if (Object.keys(feature).length === 1) {
             newFieldName = feature._capitalize ? fieldName.toLowerCase().capitalizeFirstLetter() : fieldName;
