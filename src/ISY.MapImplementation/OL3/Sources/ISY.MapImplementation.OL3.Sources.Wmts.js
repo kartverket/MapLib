@@ -3,7 +3,7 @@ ISY.MapImplementation = ISY.MapImplementation || {};
 ISY.MapImplementation.OL3 = ISY.MapImplementation.OL3 || {};
 ISY.MapImplementation.OL3.Sources = ISY.MapImplementation.OL3.Sources || {};
 
-ISY.MapImplementation.OL3.Sources.Wmts = function(isySubLayer, parameters) {
+ISY.MapImplementation.OL3.Sources.Wmts = function (isySubLayer, parameters) {
     var projection = new ol.proj.Projection({
         code: isySubLayer.coordinate_system,
         extent: isySubLayer.extent,
@@ -46,8 +46,11 @@ ISY.MapImplementation.OL3.Sources.Wmts = function(isySubLayer, parameters) {
                 layer.WGS84BoundingBox = undefined;
             }
         });
-        sourceOptions = ol.source.WMTS.optionsFromCapabilities(capabilities,
-            {layer: isySubLayer.name, matrixSet: matrixSet, requestEncoding: 'KVP'});
+    sourceOptions = ol.source.WMTS.optionsFromCapabilities(capabilities, {
+      layer: isySubLayer.name,
+      matrixSet: matrixSet,
+      requestEncoding: 'KVP'
+    });
         sourceOptions.tileGrid = new ol.tilegrid.WMTS({
             extent: wmtsExtent,
             origin: sourceOptions.tileGrid.getOrigin(0),
@@ -55,8 +58,7 @@ ISY.MapImplementation.OL3.Sources.Wmts = function(isySubLayer, parameters) {
             matrixIds: sourceOptions.tileGrid.getMatrixIds(),
             tileSize: sourceOptions.tileGrid.getTileSize(0)
         });
-    }
-    else {
+  } else {
         var size = ol.extent.getWidth(projectionExtent) / 256;
         var resolutions = new Array(isySubLayer.numZoomLevels);
         var matrixIds = new Array(isySubLayer.numZoomLevels);

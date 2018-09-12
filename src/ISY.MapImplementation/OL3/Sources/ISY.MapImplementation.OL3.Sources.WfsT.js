@@ -33,16 +33,18 @@ ISY.MapImplementation.OL3.Sources.WfsT = function (url, featureType, featureNS, 
      * @throws {Error} error message.
      */
     function insertFeature(feature, describedSource) {
-        if (source_.format === undefined && describedSource === undefined){
+    if (source_.format === undefined && describedSource === undefined) {
             eventHandler.TriggerEvent(ISY.Events.EventTypes.TransactionInsertEnd, false);
             return false;
         }
-        if (describedSource !== undefined){
+    if (describedSource !== undefined) {
             source_ = describedSource;
         }
 
         var featureNode = source_.format.writeTransaction([feature], null, null, {
-            gmlOptions: {srsName: srsName_},
+      gmlOptions: {
+        srsName: srsName_
+      },
             featureNS: featureNS_,
             featureType: featureType_
         });
@@ -66,21 +68,18 @@ ISY.MapImplementation.OL3.Sources.WfsT = function (url, featureType, featureNS, 
                 if (result === undefined) {
                     okResult = false;
                     message += "Response parse error.";
-                }
-                else if (typeof result === 'string') {
+        } else if (typeof result === 'string') {
                     okResult = false;
                     message += result;
-                }else if (result.transactionSummary === undefined){
+        } else if (result.transactionSummary === undefined) {
                     okResult = false;
-                }
-                else if (result && result.transactionSummary.totalInserted === 1) {
+        } else if (result && result.transactionSummary.totalInserted === 1) {
                     var gmlId = result.insertIds[0];
                     feature.setId(gmlId);
                     var localId = getLocalId(gmlId);
                     feature.set("lokalId", localId);
                     source_.addFeature(feature);
-                }
-                else {
+        } else {
                     okResult = false;
                     message += "Feature not inserted.";
                 }
@@ -110,7 +109,7 @@ ISY.MapImplementation.OL3.Sources.WfsT = function (url, featureType, featureNS, 
      * @throws {Error} error message.
      */
     function updateFeature(feature) {
-        if (source_.format === undefined){
+    if (source_.format === undefined) {
             eventHandler.TriggerEvent(ISY.Events.EventTypes.TransactionUpdateEnd, false);
             return false;
         }
@@ -127,23 +126,26 @@ ISY.MapImplementation.OL3.Sources.WfsT = function (url, featureType, featureNS, 
 
         if (featureNamespace !== "") {
             featureNode = source_.format.writeTransaction(null, [clone], null, {
-                gmlOptions: {srsName: srsName_},
+        gmlOptions: {
+          srsName: srsName_
+        },
                 featureNS: featureNS_,
                 featureType: getFeatureName(featureType_),
                 featurePrefix: featureNamespace
             });
 
-            featureData = _convertXmlToString(featureNode);//serializer_.serializeToString(featureNode);
+      featureData = _convertXmlToString(featureNode); //serializer_.serializeToString(featureNode);
             featureData = featureData.replace(/<Name>/g, "<Name>" + featureNamespace + ":");
             //featureData = featureData.replace("xmlns=\"http://www.opengis.net/gml\"", "xmlns=\"http://www.opengis.net/gml/3.2\"");
-        }
-        else {
+    } else {
             featureNode = source_.format.writeTransaction(null, [clone], null, {
-                gmlOptions: {srsName: srsName_},
+        gmlOptions: {
+          srsName: srsName_
+        },
                 featureNS: featureNS_,
                 featureType: getFeatureName(featureType_)
             });
-            featureData = _convertXmlToString(featureNode);//serializer_.serializeToString(featureNode);
+      featureData = _convertXmlToString(featureNode); //serializer_.serializeToString(featureNode);
         }
 
         featureData = featureData.replace('xsi:schemaLocation="http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.1.0/wfs.xsd"', 'xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.1.0/wfs.xsd" xmlns="http://www.opengis.net/wfs"');
@@ -166,22 +168,18 @@ ISY.MapImplementation.OL3.Sources.WfsT = function (url, featureType, featureNS, 
                 if (result === undefined) {
                     okResult = false;
                     message += "Response parse error.";
-                }
-                else if (typeof result === 'string') {
+        } else if (typeof result === 'string') {
                     okResult = false;
                     message += result;
-                }else if (result.transactionSummary === undefined){
+        } else if (result.transactionSummary === undefined) {
                     okResult = false;
-                }
-                else if (result && result.transactionSummary.totalUpdated === undefined) {
+        } else if (result && result.transactionSummary.totalUpdated === undefined) {
                     okResult = false;
                     message += "Response parse error.";
-                }
-                else if (result && result.transactionSummary.totalUpdated !== 1) {
+        } else if (result && result.transactionSummary.totalUpdated !== 1) {
                     okResult = false;
                     message += "Feature not updated.";
-                }
-                else {
+        } else {
                     var sourceFeature = source_.getFeatureById(gmlId);
                     if (sourceFeature !== undefined) {
                         sourceFeature.setProperties(properties);
@@ -208,13 +206,13 @@ ISY.MapImplementation.OL3.Sources.WfsT = function (url, featureType, featureNS, 
     //var nodeElements = [];
     var resultString = "";
 
-    function _getChildElementToString(node){
-        if (node.childElementCount > 0){
-            for (var i = 0; i < node.childNodes.length; i++){
+  function _getChildElementToString(node) {
+    if (node.childElementCount > 0) {
+      for (var i = 0; i < node.childNodes.length; i++) {
 
-                resultString += '<'+node.childNodes[i].nodeName;
-                if (node.childNodes[i].attributes.length > 0){
-                    for (var j = 0; j < node.childNodes[i].attributes.length; j++){
+        resultString += '<' + node.childNodes[i].nodeName;
+        if (node.childNodes[i].attributes.length > 0) {
+          for (var j = 0; j < node.childNodes[i].attributes.length; j++) {
                         var attribute = node.childNodes[i].attributes[j];
                         resultString += ' ' + attribute.name + '=' + '"' + attribute.value + '"';
                     }
@@ -222,65 +220,65 @@ ISY.MapImplementation.OL3.Sources.WfsT = function (url, featureType, featureNS, 
                 if (node.childNodes[i].childNodes.length > 0) {
                     resultString += ">";
                 }
-                if (node.childNodes[i].childElementCount > 0){
+        if (node.childNodes[i].childElementCount > 0) {
                     _getChildElementToString(node.childNodes[i]);
-                }else{
-                    if (node.childNodes[i].childNodes.length > 0){
+        } else {
+          if (node.childNodes[i].childNodes.length > 0) {
                         resultString += node.childNodes[i].childNodes[0].nodeValue;
                         resultString += "</" + node.childNodes[i].nodeName + ">";
-                    }else{
+          } else {
                         resultString += "/>";
                     }
                 }
             }
-        }else{
-            resultString += '<'+node.nodeName;
-            if (node.attributes.length > 0){
-                for (var k = 0; k < node.attributes.length; k++){
+    } else {
+      resultString += '<' + node.nodeName;
+      if (node.attributes.length > 0) {
+        for (var k = 0; k < node.attributes.length; k++) {
                     var attribute1 = node.attributes[k];
                     resultString += ' ' + attribute1.name + '=' + '"' + attribute1.value + '"';
                 }
             }
-            if (node.childNodes[0].childNodes.length > 0){
+      if (node.childNodes[0].childNodes.length > 0) {
                 resultString += ">";
                 resultString += node.childNodes[0].nodeValue;
                 resultString += "</" + node.nodeName + ">";
-            }else{
+      } else {
                 resultString += "/>";
             }
         }
         resultString += "</" + node.nodeName + ">";
     }
 
-    function _convertXmlToString(xmlDoc){
+  function _convertXmlToString(xmlDoc) {
         var tags = xmlDoc.getElementsByTagName('*');
         var xmlString = '';
         var tagNodeName = [];
         var parentNode = tags[0].parentNode;
 
         //parent node
-        xmlString += '<'+parentNode.nodeName;
+    xmlString += '<' + parentNode.nodeName;
         tagNodeName.push(parentNode.nodeName);
-        for (var m = 0; m < parentNode.attributes.length; m++){
+    for (var m = 0; m < parentNode.attributes.length; m++) {
             var parentAttribute = parentNode.attributes[m];
             xmlString += ' ' + parentAttribute.name + '=' + '"' + parentAttribute.value + '"';
         }
         xmlString += ">";
 
         //main node
-        xmlString += '<'+tags[0].nodeName;
+    xmlString += '<' + tags[0].nodeName;
         tagNodeName.push(tags[0].nodeName);
-        for (var c = 0; c < tags[0].attributes.length; c++){
+    for (var c = 0; c < tags[0].attributes.length; c++) {
             var mainAttribute = tags[0].attributes[c];
             xmlString += ' ' + mainAttribute.name + '=' + '"' + mainAttribute.value + '"';
         }
         xmlString += ">";
 
         var tag = tags[0]; // tags[0] has all children - not necessary to loop tags
-        for (var i = 0; i < tag.childElementCount; i++){
-            xmlString += '<'+tag.childNodes[i].nodeName;
-            if (tag.childNodes[i].attributes.length > 0){
-                for (var b = 0; b < tag.childNodes[i].attributes.length; b++){
+    for (var i = 0; i < tag.childElementCount; i++) {
+      xmlString += '<' + tag.childNodes[i].nodeName;
+      if (tag.childNodes[i].attributes.length > 0) {
+        for (var b = 0; b < tag.childNodes[i].attributes.length; b++) {
                     var attribute = tag.childNodes[i].attributes[b];
                     xmlString += ' ' + attribute.name + '=' + '"' + attribute.value + '"';
                 }
@@ -291,7 +289,7 @@ ISY.MapImplementation.OL3.Sources.WfsT = function (url, featureType, featureNS, 
             resultString = "";
         }
 
-        for (var k = tagNodeName.length - 1; k >= 0; k--){
+    for (var k = tagNodeName.length - 1; k >= 0; k--) {
             xmlString += "</" + tagNodeName[k] + ">";
         }
         return xmlString;
@@ -304,7 +302,7 @@ ISY.MapImplementation.OL3.Sources.WfsT = function (url, featureType, featureNS, 
      * @throws {Error} error message.
      */
     function deleteFeature(feature) {
-        if (source_.format === undefined){
+    if (source_.format === undefined) {
             eventHandler.TriggerEvent(ISY.Events.EventTypes.TransactionRemoveEnd, false);
             return false;
         }
@@ -314,7 +312,7 @@ ISY.MapImplementation.OL3.Sources.WfsT = function (url, featureType, featureNS, 
             featureType: getFeatureName(featureType_)
         });
 
-        var featureData = _convertXmlToString(featureNode);//serializer_.serializeToString(featureNode);
+    var featureData = _convertXmlToString(featureNode); //serializer_.serializeToString(featureNode);
         featureData = featureData.replace('xsi:schemaLocation="http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.1.0/wfs.xsd"', 'xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.1.0/wfs.xsd" xmlns="http://www.opengis.net/wfs"');
         featureData = featureData.replace('Filter', 'Filter xmlns="http://www.opengis.net/ogc"');
 
@@ -330,15 +328,12 @@ ISY.MapImplementation.OL3.Sources.WfsT = function (url, featureType, featureNS, 
                 if (result === undefined) {
                     okResult = false;
                     message += "Response parse error.";
-                }
-                else if (typeof result === 'string') {
+        } else if (typeof result === 'string') {
                     okResult = false;
                     message += result;
-                }
-                else if (result.transactionSummary === undefined){
+        } else if (result.transactionSummary === undefined) {
                     okResult = false;
-                }
-                else if (result && result.transactionSummary.totalDeleted !== 1) {
+        } else if (result && result.transactionSummary.totalDeleted !== 1) {
                         okResult = false;
                         message += "Feature not deleted.";
                 }
@@ -370,8 +365,7 @@ ISY.MapImplementation.OL3.Sources.WfsT = function (url, featureType, featureNS, 
         var result;
         if (window.Document && data instanceof Document && data.documentElement && data.documentElement.localName === 'ExceptionReport') {
             result = (data.getElementsByTagNameNS('http://www.opengis.net/ows', 'ExceptionText').item(0).textContent);
-        }
-        else {
+    } else {
             result = source_.format.readTransactionResponse(data);
         }
         return result;
@@ -394,8 +388,7 @@ ISY.MapImplementation.OL3.Sources.WfsT = function (url, featureType, featureNS, 
         var startIndex = gmlId.indexOf('{');
         if (startIndex !== -1) {
             return gmlId.substr(startIndex);
-        }
-        else {
+    } else {
             return "";
         }
     }
@@ -410,8 +403,7 @@ ISY.MapImplementation.OL3.Sources.WfsT = function (url, featureType, featureNS, 
         if (startIndex !== -1) {
             startIndex++;
             return featureType.substr(startIndex);
-        }
-        else {
+    } else {
             return featureType;
         }
     }
@@ -425,8 +417,7 @@ ISY.MapImplementation.OL3.Sources.WfsT = function (url, featureType, featureNS, 
         var startIndex = featureType.indexOf(':');
         if (startIndex !== -1) {
             return featureType.substr(0, startIndex);
-        }
-        else {
+    } else {
             return "";
         }
     }

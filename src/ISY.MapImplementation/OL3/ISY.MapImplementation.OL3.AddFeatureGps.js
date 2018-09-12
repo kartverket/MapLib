@@ -99,26 +99,20 @@ ISY.MapImplementation.OL3.AddFeatureGps = function(eventHandler){
                 // set sketch
                 sketch = evt.feature;
 
-                var tooltipCoord = evt.coordinate;
-
                 listener = sketch.getGeometry().on('change', function(evt) {
                     var geom = evt.target;
                     var output;
                     if (geom instanceof ol.geom.Polygon) {
                         output = "";//formatArea(/** @type {ol.geom.Polygon} */ (geom));
-                        tooltipCoord = geom.getInteriorPoint().getCoordinates();
+                        evt.coordinate = geom.getInteriorPoint().getCoordinates();
                     } else if (geom instanceof ol.geom.LineString) {
                         output = "";//formatLength( /** @type {ol.geom.LineString} */ (geom));
-                        tooltipCoord = geom.getLastCoordinate();
+                        evt.coordinate = geom.getLastCoordinate();
                     }
                     //measureTooltipElement.innerHTML = output.string;
                     eventHandler.TriggerEvent(ISY.Events.EventTypes.MeasureMouseMove, output);
-                    //measureTooltip.setPosition(tooltipCoord);
+                    //measureTooltip.setPosition(evt.coordinate);
                 });
-
-
-
-
             }, this);
 
         draw.on('drawend',
@@ -184,14 +178,7 @@ ISY.MapImplementation.OL3.AddFeatureGps = function(eventHandler){
         map.addOverlay(helpTooltip);
     }
 
-    function  activate(map, options){
-
-        console.log(map, options);
-
-        //if (true){
-        //    return;
-        //}
-
+    function activate(map, options){
         isActive = true;
         translate = options.translate;
         typeObject = options.toolType;//type;
@@ -239,7 +226,6 @@ ISY.MapImplementation.OL3.AddFeatureGps = function(eventHandler){
     }
 
     function addCoordinates(coordinates){
-        console.log(coordinates);
         //var point = new ol.geom.Point([coordinates[0], coordinates[1]]);
         //var feature = new ol.Feature();
         //feature.setGeometry(point);
@@ -252,6 +238,7 @@ ISY.MapImplementation.OL3.AddFeatureGps = function(eventHandler){
         //sketch.setGeometry(geom);
         //draw.extend(feature);
         //sketch.setGeometry(point);
+        return coordinates;
     }
 
     return {

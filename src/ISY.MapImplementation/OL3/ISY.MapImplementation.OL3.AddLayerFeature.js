@@ -5,11 +5,9 @@ ISY.MapImplementation.OL3 = ISY.MapImplementation.OL3 || {};
 ISY.MapImplementation.OL3.AddLayerFeature = function (eventHandler) {
 
   var isActive = false;
-  var translate;
   var typeObject;
   var snappingFeatures;
   var sketch;
-  var startModify = false;
   var draw;
   var drawLayer;
   var modify;

@@ -293,11 +293,6 @@ ISY.MapImplementation.OL3.Styles.Sld = function () {
                 }
             },
             "Rule": function(node, obj) {
-                var config;
-                if (this.multipleSymbolizers) {
-                    config = {symbolizers: []};
-                }
-                //var rule = new OpenLayers.Rule(config);
                 var rule = {symbolizer:[]};
                 rule.symbolizer = {
                     fill: false,
@@ -1249,7 +1244,6 @@ ISY.MapImplementation.OL3.Styles.Sld = function () {
             } else {
                 return 'right';
             }
-            return 'left';
         },
         getBaselineValue: function(baseline){
             if (baseline === undefined){
@@ -1263,7 +1257,6 @@ ISY.MapImplementation.OL3.Styles.Sld = function () {
             } else {
                 return 'top';
             }
-            return 'bottom';
         },
         getColorValue: function(colorvalue, opacityvalue){
             //if (colorvalue === undefined){

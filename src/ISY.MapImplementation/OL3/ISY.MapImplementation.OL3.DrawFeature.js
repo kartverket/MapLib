@@ -112,7 +112,7 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler) {
     function showTooltip(evt, map) {
         createMeasureTooltip(map);
         // set sketch
-        sketch = evt.feature || evt.features.getArray()[0];
+        var sketch = evt.feature || evt.features.getArray()[0];
         listener = sketch.getGeometry().on('change', function (evt) {
             var output = getMeasurements(evt.target, map);
             sketch.setProperties({measurement: output});
@@ -404,11 +404,10 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler) {
         };
 
         if (style.getText().getStroke()) {
-            var textStroke = {
-                color: style.getText().getStroke().getColor(),
-                width: style.getText().getStroke().getWidth()
+            textStyle['stroke'] = {
+              color: style.getText().getStroke().getColor(),
+              width: style.getText().getStroke().getWidth()
             };
-            textStyle['stroke'] = textStroke;
         }
         return textStyle;
     }

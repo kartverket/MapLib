@@ -53,11 +53,10 @@ ISY.MapAPI.Parsers.Base = function(factory) {
             var tableResult = result.substring(indexOfTableStart, result.length);
             var indexOfTableEnd = tableResult.indexOf("</body>");
             tableResult = tableResult.substring(0, indexOfTableEnd);
-            console.log(tableResult);
-            var jsonObject = xml2json.parser(tableResult);
-            console.log(jsonObject);
+            return xml2json.parser(tableResult);
+        } else {
+          return [];
         }
-        return [];
     }
 
     return {

@@ -144,8 +144,8 @@ ISY.MapImplementation.OL3.PrintBoxSelect = function (eventHandler) {
       }
     }
     return {
-      'sone': sone,
-      'localProj': localProj
+      sone: sone,
+      localProj: localProj
     };
   };
   var getBiSone = function (geometry, sone) {
@@ -267,7 +267,7 @@ ISY.MapImplementation.OL3.PrintBoxSelect = function (eventHandler) {
   };
 
   var _getStyle = function () {
-    var style = new ol.style.Style({
+    return new ol.style.Style({
       stroke: new ol.style.Stroke({
         color: '#ee9900',
         width: 1,
@@ -278,7 +278,6 @@ ISY.MapImplementation.OL3.PrintBoxSelect = function (eventHandler) {
         opacity: 0.4
       })
     });
-    return style;
   };
 
   var _removeKineticDragPan = function (map, copyOld) {

@@ -1,5 +1,5 @@
 /**
- * maplib - v1.0.20 - 2018-07-02
+ * maplib - v1.0.21 - 2018-09-12
  * https://github.com/kartverket/MapLib
  *
  * Copyright (c) 2018 
@@ -322,38 +322,39 @@ ISY.Facade.ServerConfigFacade = function () {
 var ISY = ISY || {};
 ISY.MapAPI = ISY.MapAPI || {};
 
-ISY.MapAPI.Categories = function(){
-    var categories = [];
+ISY.MapAPI.Categories = function () {
+  var categories = [];
 
-    function init(mapConfig) {
-        categories = mapConfig.categories;
-    }
+  function init(mapConfig) {
+    categories = mapConfig.categories;
+  }
 
-    function getCategories() {
-        return categories;
-    }
+  function getCategories() {
+    return categories;
+  }
 
-    function getCategoryById(catId) {
-        for(var i = 0; i < categories.length; i++){
-            var cat = categories[i];
-            if (cat.catId.toString() === catId.toString()){
-                return cat;
-            }
-            for (var j = 0; j < categories[i].subCategories.length; j++) {
-                var subcat = categories[i].subCategories[j];
-                if (subcat.catId.toString() === catId.toString()){
-                    return subcat;
-                }
-            }
+  function getCategoryById(catId) {
+    for (var i = 0; i < categories.length; i++) {
+      var cat = categories[i];
+      if (cat.catId.toString() === catId.toString()) {
+        return cat;
+      }
+      for (var j = 0; j < categories[i].subCategories.length; j++) {
+        var subcat = categories[i].subCategories[j];
+        if (subcat.catId.toString() === catId.toString()) {
+          return subcat;
         }
+      }
     }
+  }
 
-    return {
-        Init: init,
-        GetCategoryById: getCategoryById,
-        GetCategories: getCategories
-    };
+  return {
+    Init: init,
+    GetCategoryById: getCategoryById,
+    GetCategories: getCategories
+  };
 };
+
 var ISY = ISY || {};
 ISY.MapAPI = ISY.MapAPI || {};
 
@@ -370,6 +371,7 @@ ISY.MapAPI.CustomCrsLoader = function () {
 
     // From epsg.io
     //SWEREF99:
+    /*
     proj4.defs("EPSG:3006", "+proj=utm +zone=33 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs");
     proj4.defs("EPSG:3007", "+proj=tmerc +lat_0=0 +lon_0=12 +k=1 +x_0=150000 +y_0=0 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs");
     proj4.defs("EPSG:3008", "+proj=tmerc +lat_0=0 +lon_0=13.5 +k=1 +x_0=150000 +y_0=0 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs");
@@ -383,6 +385,7 @@ ISY.MapAPI.CustomCrsLoader = function () {
     proj4.defs("EPSG:3016", "+proj=tmerc +lat_0=0 +lon_0=20.25 +k=1 +x_0=150000 +y_0=0 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs");
     proj4.defs("EPSG:3017", "+proj=tmerc +lat_0=0 +lon_0=21.75 +k=1 +x_0=150000 +y_0=0 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs");
     proj4.defs("EPSG:3018", "+proj=tmerc +lat_0=0 +lon_0=23.25 +k=1 +x_0=150000 +y_0=0 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs");
+    */
     //UTM 31-35:
     proj4.defs("EPSG:25831", "+proj=utm +zone=31 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs");
     proj4.defs("EPSG:25832", "+proj=utm +zone=32 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs");
@@ -752,9 +755,8 @@ ISY.MapAPI.FeatureInfo = function (mapImplementation, httpHelper, eventHandler, 
     var crs = isySubLayer.featureInfo.getFeatureCrs;
     //var adaptedExtent = mapImplementation.TransformBox(isySubLayer.coordinate_system, isySubLayer.featureInfo.getFeatureCrs, boxExtent);
     //var extent = mapImplementation.GetCenterFromExtent(boxExtent);
-    var adaptedExtent = boxExtent;
     //var url = "service=WFS&request=GetFeature&typeName=" + isySubLayer.name + "&srsName=" + crs + "&outputFormat=" + isySubLayer.featureInfo.getFeatureFormat + "&bbox=" + adaptedExtent;
-    var url = 'service=WMS&version=1.3.0&request=GetFeatureInfo&TRANSPARENT=' + isySubLayer.transparent + '&QUERY_LAYERS=' + isySubLayer.name + '&INFO_FORMAT=' + isySubLayer.featureInfo.getFeatureInfoFormat + '&SRS=' + crs + '&bbox=' + adaptedExtent + '&width=' + 400 + '&height=' + 400 + '&x=' + 150 + '&y=' + 150;
+    var url = 'service=WMS&version=1.3.0&request=GetFeatureInfo&TRANSPARENT=' + isySubLayer.transparent + '&QUERY_LAYERS=' + isySubLayer.name + '&INFO_FORMAT=' + isySubLayer.featureInfo.getFeatureInfoFormat + '&SRS=' + crs + '&bbox=' + boxExtent + '&width=' + 400 + '&height=' + 400 + '&x=' + 150 + '&y=' + 150;
     url = decodeURIComponent(url);
     url = url.substring(url.lastIndexOf('?'), url.length);
     url = url.replace('?', '');
@@ -864,1306 +866,1306 @@ ISY.MapAPI.FeatureInfo = function (mapImplementation, httpHelper, eventHandler, 
 var ISY = ISY || {};
 ISY.MapAPI = ISY.MapAPI || {};
 
-ISY.MapAPI.Groups = function(){
-    var groups = [];
+ISY.MapAPI.Groups = function () {
+  var groups = [];
 
-    function init(mapConfig) {
-        groups = mapConfig.groups;
-    }
+  function init(mapConfig) {
+    groups = mapConfig.groups;
+  }
 
-    function getGroups() {
-        return groups;
-    }
+  function getGroups() {
+    return groups;
+  }
 
-    function getGroupById(groupId) {
-        for(var i = 0; i < groups.length; i++){
-            var group = groups[i];
-            if (group.groupId.toString() === groupId.toString()){
-                return group;
-            }
-            for (var j = 0; j < groups[i].subCategories.length; j++) {
-                var subcat = groups[i].subCategories[j];
-                if (subcat.groupId.toString() === groupId.toString()){
-                    return subcat;
-                }
-            }
+  function getGroupById(groupId) {
+    for (var i = 0; i < groups.length; i++) {
+      var group = groups[i];
+      if (group.groupId.toString() === groupId.toString()) {
+        return group;
+      }
+      for (var j = 0; j < groups[i].subCategories.length; j++) {
+        var subcat = groups[i].subCategories[j];
+        if (subcat.groupId.toString() === groupId.toString()) {
+          return subcat;
         }
+      }
     }
+  }
 
-    return {
-        Init: init,
-        GetGroupById: getGroupById,
-        GetGroups: getGroups
-    };
+  return {
+    Init: init,
+    GetGroupById: getGroupById,
+    GetGroups: getGroups
+  };
 };
 
 var ISY = ISY || {};
 ISY.MapAPI = ISY.MapAPI || {};
 
-ISY.MapAPI.Layers = function(mapImplementation){
-    var config;
-    var layers;
-    var layersArranged;
+ISY.MapAPI.Layers = function (mapImplementation) {
+  var config;
+  var layers;
+  var layersArranged;
 
-    function init(mapConfig){
-        config = mapConfig;
-        layers = mapConfig.layers;
+  function init(mapConfig) {
+    config = mapConfig;
+    layers = mapConfig.layers;
 
-        _setUpLayerIndex();
+    _setUpLayerIndex();
 
-        var baseLayers = getBaseLayers();
-        var isBaseLayerVisible = false;
-        for(var i = 0; i < baseLayers.length; i++){
-            var baseLayer = baseLayers[i];
-            if(baseLayer.visibleOnLoad){
-                setBaseLayer(baseLayer);
-                isBaseLayerVisible = true;
-            }else if(isBaseLayerVisible === false){
-                baseLayer.visibleOnLoad = true;
-                setBaseLayer(baseLayer);
-                isBaseLayerVisible = true;
-            }
-        }
-
-        var overlayLayers = getOverlayLayers();
-        for(var j = 0; j < overlayLayers.length; j++){
-            var overlayLayer = overlayLayers[j];
-            if(overlayLayer.visibleOnLoad){
-                showLayer(overlayLayer);
-            } else {
-                hideLayer(overlayLayer);
-            }
-        }
+    var baseLayers = getBaseLayers();
+    var isBaseLayerVisible = false;
+    for (var i = 0; i < baseLayers.length; i++) {
+      var baseLayer = baseLayers[i];
+      if (baseLayer.visibleOnLoad) {
+        setBaseLayer(baseLayer);
+        isBaseLayerVisible = true;
+      } else if (isBaseLayerVisible === false) {
+        baseLayer.visibleOnLoad = true;
+        setBaseLayer(baseLayer);
+        isBaseLayerVisible = true;
+      }
     }
 
-    function _setUpLayerIndex(){
-        var layerIndex = 0;
+    var overlayLayers = getOverlayLayers();
+    for (var j = 0; j < overlayLayers.length; j++) {
+      var overlayLayer = overlayLayers[j];
+      if (overlayLayer.visibleOnLoad) {
+        showLayer(overlayLayer);
+      } else {
+        hideLayer(overlayLayer);
+      }
+    }
+  }
 
-        var baseLayers = getBaseLayers();
-        for(var i = 0; i < baseLayers.length; i++){
-            var baseLayer = baseLayers[i];
-            for(var j = 0; j < baseLayer.subLayers.length; j++){
-                baseLayer.subLayers[j].layerIndex = layerIndex;
-                layerIndex++;
-            }
-        }
+  function _setUpLayerIndex() {
+    var layerIndex = 0;
 
-        var overlayLayers = getOverlayLayers();
-        for(var k = 0; k < overlayLayers.length; k++){
-            var overlayLayer = overlayLayers[k];
-            for(var l = 0; l < overlayLayer.subLayers.length; l++){
-                overlayLayer.subLayers[l].layerIndex = layerIndex;
-                layerIndex++;
-            }
-        }
+    var baseLayers = getBaseLayers();
+    for (var i = 0; i < baseLayers.length; i++) {
+      var baseLayer = baseLayers[i];
+      for (var j = 0; j < baseLayer.subLayers.length; j++) {
+        baseLayer.subLayers[j].layerIndex = layerIndex;
+        layerIndex++;
+      }
     }
 
-    function _getLayers() {
-        if (config !== undefined) {
-            return config.layers;
-        }
-        return [];
+    var overlayLayers = getOverlayLayers();
+    for (var k = 0; k < overlayLayers.length; k++) {
+      var overlayLayer = overlayLayers[k];
+      for (var l = 0; l < overlayLayer.subLayers.length; l++) {
+        overlayLayer.subLayers[l].layerIndex = layerIndex;
+        layerIndex++;
+      }
+    }
+  }
+
+  function _getLayers() {
+    if (config !== undefined) {
+      return config.layers;
+    }
+    return [];
+  }
+
+  function _compare(a, b) {
+    if (a.id < b.id) {
+      return -1;
+    }
+    if (a.id > b.id) {
+      return 1;
+    }
+    return 0;
+  }
+
+  function arrangeLayers() {
+    if (layersArranged) {
+      return;
+    }
+    layersArranged = true;
+    var overlayLayers = getOverlayLayers();
+    var rearrangeLayers = [];
+    for (var k = 0; k < overlayLayers.length; k++) {
+      var overlayLayer = overlayLayers[k];
+      if (overlayLayer.isVisible) {
+        rearrangeLayers.push(overlayLayer);
+      }
+    }
+    rearrangeLayers.sort(_compare);
+    rearrangeLayers.forEach(function (layer) {
+      showLayer(layer);
+    });
+  }
+
+  function getBaseLayers() {
+    return _getLayers().filter(function (elem) {
+      return elem.isBaseLayer === true;
+    });
+  }
+
+  function getOverlayLayers() {
+    return _getLayers().filter(function (elem) {
+      return elem.isBaseLayer === false;
+    });
+  }
+
+  function setBaseLayer(isyLayer) {
+    var baseLayers = getVisibleBaseLayers();
+    for (var i = 0; i < baseLayers.length; i++) {
+      var baseLayer = baseLayers[i];
+      hideLayer(baseLayer);
     }
 
-    function _compare(a, b) {
-        if (a.id < b.id) {
-            return -1;
+    _showBaseLayer(isyLayer);
+  }
+
+  function updateSortingIndex() {
+    var index = 1;
+    for (var i = 0; i < config.groups.length; i++) {
+      if (config.groups[i].isyLayers !== undefined) {
+        for (var j = 0; j < config.groups[i].isyLayers.length; j++) {
+          for (var k = 0; k < config.groups[i].isyLayers[j].subLayers.length; k++) {
+            config.groups[i].isyLayers[j].subLayers[k].sortingIndex = index;
+            index += 1;
+          }
         }
-        if (a.id > b.id) {
-            return 1;
-        }
-        return 0;
+      } else {
+        break;
+      }
+    }
+  }
+
+  function addLayer(isyLayer) {
+    showLayer(isyLayer);
+    layers.push(isyLayer);
+  }
+
+  function showLayer(isyLayer) {
+    var subLayers = isyLayer.subLayers;
+    for (var j = 0; j < subLayers.length; j++) {
+      var isySubLayer = subLayers[j];
+      if (shouldBeVisible(isySubLayer)) {
+        mapImplementation.ShowLayer(isySubLayer);
+      } else {
+        mapImplementation.HideLayer(isySubLayer);
+      }
     }
 
-    function arrangeLayers(){
-        if (layersArranged){
-            return;
+    isyLayer.isVisible = true;
+    ////_recalculateMapLayerIndexes();
+    // updateSortingIndex();
+    // mapImplementation.UpdateLayerSortIndex(config.groups);
+    // mapImplementation.SortLayerBySortIndex();
+    // mapImplementation.RedrawMap();
+  }
+
+  function hideLayer(isyLayer) {
+    var subLayers = isyLayer.subLayers;
+    isyLayer.isVisible = false;
+    for (var j = 0; j < subLayers.length; j++) {
+      var isySubLayer = subLayers[j];
+      mapImplementation.HideLayer(isySubLayer);
+    }
+
+    isyLayer.mapLayerIndex = -1;
+    //_recalculateMapLayerIndexes();
+  }
+
+  function getVisibleSubLayers() {
+    var subLayersOnly = [];
+    var visibleOverlays = _getVisibleOverlayLayers();
+    for (var i = 0; i < visibleOverlays.length; i++) {
+      var isyLayer = visibleOverlays[i];
+      for (var j = 0; j < isyLayer.subLayers.length; j++) {
+        var subLayer = isyLayer.subLayers[j];
+        if (shouldBeVisible(subLayer)) {
+          subLayersOnly.push(subLayer);
         }
-        layersArranged = true;
-        var overlayLayers = getOverlayLayers();
-        var rearrangeLayers = [];
-        for(var k = 0; k < overlayLayers.length; k++){
-            var overlayLayer = overlayLayers[k];
-            if (overlayLayer.isVisible) {
-                rearrangeLayers.push(overlayLayer);
-            }
+      }
+    }
+    return subLayersOnly;
+  }
+
+  function getVisibleBaseLayers() {
+    return getBaseLayers().filter(function (elem) {
+      return elem.isVisible === true;
+    });
+  }
+
+  function getLayerById(id) {
+    if (layers !== undefined) {
+      for (var i = 0; i < layers.length; i++) {
+        var layer = layers[i];
+        if (layer.id.toString() === id.toString()) {
+          return layer;
         }
-        rearrangeLayers.sort(_compare);
-        rearrangeLayers.forEach(function(layer){
+      }
+    }
+  }
+
+  function moveLayerToIndexInGroup() {
+    updateSortingIndex();
+    mapImplementation.UpdateLayerSortIndex(config.groups);
+    mapImplementation.SortLayerBySortIndex();
+    mapImplementation.RedrawMap();
+  }
+
+  function moveLayerToIndex(isyLayer, index) {
+    var subLayers = isyLayer.subLayers;
+    for (var i = 0; i < subLayers.length; i++) {
+      var subLayer = subLayers[i];
+      if (shouldBeVisible(subLayer)) {
+        mapImplementation.MoveLayerToIndex(subLayer, index);
+      }
+    }
+    mapImplementation.RedrawMap();
+  }
+
+  function moveLayerAbove(isySourceLayer, isyTargetLayer) {
+    var targetLayerIndex = _getMaxLayerIndexForLayer(isyTargetLayer);
+    var subLayers = isySourceLayer.subLayers;
+    for (var i = 0; i < subLayers.length; i++) {
+      var subLayer = subLayers[i];
+      if (shouldBeVisible(subLayer)) {
+        mapImplementation.MoveLayerToIndex(subLayer, targetLayerIndex);
+      }
+    }
+  }
+
+  function _showBaseLayer(isyLayer) {
+    var subLayers = isyLayer.subLayers;
+    for (var j = 0; j < subLayers.length; j++) {
+      var isySubLayer = subLayers[j];
+      if (shouldBeVisible(isySubLayer)) {
+        mapImplementation.ShowBaseLayer(isySubLayer);
+      } else {
+        mapImplementation.HideLayer(isySubLayer);
+      }
+    }
+
+    isyLayer.isVisible = true;
+    _recalculateMapLayerIndexes();
+  }
+
+  function _recalculateMapLayerIndexes() {
+    var visibleOverlayLayers = _getVisibleOverlayLayers();
+    for (var i = 0; i < visibleOverlayLayers.length; i++) {
+      var layer = visibleOverlayLayers[i];
+      layer.mapLayerIndex = _getMaxLayerIndexForLayer(layer);
+    }
+  }
+
+  function _getVisibleOverlayLayers() {
+    return getOverlayLayers().filter(function (elem) {
+      return elem.isVisible === true;
+    });
+  }
+
+  function shouldBeVisible( /*isySubLayer*/ ) {
+    // todo johben: Logic could include zoom levels in case of a layer with both wms and wfs.
+    // I.E.
+    // var currentZoomLevel = mapImplementation.getCurrentZoomLevel();
+    // return subLayer.StartZoomLevel < currentZoomLevel && subLayer.EndZoomLevel > currentZoomLevel
+    return true;
+  }
+
+  function _getMaxLayerIndexForLayer(isyLayer) {
+    var subLayers = isyLayer.subLayers;
+    var indexes = [];
+    for (var i = 0; i < subLayers.length; i++) {
+      var subLayer = subLayers[i];
+      var thisIndex = mapImplementation.GetLayerIndex(subLayer);
+      if (thisIndex !== null) {
+        indexes.push(thisIndex);
+      }
+    }
+    return Math.max(indexes);
+  }
+
+  return {
+    Init: init,
+    ArrangeLayers: arrangeLayers,
+    GetBaseLayers: getBaseLayers,
+    GetOverlayLayers: getOverlayLayers,
+    SetBaseLayer: setBaseLayer,
+    AddLayer: addLayer,
+    HideLayer: hideLayer,
+    ShowLayer: showLayer,
+    GetVisibleSubLayers: getVisibleSubLayers,
+    GetVisibleBaseLayers: getVisibleBaseLayers,
+    GetLayerById: getLayerById,
+    MoveLayerToIndex: moveLayerToIndex,
+    MoveLayerToIndexInGroup: moveLayerToIndexInGroup,
+    MoveLayerAbove: moveLayerAbove,
+    ShouldBeVisible: shouldBeVisible
+  };
+
+};
+
+var ISY = ISY || {};
+ISY.MapAPI = ISY.MapAPI || {};
+
+ISY.MapAPI.Map = function (mapImplementation, eventHandler, featureInfo, layerHandler, groupHandler, categoryHandler) {
+
+  /*
+      Start up functions Start
+   */
+
+  var mapConfiguration;
+
+  function init(targetId, mapConfig) {
+    _loadCustomCrs();
+
+    mapConfiguration = mapConfig;
+    mapImplementation.InitMap(targetId, mapConfig);
+    layerHandler.Init(mapConfig);
+    groupHandler.Init(mapConfig);
+    categoryHandler.Init(mapConfig);
+
+    eventHandler.TriggerEvent(ISY.Events.EventTypes.MapLoaded);
+  }
+
+  function _loadCustomCrs() {
+    var customCrsLoader = new ISY.MapAPI.CustomCrsLoader();
+    customCrsLoader.LoadCustomCrs();
+
+    addCustomProj('EPSG:25832');
+    addCustomProj('EPSG:25833');
+    addCustomProj('EPSG:25834');
+    addCustomProj('EPSG:25835');
+    addCustomProj('EPSG:25836');
+    addCustomProj('EPSG:32632');
+    addCustomProj('EPSG:32633');
+    addCustomProj('EPSG:32634');
+    addCustomProj('EPSG:32635');
+    addCustomProj('EPSG:32636');
+    addCustomProj('EPSG:4258');
+    // TODO: Geoserver
+    //addCustomProj('http://www.opengis.net/gml/srs/epsg.xml#25832');
+    //addCustomProj('http://www.opengis.net/gml/srs/epsg.xml#25833');
+    //addCustomProj('http://www.opengis.net/gml/srs/epsg.xml#25835');
+    //addCustomProj('http://www.opengis.net/gml/srs/epsg.xml#32632');
+    //addCustomProj('http://www.opengis.net/gml/srs/epsg.xml#32633');
+    //addCustomProj('http://www.opengis.net/gml/srs/epsg.xml#32635');
+  }
+
+  function addCustomProj(code) {
+    if (typeof (ol) === "undefined") {
+      // TODO: Never create ol-stuff in general code!!!
+      return;
+    }
+    var proj = new ol.proj.Projection({
+      code: code,
+      units: 'm'
+    });
+
+    ol.proj.addProjection(proj);
+  }
+
+  function changeView(viewPropertyObject) {
+    mapImplementation.ChangeView(viewPropertyObject);
+  }
+
+  function redrawMap() {
+    mapImplementation.RedrawMap();
+  }
+
+  function refreshMap() {
+    mapImplementation.RefreshMap();
+  }
+
+  function refreshLayerByGuid(guid, featureObj) {
+    mapImplementation.RefreshLayerByGuid(guid, featureObj);
+  }
+
+  /*
+      Start up functions End
+   */
+
+  /*
+      Layer functions Start
+   */
+
+  function addLayer(isyLayer) {
+    layerHandler.AddLayer(isyLayer);
+  }
+
+  function addDataToLayer(isyLayer, data) {
+    mapImplementation.AddDataToLayer(isyLayer.subLayers[0], data);
+  }
+
+  function removeDataFromLayer(isyLayer, data) {
+    mapImplementation.RemoveDataFromLayer(isyLayer.subLayers[0], data);
+  }
+
+  function clearLayer(isyLayer) {
+    mapImplementation.ClearLayer(isyLayer.subLayers[0]);
+  }
+
+  function showLayer(isyLayer) {
+    layerHandler.ShowLayer(isyLayer);
+  }
+
+  function hideLayer(isyLayer) {
+    layerHandler.HideLayer(isyLayer);
+  }
+
+  function setLayerOpacity(isyLayer, value) {
+    var subLayers = isyLayer.subLayers;
+    for (var j = 0; j < subLayers.length; j++) {
+      var isySubLayer = subLayers[j];
+      mapImplementation.SetLayerOpacity(isySubLayer, value);
+    }
+    mapImplementation.RedrawMap();
+  }
+
+  function setBaseLayer(isyLayer) {
+    layerHandler.SetBaseLayer(isyLayer);
+  }
+
+  function getBaseLayers() {
+    return layerHandler.GetBaseLayers();
+  }
+
+  function getFirstVisibleBaseLayer() {
+    return layerHandler.GetVisibleBaseLayers()[0];
+  }
+
+  function getOverlayLayers() {
+    return layerHandler.GetOverlayLayers();
+  }
+
+  function getVisibleSubLayers() {
+    return layerHandler.GetVisibleSubLayers();
+  }
+
+  function getLayerById(id) {
+    return layerHandler.GetLayerById(id);
+  }
+
+  function moveLayerToIndex(isyLayer, index) {
+    layerHandler.MoveLayerToIndex(isyLayer, index);
+  }
+
+  function moveLayerToIndexInGroup() {
+    layerHandler.MoveLayerToIndexInGroup();
+  }
+
+  function moveLayerAbove(isySourceLayer, isyTargetLayer) {
+    layerHandler.MoveLayerAbove(isySourceLayer, isyTargetLayer);
+  }
+
+  function _shouldBeVisible(subLayer) {
+    return layerHandler.ShouldBeVisible(subLayer);
+  }
+
+  /*
+      Layer functions End
+   */
+
+  /*
+   Categories functions Start
+   */
+
+  function getCategoryById(id) {
+    return categoryHandler.GetCategoryById(id);
+  }
+
+  function getCategories() {
+    return categoryHandler.GetCategories();
+  }
+
+  /*
+   Categories functions End
+   */
+
+  /*
+   Groups functions Start
+   */
+
+  function getGroupById(id) {
+    return groupHandler.GetGroupById(id);
+  }
+
+  function getGroups() {
+    return groupHandler.GetGroups();
+  }
+
+  /*
+   Groups functions End
+   */
+
+  /*
+      Export functions Start
+   */
+
+  function exportMap(callback) {
+    mapImplementation.ExportMap(callback);
+  }
+
+  function activateExport(options) {
+    mapImplementation.ActivateExport(options);
+  }
+
+  function deactivateExport() {
+    mapImplementation.DeactivateExport();
+  }
+
+  function renderSync() {
+    return mapImplementation.RenderSync();
+  }
+
+  /*
+      Export functions End
+   */
+
+  /*
+      Feature Info Start
+   */
+
+  function setImageInfoMarker(path) {
+    featureInfo.SetInfoMarkerPath(path);
+    featureInfo.CreateDefaultInfoMarker();
+  }
+
+  function setInfoMarker(element, removeCurrent) {
+    featureInfo.SetInfoMarker(element, removeCurrent);
+  }
+
+  function removeInfoMarker() {
+    featureInfo.RemoveInfoMarker();
+  }
+
+  function removeInfoMarkers() {
+    featureInfo.RemoveInfoMarkers();
+  }
+
+  function showHighlightedFeatures(layerguid, features) {
+    mapImplementation.ShowHighlightedFeatures(layerguid, features);
+  }
+
+  function clearHighlightedFeatures() {
+    mapImplementation.ClearHighlightedFeatures();
+  }
+
+  function setHighlightStyle(style) {
+    mapImplementation.SetHighlightStyle(style);
+  }
+
+  function activateInfoClick() {
+    mapImplementation.ActivateInfoClick(_handlePointSelect);
+  }
+
+  function showInfoMarker(coordinate) {
+    featureInfo.ShowInfoMarker(coordinate);
+  }
+
+  function showInfoMarkers(coordinates) {
+    featureInfo.ShowInfoMarkers(coordinates);
+  }
+
+  function deactivateInfoClick() {
+    mapImplementation.DeactivateInfoClick();
+  }
+
+  function activateBoxSelect() {
+    mapImplementation.ActivateBoxSelect(_handleBoxSelect);
+  }
+
+  function deactivateBoxSelect() {
+    mapImplementation.DeactivateBoxSelect();
+  }
+
+  function initEdit(isySubLayer) {
+    return mapImplementation.InitEdit(isySubLayer);
+  }
+
+  function describeFeature(isySubLayer, geometryType) {
+    mapImplementation.DescribeFeature(isySubLayer, geometryType);
+  }
+
+  function activateEditClick() {
+    mapImplementation.ActivateEditSelect(_handleEditSelect);
+  }
+
+  function deactivateEditClick() {
+    mapImplementation.DeactivateEditSelect();
+  }
+
+  function updateFeature(feature) {
+    mapImplementation.UpdateFeature(feature);
+  }
+
+  function insertFeature(feature, source) {
+    return mapImplementation.InsertFeature(feature, source);
+  }
+
+  function deleteFeature(feature) {
+    return mapImplementation.DeleteFeature(feature);
+  }
+
+  function getSupportedGetFeatureInfoFormats(isySubLayer, callback) {
+    featureInfo.GetSupportedGetFeatureInfoFormats(isySubLayer, callback);
+  }
+
+  function getSupportedGetFeatureFormats(isySubLayer, callback) {
+    featureInfo.GetSupportedGetFeatureFormats(isySubLayer, callback);
+  }
+
+  function arrangeLayers() {
+    if (getConfigLayerCount() === getLayerCount()) {
+      layerHandler.ArrangeLayers();
+    }
+  }
+
+  function convertGmlToGeoJson(gml) {
+    return mapImplementation.ConvertGmlToGeoJson(gml);
+  }
+
+  function _handlePointSelect(coordinate) {
+    featureInfo.HandlePointSelect(coordinate, _getLayersSupportingGetFeatureInfo());
+  }
+
+  function _getLayersSupportingGetFeatureInfo() {
+    var visibleSubLayers = getVisibleSubLayers();
+    return visibleSubLayers.filter(function (subLayer) {
+      if (subLayer.featureInfo) {
+        return subLayer.featureInfo.supportsGetFeatureInfo === true;
+      } else {
+        return false;
+      }
+    });
+  }
+
+  function _handleBoxSelect(boxExtent) {
+    featureInfo.HandleBoxSelect(boxExtent, _getLayersSupportingGetFeature());
+  }
+
+  function _getLayersSupportingGetFeature() {
+    var visibleSubLayers = getVisibleSubLayers();
+    return visibleSubLayers.filter(function (subLayer) {
+      return subLayer.featureInfo.supportsGetFeature === true;
+    });
+  }
+
+  function _handleEditSelect(coordinate) {
+    mapImplementation.HandlePointSelect(coordinate);
+  }
+
+  /*
+      Feature Info End
+   */
+
+  /*
+      Measure Start
+   */
+
+  function activateMeasure(options) {
+    mapImplementation.ActivateMeasure(options);
+  }
+
+  function deactivateMeasure() {
+    mapImplementation.DeactivateMeasure();
+  }
+
+  /*
+      Measure End
+   */
+
+  /*
+   Measure line Start
+   */
+
+  function activateMeasureLine(options) {
+    mapImplementation.ActivateMeasureLine(options);
+  }
+
+  function deactivateMeasureLine() {
+    mapImplementation.DeactivateMeasureLine();
+  }
+
+  /*
+   Measure line End
+   */
+
+  /*
+   Add Feature Start
+   */
+
+  function activateAddLayerFeature(options) {
+    mapImplementation.ActivateAddLayerFeature(options);
+  }
+
+  function deactivateAddLayerFeature() {
+    mapImplementation.DeactivateAddLayerFeature();
+  }
+
+  /*
+   Add Feature End
+   */
+
+  /*
+   Add Feature Gps Start
+   */
+
+  function activateAddFeatureGps(options) {
+    mapImplementation.ActivateAddFeatureGps(options);
+  }
+
+  function addCoordinatesGps(coordinates) {
+    mapImplementation.AddCoordinatesGps(coordinates);
+  }
+
+  function deactivateAddFeatureGps() {
+    mapImplementation.DeactivateAddFeatureGps();
+  }
+
+  /*
+   Add Feature Gps End
+   */
+
+  /*
+   Modify Feature Start
+   */
+
+  function activateModifyFeature(options) {
+    mapImplementation.ActivateModifyFeature(options);
+  }
+
+  function deactivateModifyFeature() {
+    mapImplementation.DeactivateModifyFeature();
+  }
+
+  /*
+   Modify Feature End
+   */
+
+  /*
+   DrawFeature Start
+   */
+
+  function activateDrawFeature(options) {
+    mapImplementation.ActivateDrawFeature(options);
+  }
+
+  function deactivateDrawFeature(options) {
+    mapImplementation.DeactivateDrawFeature(options);
+  }
+
+  /*
+   DrawFeature End
+   */
+
+  /*
+   Offline Start
+   */
+
+  function initOffline() {
+    mapImplementation.InitOffline();
+  }
+
+  function activateOffline() {
+    mapImplementation.ActivateOffline();
+  }
+
+  function startCaching(zoomLevelMin, zoomLevelMax, extentView) {
+    mapImplementation.StartCaching(zoomLevelMin, zoomLevelMax, extentView);
+  }
+
+  function stopCaching() {
+    mapImplementation.StopCaching();
+  }
+
+  function deleteDatabase(callback, zoomlevels, eventhandler) {
+    mapImplementation.DeleteDatabase(callback, zoomlevels, eventhandler);
+  }
+
+  function cacheDatabaseExist() {
+    return mapImplementation.CacheDatabaseExist();
+  }
+
+  function calculateTileCount(zoomLevelMin, zoomLevelMax, extentView) {
+    return mapImplementation.CalculateTileCount(zoomLevelMin, zoomLevelMax, extentView);
+  }
+
+  function getResource(url, contentType, callback) {
+    mapImplementation.GetResource(url, contentType, callback);
+  }
+
+  function getConfigResource(url, contentType, callback) {
+    mapImplementation.GetConfigResource(url, contentType, callback);
+  }
+
+  function getResourceFromJson(url, contentType, callback) {
+    mapImplementation.GetResourceFromJson(url, contentType, callback);
+  }
+
+  function getLayerResource(key, name, url) {
+    mapImplementation.GetLayerResource(key, name, url);
+  }
+
+  function deactivateOffline() {
+    mapImplementation.DeactivateOffline();
+  }
+
+  /*
+   Offline End
+   */
+
+  /*
+   HoverInfo Start
+   */
+  function activateHoverInfo() {
+    mapImplementation.ActivateHoverInfo();
+  }
+
+  function deactivateHoverInfo() {
+    mapImplementation.DeactivateHoverInfo();
+  }
+
+  /*
+   HoverInfo End
+   */
+
+
+  /*
+   PrintBoxSelect Start
+   */
+  function activatePrintBoxSelect(options) {
+    mapImplementation.ActivatePrintBoxSelect(options);
+  }
+
+  function deactivatePrintBoxSelect() {
+    mapImplementation.DeactivatePrintBoxSelect();
+  }
+
+  /*
+   PrintBoxSelect End
+   */
+
+  /*
+   AddLayerUrl Start
+   */
+  function activateAddLayerUrl(options) {
+    mapImplementation.ActivateAddLayerUrl(options);
+  }
+
+  function deactivateAddLayerUrl() {
+    mapImplementation.DeactivateAddLayerUrl();
+  }
+
+  /*
+   AddLayerUrl End
+   */
+
+  /*
+      Utility functions Start
+   */
+
+  function extentToGeoJson(x, y) {
+    mapImplementation.ExtentToGeoJson(x, y);
+  }
+
+  function setStateFromUrlParams(viewPropertyObject) {
+    mapImplementation.ChangeView(viewPropertyObject);
+
+    if (viewPropertyObject.layers) {
+      var layerGuids = viewPropertyObject.layers;
+      var guids = layerGuids.split(",");
+      guids.forEach(function (guid) {
+        var layer = getLayerById(guid);
+        if (layer) {
+          if (layer.isBaseLayer === true) {
+            setBaseLayer(layer);
+          } else {
             showLayer(layer);
-        });
-    }
-
-    function getBaseLayers(){
-        return _getLayers().filter(function (elem) {
-            return elem.isBaseLayer === true;
-        });
-    }
-
-    function getOverlayLayers(){
-        return _getLayers().filter(function (elem) {
-            return elem.isBaseLayer === false;
-        });
-    }
-
-    function setBaseLayer(isyLayer){
-        var baseLayers = getVisibleBaseLayers();
-        for(var i = 0; i < baseLayers.length; i++){
-            var baseLayer = baseLayers[i];
-            hideLayer(baseLayer);
+          }
         }
-
-        _showBaseLayer(isyLayer);
+      });
     }
+  }
 
-    function updateSortingIndex(){
-        var index = 1;
-        for (var i = 0; i < config.groups.length; i++){
-            if (config.groups[i].isyLayers !== undefined){
-                for (var j = 0; j < config.groups[i].isyLayers.length; j++){
-                    for (var k = 0; k<config.groups[i].isyLayers[j].subLayers.length; k++){
-                        config.groups[i].isyLayers[j].subLayers[k].sortingIndex = index;
-                        index +=1;
-                    }
-                }
-            }else{
-                break;
-            }
+  function setLegendGraphics(isyLayer) {
+    isyLayer.legendGraphicUrls = [];
+    for (var i = 0; i < isyLayer.subLayers.length; i++) {
+      var subLayer = isyLayer.subLayers[i];
+      if (isyLayer.isVisible && _shouldBeVisible(subLayer)) {
+        isyLayer.legendGraphicUrls.push(subLayer.legendGraphicUrl);
+      }
+    }
+  }
+
+  function addZoom() {
+    mapImplementation.AddZoom();
+  }
+
+  function addZoomSlider() {
+    mapImplementation.AddZoomSlider();
+  }
+
+  function addZoomToExtent(extent) {
+    mapImplementation.AddZoomToExtent(extent);
+  }
+
+  function addScaleLine() {
+    mapImplementation.AddScaleLine();
+  }
+
+  /*function addVectorTestData(){
+      var callback = function(data){
+          showHighlightedFeatures(featureParser.Parse(data));
+      };
+      var url = 'assets/mapConfig/testdata.json';
+      httpHelper.get(url).success(callback);
+  }*/
+
+  function zoomToLayer(isySubLayer) {
+    mapImplementation.ZoomToLayer(isySubLayer);
+  }
+
+  function zoomToLayers(isySubLayers) {
+    mapImplementation.ZoomToLayers(isySubLayers);
+  }
+
+  function fitExtent(extent) {
+    mapImplementation.FitExtent(extent);
+  }
+
+  function getCenter() {
+    return mapImplementation.GetCenter();
+  }
+
+  function setCenter(center) {
+    return mapImplementation.SetCenter(center);
+  }
+
+  function getZoom() {
+    return mapImplementation.GetZoom();
+  }
+
+  function setZoom(zoom) {
+    mapImplementation.SetZoom(zoom);
+  }
+
+  function getRotation() {
+    return mapImplementation.GetRotation();
+  }
+
+  function setRotation(angle, anchor) {
+    mapImplementation.SetRotation(angle, anchor);
+  }
+
+  function getEpsgCode() {
+    return mapImplementation.GetEpsgCode();
+  }
+
+  function getVectorLayers(isySubLayer, source) {
+    return mapImplementation.GetVectorLayers(isySubLayer, source);
+  }
+
+  function getConfigLayerCount() {
+    if (mapConfiguration) {
+      var totalCount = 0;
+      mapConfiguration.layers.forEach(function (layer) {
+        if (layer.isVisible) {
+          layer.subLayers.forEach(function () {
+            totalCount++;
+          });
         }
-    }
-
-    function addLayer(isyLayer) {
-        showLayer(isyLayer);
-        layers.push(isyLayer);
-    }
-
-    function showLayer(isyLayer) {
-        var subLayers = isyLayer.subLayers;
-        for(var j = 0; j < subLayers.length; j++){
-            var isySubLayer = subLayers[j];
-            if(shouldBeVisible(isySubLayer)){
-                mapImplementation.ShowLayer(isySubLayer);
-            } else {
-                mapImplementation.HideLayer(isySubLayer);
-            }
-        }
-
-        isyLayer.isVisible = true;
-        ////_recalculateMapLayerIndexes();
-        // updateSortingIndex();
-        // mapImplementation.UpdateLayerSortIndex(config.groups);
-        // mapImplementation.SortLayerBySortIndex();
-        // mapImplementation.RedrawMap();
-    }
-
-    function hideLayer(isyLayer) {
-        var subLayers = isyLayer.subLayers;
-        isyLayer.isVisible = false;
-        for(var j = 0; j < subLayers.length; j++){
-            var isySubLayer = subLayers[j];
-            mapImplementation.HideLayer(isySubLayer);
-        }
-
-        isyLayer.mapLayerIndex = -1;
-        //_recalculateMapLayerIndexes();
-    }
-
-    function getVisibleSubLayers(){
-        var subLayersOnly = [];
-        var visibleOverlays = _getVisibleOverlayLayers();
-        for(var i = 0; i < visibleOverlays.length; i++){
-            var isyLayer = visibleOverlays[i];
-            for(var j = 0; j < isyLayer.subLayers.length; j++){
-                var subLayer = isyLayer.subLayers[j];
-                if(shouldBeVisible(subLayer)){
-                    subLayersOnly.push(subLayer);
-                }
-            }
-        }
-        return subLayersOnly;
-    }
-
-    function getVisibleBaseLayers(){
-        return getBaseLayers().filter(function (elem) {
-            return elem.isVisible === true;
-        });
-    }
-
-    function getLayerById(id) {
-        if (layers !== undefined) {
-            for (var i = 0; i < layers.length; i++) {
-                var layer = layers[i];
-                if (layer.id.toString() === id.toString()) {
-                    return layer;
-                }
-            }
-        }
-    }
-
-    function moveLayerToIndexInGroup(){
-        updateSortingIndex();
-        mapImplementation.UpdateLayerSortIndex(config.groups);
-        mapImplementation.SortLayerBySortIndex();
-        mapImplementation.RedrawMap();
-    }
-
-    function moveLayerToIndex(isyLayer, index){
-        var subLayers = isyLayer.subLayers;
-        for(var i = 0; i < subLayers.length; i++){
-            var subLayer = subLayers[i];
-            if(shouldBeVisible(subLayer)){
-                mapImplementation.MoveLayerToIndex(subLayer, index);
-            }
-        }
-        mapImplementation.RedrawMap();
-    }
-
-    function moveLayerAbove(isySourceLayer, isyTargetLayer){
-        var targetLayerIndex = _getMaxLayerIndexForLayer(isyTargetLayer);
-        var subLayers = isySourceLayer.subLayers;
-        for(var i = 0; i < subLayers.length; i++){
-            var subLayer = subLayers[i];
-            if(shouldBeVisible(subLayer)){
-                mapImplementation.MoveLayerToIndex(subLayer, targetLayerIndex);
-            }
-        }
-    }
-
-    function _showBaseLayer(isyLayer) {
-        var subLayers = isyLayer.subLayers;
-        for(var j = 0; j < subLayers.length; j++){
-            var isySubLayer = subLayers[j];
-            if(shouldBeVisible(isySubLayer)){
-                mapImplementation.ShowBaseLayer(isySubLayer);
-            } else {
-                mapImplementation.HideLayer(isySubLayer);
-            }
-        }
-
-        isyLayer.isVisible = true;
-        _recalculateMapLayerIndexes();
-    }
-
-    function _recalculateMapLayerIndexes(){
-        var visibleOverlayLayers = _getVisibleOverlayLayers();
-        for(var i = 0; i < visibleOverlayLayers.length; i++){
-            var layer = visibleOverlayLayers[i];
-            layer.mapLayerIndex = _getMaxLayerIndexForLayer(layer);
-        }
-    }
-
-    function _getVisibleOverlayLayers(){
-        return getOverlayLayers().filter(function (elem) {
-            return elem.isVisible === true;
-        });
-    }
-
-    function shouldBeVisible(/*isySubLayer*/){
-        // todo johben: Logic could include zoom levels in case of a layer with both wms and wfs.
-        // I.E.
-        // var currentZoomLevel = mapImplementation.getCurrentZoomLevel();
-        // return subLayer.StartZoomLevel < currentZoomLevel && subLayer.EndZoomLevel > currentZoomLevel
-        return true;
-    }
-
-    function _getMaxLayerIndexForLayer(isyLayer){
-        var subLayers = isyLayer.subLayers;
-        var indexes = [];
-        for(var i = 0; i < subLayers.length; i++){
-            var subLayer = subLayers[i];
-            var thisIndex = mapImplementation.GetLayerIndex(subLayer);
-            if(thisIndex !== null){
-                indexes.push(thisIndex);
-            }
-        }
-        return Math.max(indexes);
-    }
-
-    return {
-        Init: init,
-        ArrangeLayers: arrangeLayers,
-        GetBaseLayers: getBaseLayers,
-        GetOverlayLayers: getOverlayLayers,
-        SetBaseLayer: setBaseLayer,
-        AddLayer: addLayer,
-        HideLayer: hideLayer,
-        ShowLayer: showLayer,
-        GetVisibleSubLayers: getVisibleSubLayers,
-        GetVisibleBaseLayers: getVisibleBaseLayers,
-        GetLayerById: getLayerById,
-        MoveLayerToIndex: moveLayerToIndex,
-        MoveLayerToIndexInGroup: moveLayerToIndexInGroup,
-        MoveLayerAbove: moveLayerAbove,
-        ShouldBeVisible: shouldBeVisible
-    };
-
-};
-var ISY = ISY || {};
-ISY.MapAPI = ISY.MapAPI || {};
-
-ISY.MapAPI.Map = function(mapImplementation, eventHandler, featureInfo, layerHandler, groupHandler, categoryHandler) {
-
-    /*
-        Start up functions Start
-     */
-
-    var mapConfiguration;
-
-    function init(targetId, mapConfig){
-        _loadCustomCrs();
-
-        mapConfiguration = mapConfig;
-        mapImplementation.InitMap(targetId, mapConfig);
-        layerHandler.Init(mapConfig);
-        groupHandler.Init(mapConfig);
-        categoryHandler.Init(mapConfig);
-
-        eventHandler.TriggerEvent(ISY.Events.EventTypes.MapLoaded);
-    }
-
-    function _loadCustomCrs(){
-        var customCrsLoader = new ISY.MapAPI.CustomCrsLoader();
-        customCrsLoader.LoadCustomCrs();
-
-        addCustomProj('EPSG:25832');
-        addCustomProj('EPSG:25833');
-        addCustomProj('EPSG:25834');
-        addCustomProj('EPSG:25835');
-        addCustomProj('EPSG:25836');
-        addCustomProj('EPSG:32632');
-        addCustomProj('EPSG:32633');
-        addCustomProj('EPSG:32634');
-        addCustomProj('EPSG:32635');
-        addCustomProj('EPSG:32636');
-        addCustomProj('EPSG:4258');
-        // TODO: Geoserver
-        //addCustomProj('http://www.opengis.net/gml/srs/epsg.xml#25832');
-        //addCustomProj('http://www.opengis.net/gml/srs/epsg.xml#25833');
-        //addCustomProj('http://www.opengis.net/gml/srs/epsg.xml#25835');
-        //addCustomProj('http://www.opengis.net/gml/srs/epsg.xml#32632');
-        //addCustomProj('http://www.opengis.net/gml/srs/epsg.xml#32633');
-        //addCustomProj('http://www.opengis.net/gml/srs/epsg.xml#32635');
-    }
-
-    function addCustomProj(code) {
-        if (typeof(ol) === "undefined") {
-            // TODO: Never create ol-stuff in general code!!!
-            return;
-        }
-        var proj = new ol.proj.Projection({
-            code: code,
-            units: 'm'
-        });
-
-        ol.proj.addProjection(proj);
-    }
-
-    function changeView(viewPropertyObject){
-        mapImplementation.ChangeView(viewPropertyObject);
-    }
-
-    function redrawMap() {
-        mapImplementation.RedrawMap();
-    }
-
-    function refreshMap(){
-        mapImplementation.RefreshMap();
-    }
-
-    function refreshLayerByGuid(guid, featureObj){
-        mapImplementation.RefreshLayerByGuid(guid, featureObj);
-    }
-
-    /*
-        Start up functions End
-     */
-
-    /*
-        Layer functions Start
-     */
-
-    function addLayer(isyLayer) {
-        layerHandler.AddLayer(isyLayer);
-    }
-
-    function addDataToLayer(isyLayer, data) {
-        mapImplementation.AddDataToLayer(isyLayer.subLayers[0], data);
-    }
-
-    function removeDataFromLayer(isyLayer, data) {
-        mapImplementation.RemoveDataFromLayer(isyLayer.subLayers[0], data);
-    }
-
-    function clearLayer(isyLayer) {
-        mapImplementation.ClearLayer(isyLayer.subLayers[0]);
-    }
-
-    function showLayer(isyLayer) {
-        layerHandler.ShowLayer(isyLayer);
-    }
-
-    function hideLayer(isyLayer) {
-        layerHandler.HideLayer(isyLayer);
-    }
-
-    function setLayerOpacity(isyLayer, value) {
-        var subLayers = isyLayer.subLayers;
-        for(var j = 0; j < subLayers.length; j++){
-            var isySubLayer = subLayers[j];
-            mapImplementation.SetLayerOpacity(isySubLayer, value);
-        }
-        mapImplementation.RedrawMap();
-    }
-
-    function setBaseLayer(isyLayer){
-        layerHandler.SetBaseLayer(isyLayer);
-    }
-
-    function getBaseLayers(){
-        return layerHandler.GetBaseLayers();
-    }
-
-    function getFirstVisibleBaseLayer(){
-        return layerHandler.GetVisibleBaseLayers()[0];
-    }
-
-    function getOverlayLayers(){
-        return layerHandler.GetOverlayLayers();
-    }
-
-    function getVisibleSubLayers(){
-        return layerHandler.GetVisibleSubLayers();
-    }
-
-    function getLayerById(id) {
-        return layerHandler.GetLayerById(id);
-    }
-
-    function moveLayerToIndex(isyLayer, index){
-        layerHandler.MoveLayerToIndex(isyLayer, index);
-    }
-
-    function moveLayerToIndexInGroup(){
-        layerHandler.MoveLayerToIndexInGroup();
-    }
-
-    function moveLayerAbove(isySourceLayer, isyTargetLayer){
-        layerHandler.MoveLayerAbove(isySourceLayer, isyTargetLayer);
-    }
-
-    function _shouldBeVisible(subLayer){
-        return layerHandler.ShouldBeVisible(subLayer);
-    }
-
-    /*
-        Layer functions End
-     */
-
-    /*
-     Categories functions Start
-     */
-
-    function getCategoryById(id) {
-        return categoryHandler.GetCategoryById(id);
-    }
-
-    function getCategories() {
-        return categoryHandler.GetCategories();
-    }
-
-    /*
-     Categories functions End
-     */
-
-    /*
-     Groups functions Start
-     */
-
-    function getGroupById(id) {
-        return groupHandler.GetGroupById(id);
-    }
-
-    function getGroups() {
-        return groupHandler.GetGroups();
-    }
-
-    /*
-     Groups functions End
-     */
-
-    /*
-        Export functions Start
-     */
-
-    function exportMap(callback){
-        mapImplementation.ExportMap(callback);
-    }
-
-    function activateExport(options) {
-        mapImplementation.ActivateExport(options);
-    }
-
-    function deactivateExport() {
-        mapImplementation.DeactivateExport();
-    }
-
-    function renderSync(){
-        return mapImplementation.RenderSync();
-    }
-
-    /*
-        Export functions End
-     */
-
-    /*
-        Feature Info Start
-     */
-
-    function setImageInfoMarker(path){
-        featureInfo.SetInfoMarkerPath(path);
-        featureInfo.CreateDefaultInfoMarker();
-    }
-
-    function setInfoMarker(element, removeCurrent){
-        featureInfo.SetInfoMarker(element, removeCurrent);
-    }
-
-    function removeInfoMarker(){
-        featureInfo.RemoveInfoMarker();
-    }
-
-    function removeInfoMarkers(){
-        featureInfo.RemoveInfoMarkers();
-    }
-
-    function showHighlightedFeatures(layerguid, features){
-        mapImplementation.ShowHighlightedFeatures(layerguid, features);
-    }
-
-    function clearHighlightedFeatures(){
-        mapImplementation.ClearHighlightedFeatures();
-    }
-
-    function setHighlightStyle(style) {
-        mapImplementation.SetHighlightStyle(style);
-    }
-
-    function activateInfoClick(){
-        mapImplementation.ActivateInfoClick(_handlePointSelect);
-    }
-
-    function showInfoMarker(coordinate){
-        featureInfo.ShowInfoMarker(coordinate);
-    }
-
-    function showInfoMarkers(coordinates){
-        featureInfo.ShowInfoMarkers(coordinates);
-    }
-
-    function deactivateInfoClick(){
-        mapImplementation.DeactivateInfoClick();
-    }
-
-    function activateBoxSelect(){
-        mapImplementation.ActivateBoxSelect(_handleBoxSelect);
-    }
-
-    function deactivateBoxSelect(){
-        mapImplementation.DeactivateBoxSelect();
-    }
-
-    function initEdit(isySubLayer) {
-        return mapImplementation.InitEdit(isySubLayer);
-    }
-
-    function describeFeature(isySubLayer, geometryType){
-        mapImplementation.DescribeFeature(isySubLayer, geometryType);
-    }
-
-    function activateEditClick(){
-        mapImplementation.ActivateEditSelect(_handleEditSelect);
-    }
-
-    function deactivateEditClick(){
-        mapImplementation.DeactivateEditSelect();
-    }
-
-    function updateFeature(feature) {
-        mapImplementation.UpdateFeature(feature);
-    }
-
-    function insertFeature(feature, source){
-        return mapImplementation.InsertFeature(feature, source);
-    }
-
-    function deleteFeature(feature){
-        return mapImplementation.DeleteFeature(feature);
-    }
-
-    function getSupportedGetFeatureInfoFormats(isySubLayer, callback){
-        featureInfo.GetSupportedGetFeatureInfoFormats(isySubLayer, callback);
-    }
-
-    function getSupportedGetFeatureFormats(isySubLayer, callback){
-        featureInfo.GetSupportedGetFeatureFormats(isySubLayer, callback);
-    }
-
-    function arrangeLayers(){
-        if (getConfigLayerCount() === getLayerCount()){
-            layerHandler.ArrangeLayers();
-        }
-    }
-
-    function convertGmlToGeoJson(gml){
-        return mapImplementation.ConvertGmlToGeoJson(gml);
-    }
-
-    function _handlePointSelect(coordinate){
-        featureInfo.HandlePointSelect(coordinate, _getLayersSupportingGetFeatureInfo());
-    }
-
-    function _getLayersSupportingGetFeatureInfo(){
-        var visibleSubLayers = getVisibleSubLayers();
-        return visibleSubLayers.filter(function(subLayer){
-            if (subLayer.featureInfo) {
-                return subLayer.featureInfo.supportsGetFeatureInfo === true;
-            } else {
-                return false;
-            }
-        });
-    }
-
-    function _handleBoxSelect(boxExtent){
-        featureInfo.HandleBoxSelect(boxExtent, _getLayersSupportingGetFeature());
-    }
-
-    function _getLayersSupportingGetFeature(){
-        var visibleSubLayers = getVisibleSubLayers();
-        return visibleSubLayers.filter(function(subLayer){
-            return subLayer.featureInfo.supportsGetFeature === true;
-        });
-    }
-
-    function _handleEditSelect(coordinate){
-        mapImplementation.HandlePointSelect(coordinate);
-    }
-
-    /*
-        Feature Info End
-     */
-
-    /*
-        Measure Start
-     */
-
-    function activateMeasure(options){
-        mapImplementation.ActivateMeasure(options);
-    }
-
-    function deactivateMeasure(){
-        mapImplementation.DeactivateMeasure();
-    }
-
-    /*
-        Measure End
-     */
-
-    /*
-     Measure line Start
-     */
-
-    function activateMeasureLine(options){
-        mapImplementation.ActivateMeasureLine(options);
-    }
-
-    function deactivateMeasureLine(){
-        mapImplementation.DeactivateMeasureLine();
-    }
-
-    /*
-     Measure line End
-     */
-
-    /*
-     Add Feature Start
-     */
-
-    function activateAddLayerFeature(options){
-        mapImplementation.ActivateAddLayerFeature(options);
-    }
-
-    function deactivateAddLayerFeature(){
-        mapImplementation.DeactivateAddLayerFeature();
-    }
-
-    /*
-     Add Feature End
-     */
-
-    /*
-     Add Feature Gps Start
-     */
-
-    function activateAddFeatureGps(options){
-        mapImplementation.ActivateAddFeatureGps(options);
-    }
-
-    function addCoordinatesGps(coordinates){
-        mapImplementation.AddCoordinatesGps(coordinates);
-    }
-
-    function deactivateAddFeatureGps(){
-        mapImplementation.DeactivateAddFeatureGps();
-    }
-
-    /*
-     Add Feature Gps End
-     */
-
-    /*
-     Modify Feature Start
-     */
-
-    function activateModifyFeature(options){
-        mapImplementation.ActivateModifyFeature(options);
-    }
-
-    function deactivateModifyFeature(){
-        mapImplementation.DeactivateModifyFeature();
-    }
-
-    /*
-     Modify Feature End
-     */
-
-    /*
-     DrawFeature Start
-     */
-
-    function activateDrawFeature(options){
-        mapImplementation.ActivateDrawFeature(options);
-    }
-
-    function deactivateDrawFeature(options){
-        mapImplementation.DeactivateDrawFeature(options);
-    }
-
-    /*
-     DrawFeature End
-     */
-
-    /*
-     Offline Start
-     */
-
-    function initOffline(){
-        mapImplementation.InitOffline();
-    }
-
-    function activateOffline(){
-        mapImplementation.ActivateOffline();
-    }
-
-    function startCaching(zoomLevelMin, zoomLevelMax, extentView){
-        mapImplementation.StartCaching(zoomLevelMin, zoomLevelMax, extentView);
-    }
-
-    function stopCaching(){
-        mapImplementation.StopCaching();
-    }
-
-    function deleteDatabase(callback, zoomlevels, eventhandler){
-        mapImplementation.DeleteDatabase(callback, zoomlevels, eventhandler);
-    }
-
-    function cacheDatabaseExist(){
-        return mapImplementation.CacheDatabaseExist();
-    }
-
-    function calculateTileCount(zoomLevelMin, zoomLevelMax, extentView){
-        return mapImplementation.CalculateTileCount(zoomLevelMin, zoomLevelMax, extentView);
-    }
-
-    function getResource(url, contentType, callback){
-        mapImplementation.GetResource(url, contentType, callback);
-    }
-
-    function getConfigResource(url, contentType, callback){
-        mapImplementation.GetConfigResource(url, contentType, callback);
-    }
-
-    function getResourceFromJson(url, contentType, callback){
-        mapImplementation.GetResourceFromJson(url, contentType, callback);
-    }
-
-    function getLayerResource(key, name, url){
-        mapImplementation.GetLayerResource(key, name, url);
-    }
-
-    function deactivateOffline(){
-        mapImplementation.DeactivateOffline();
-    }
-
-    /*
-     Offline End
-     */
-
-    /*
-     HoverInfo Start
-     */
-    function activateHoverInfo(){
-        mapImplementation.ActivateHoverInfo();
-    }
-
-    function deactivateHoverInfo(){
-        mapImplementation.DeactivateHoverInfo();
-    }
-
-    /*
-     HoverInfo End
-     */
-
-
-    /*
-     PrintBoxSelect Start
-     */
-    function activatePrintBoxSelect(options){
-        mapImplementation.ActivatePrintBoxSelect(options);
-    }
-
-    function deactivatePrintBoxSelect(){
-        mapImplementation.DeactivatePrintBoxSelect();
-    }
-
-    /*
-     PrintBoxSelect End
-     */
-
-    /*
-     AddLayerUrl Start
-     */
-    function activateAddLayerUrl(options){
-        mapImplementation.ActivateAddLayerUrl(options);
-    }
-
-    function deactivateAddLayerUrl(){
-        mapImplementation.DeactivateAddLayerUrl();
-    }
-
-    /*
-     AddLayerUrl End
-     */
-
-    /*
-        Utility functions Start
-     */
-
-    function extentToGeoJson(x, y){
-        mapImplementation.ExtentToGeoJson(x, y);
-    }
-
-    function setStateFromUrlParams(viewPropertyObject){
-        mapImplementation.ChangeView(viewPropertyObject);
-
-        if(viewPropertyObject.layers){
-            var layerGuids = viewPropertyObject.layers;
-            var guids = layerGuids.split(",");
-            guids.forEach(function (guid){
-                var layer = getLayerById(guid);
-                if (layer) {
-                    if(layer.isBaseLayer === true){
-                        setBaseLayer(layer);
-                    }
-                    else{
-                        showLayer(layer);
-                    }
-                }
-            });
-        }
-    }
-
-    function setLegendGraphics(isyLayer){
-        isyLayer.legendGraphicUrls = [];
-        for(var i = 0; i < isyLayer.subLayers.length; i++){
-            var subLayer = isyLayer.subLayers[i];
-            if(isyLayer.isVisible && _shouldBeVisible(subLayer)){
-                isyLayer.legendGraphicUrls.push(subLayer.legendGraphicUrl);
-            }
-        }
-    }
-
-    function addZoom() {
-        mapImplementation.AddZoom();
-    }
-
-    function addZoomSlider() {
-        mapImplementation.AddZoomSlider();
-    }
-
-    function addZoomToExtent(extent) {
-        mapImplementation.AddZoomToExtent(extent);
-    }
-
-    function addScaleLine() {
-        mapImplementation.AddScaleLine();
-    }
-
-    /*function addVectorTestData(){
-        var callback = function(data){
-            showHighlightedFeatures(featureParser.Parse(data));
-        };
-        var url = 'assets/mapConfig/testdata.json';
-        httpHelper.get(url).success(callback);
-    }*/
-
-    function zoomToLayer(isySubLayer){
-        mapImplementation.ZoomToLayer(isySubLayer);
-    }
-
-    function zoomToLayers(isySubLayers){
-        mapImplementation.ZoomToLayers(isySubLayers);
-    }
-
-    function fitExtent(extent){
-        mapImplementation.FitExtent(extent);
-    }
-
-    function getCenter() {
-        return mapImplementation.GetCenter();
-    }
-
-    function setCenter(center) {
-        return mapImplementation.SetCenter(center);
-    }
-
-    function getZoom(){
-        return mapImplementation.GetZoom();
-    }
-
-    function setZoom(zoom){
-        mapImplementation.SetZoom(zoom);
-    }
-
-    function getRotation(){
-        return mapImplementation.GetRotation();
-    }
-
-    function setRotation(angle, anchor){
-        mapImplementation.SetRotation(angle, anchor);
-    }
-
-    function getEpsgCode() {
-        return mapImplementation.GetEpsgCode();
-    }
-
-    function getVectorLayers(isySubLayer, source){
-        return mapImplementation.GetVectorLayers(isySubLayer, source);
-    }
-
-    function getConfigLayerCount(){
-        if (mapConfiguration){
-            var totalCount = 0;
-            mapConfiguration.layers.forEach(function (layer){
-                if (layer.isVisible) {
-                    layer.subLayers.forEach(function () {
-                        totalCount++;
-                    });
-                }
-            });
-            return totalCount;
-        }
-    }
-
-    function getLayerCount(){
-        return mapImplementation.GetLayerCount();
-    }
-
-    function getCenterFromExtent(extent){
-        return mapImplementation.GetCenterFromExtent(extent);
-    }
-
-    function getScale(){
-        return mapImplementation.GetScale();
-    }
-
-    function getFeatureCollection(isySubLayer){
-        return mapImplementation.GetFeatureCollection(isySubLayer);
-    }
-
-    function getFeaturesInMap(isySubLayer){
-        return mapImplementation.GetFeaturesInMap(isySubLayer);
-    }
-
-    function getFeatureExtent(feature){
-        return mapImplementation.GetFeatureExtent(feature);
-    }
-
-    function getLegendStyles(isySubLayer){
-        return mapImplementation.GetLegendStyles(isySubLayer);
-    }
-
-    function getExtent(){
-        return mapImplementation.GetExtent();
-    }
-
-    function getUrlObject(){
-        return mapImplementation.GetUrlObject();
-    }
-
-    function getGeolocation(){
-        return mapImplementation.GetGeolocation();
-    }
-
-    function removeGeolocation(){
-        return mapImplementation.RemoveGeolocation();
-    }
-
-    function infoClickSimulation(coordinate){
-       _handlePointSelect(coordinate);
-    }
-
-    function setTranslateOptions(translate){
-        mapImplementation.SetTranslateOptions(translate);
-    }
-
-    function transformCoordinates(fromEpsg, toEpsg, coordinates){
-        return mapImplementation.TransformCoordinates(fromEpsg, toEpsg, coordinates);
-    }
-
-    function transformFromGeographic(coordinates){
-        return mapImplementation.TransformFromGeographic(coordinates);
-    }
-
-    function transformToGeographic(coordinates){
-        return mapImplementation.TransformToGeographic(coordinates);
-    }
-
-    function removeIsyToken(){
-        mapImplementation.RemoveIsyToken();
-    }
-
-    function setIsyToken(token){
-        mapImplementation.SetIsyToken(token);
-    }
-
-    function showCustomMessage(message){
-        mapImplementation.ShowCustomMessage(message);
-    }
-
-    /*
-        Utility functions End
-     */
-
-    return {
-        // Start up start
-        Init: init,
-        // Start up end
-
-        /***********************************/
-
-        // Layer start
-        AddLayer: addLayer,
-        AddDataToLayer: addDataToLayer,
-        RemoveDataFromLayer: removeDataFromLayer,
-        ClearLayer: clearLayer,
-        ShowLayer: showLayer,
-        HideLayer: hideLayer,
-        GetOverlayLayers: getOverlayLayers,
-        GetBaseLayers: getBaseLayers,
-        GetLayerById: getLayerById,
-        GetFirstVisibleBaseLayer: getFirstVisibleBaseLayer,
-        SetBaseLayer: setBaseLayer,
-        SetStateFromUrlParams: setStateFromUrlParams,
-        SetLayerOpacity: setLayerOpacity,
-        MoveLayerToIndex: moveLayerToIndex,
-        MoveLayerAbove: moveLayerAbove,
-        MoveLayerToIndexInGroup: moveLayerToIndexInGroup,
-        // Layer end
-
-        /***********************************/
-
-        // Category start
-        GetCategoryById: getCategoryById,
-        GetCategories: getCategories,
-        // Category end
-
-        /***********************************/
-
-        // Groups start
-        GetGroupById: getGroupById,
-        GetGroups: getGroups,
-        // Category end
-
-        /***********************************/
-
-        // Export start
-        RenderSync: renderSync,
-        ExportMap: exportMap,
-        ActivateExport: activateExport,
-        DeactivateExport: deactivateExport,
-        // Export end
-
-        /***********************************/
-
-        // Feature Info start
-        ActivateInfoClick: activateInfoClick,
-        DeactivateInfoClick: deactivateInfoClick,
-        ShowHighlightedFeatures: showHighlightedFeatures,
-        ClearHighlightedFeatures: clearHighlightedFeatures,
-        SetHighlightStyle: setHighlightStyle,
-        SetInfoMarker: setInfoMarker,
-        SetImageInfoMarker: setImageInfoMarker,
-        GetSupportedGetFeatureInfoFormats: getSupportedGetFeatureInfoFormats,
-        GetSupportedGetFeatureFormats: getSupportedGetFeatureFormats,
-        RemoveInfoMarker: removeInfoMarker,
-        RemoveInfoMarkers: removeInfoMarkers,
-        ActivateBoxSelect: activateBoxSelect,
-        DeactivateBoxSelect: deactivateBoxSelect,
-        GetFeatureCollection: getFeatureCollection,
-        GetFeaturesInMap: getFeaturesInMap,
-        GetFeatureExtent: getFeatureExtent,
-        // Feature Info end
-
-        /***********************************/
-
-        // Feature edit start
-        InitEdit: initEdit,
-        ActivateEditClick: activateEditClick,
-        DeactivateEditClick: deactivateEditClick,
-        UpdateFeature: updateFeature,
-        InsertFeature: insertFeature,
-        DeleteFeature: deleteFeature,
-        // Feature edit end
-
-        /***********************************/
-
-        // Hover Info start
-        ActivateHoverInfo: activateHoverInfo,
-        DeactivateHoverInfo: deactivateHoverInfo,
-        // Hover Info end
-
-        /***********************************/
-
-        // Measure start
-        ActivateMeasure: activateMeasure,
-        DeactivateMeasure: deactivateMeasure,
-        // Measure end
-
-        /***********************************/
-
-        // Offline start
-        InitOffline: initOffline,
-        ActivateOffline: activateOffline,
-        StartCaching: startCaching,
-        StopCaching: stopCaching,
-        DeleteDatabase: deleteDatabase,
-        CacheDatabaseExist: cacheDatabaseExist,
-        CalculateTileCount: calculateTileCount,
-        GetResource: getResource,
-        GetConfigResource: getConfigResource,
-        GetLayerResource: getLayerResource,
-        DeactivateOffline: deactivateOffline,
-        GetResourceFromJson: getResourceFromJson,
-        // Offline end
-
-        /***********************************/
-
-        // MeasureLine start
-        ActivateMeasureLine: activateMeasureLine,
-        DeactivateMeasureLine: deactivateMeasureLine,
-        // MeasureLine end
-
-        /***********************************/
-
-        // AddLayerFeature start
-        ActivateAddLayerFeature: activateAddLayerFeature,
-        DeactivateAddLayerFeature: deactivateAddLayerFeature,
-        // AddLayerFeature end
-
-        /***********************************/
-
-        // AddFeatureGps start
-        ActivateAddFeatureGps: activateAddFeatureGps,
-        AddCoordinatesGps: addCoordinatesGps,
-        DeactivateAddFeatureGps: deactivateAddFeatureGps,
-        // AddFeatureGps end
-
-        /***********************************/
-
-        // ModifyFeature start
-        ActivateModifyFeature: activateModifyFeature,
-        DeactivateModifyFeature: deactivateModifyFeature,
-        // ModifyFeature end
-
-        /***********************************/
-
-        // DrawFeature start
-        ActivateDrawFeature: activateDrawFeature,
-        DeactivateDrawFeature: deactivateDrawFeature,
-        // DrawFeature end
-
-        /***********************************/
-
-        // PrintBoxSelect Start
-        ActivatePrintBoxSelect: activatePrintBoxSelect,
-        DeactivatePrintBoxSelect: deactivatePrintBoxSelect,
-        // PrintBoxSelect End
-
-        /***********************************/
-
-        // AddLayerUrl Start
-        ActivateAddLayerUrl: activateAddLayerUrl,
-        DeactivateAddLayerUrl: deactivateAddLayerUrl,
-        // AddLayerUrl End
-
-        /***********************************/
-
-        // Utility start
-        ArrangeLayers: arrangeLayers,
-        ConvertGmlToGeoJson: convertGmlToGeoJson,
-        SetLegendGraphics: setLegendGraphics,
-        ExtentToGeoJson: extentToGeoJson,
-        AddZoom: addZoom,
-        AddZoomSlider: addZoomSlider,
-        AddZoomToExtent: addZoomToExtent,
-        AddScaleLine: addScaleLine,
-        ZoomToLayer: zoomToLayer,
-        ZoomToLayers: zoomToLayers,
-        FitExtent: fitExtent,
-        GetCenter: getCenter,
-        SetCenter: setCenter,
-        GetZoom: getZoom,
-        SetZoom: setZoom,
-        GetRotation: getRotation,
-        SetRotation: setRotation,
-        GetEpsgCode: getEpsgCode,
-        GetVectorLayers: getVectorLayers,
-        GetCenterFromExtent: getCenterFromExtent,
-        GetScale: getScale,
-        ChangeView: changeView,
-        GetLegendStyles: getLegendStyles,
-        RedrawMap: redrawMap,
-        RefreshMap: refreshMap,
-        RefreshLayerByGuid: refreshLayerByGuid,
-        ShowInfoMarker: showInfoMarker,
-        ShowInfoMarkers: showInfoMarkers,
-        GetExtent: getExtent,
-        GetVisibleSubLayers: getVisibleSubLayers,
-        GetUrlObject: getUrlObject,
-        GetGeolocation: getGeolocation,
-        RemoveGeolocation: removeGeolocation,
-        InfoClickSimulation: infoClickSimulation,
-        SetTranslateOptions: setTranslateOptions,
-        TransformCoordinates: transformCoordinates,
-        TransformFromGeographic: transformFromGeographic,
-        TransformToGeographic: transformToGeographic,
-        DescribeFeature: describeFeature,
-        RemoveIsyToken: removeIsyToken,
-        SetIsyToken: setIsyToken,
-        ShowCustomMessage: showCustomMessage
-        //AddVectorTestData: addVectorTestData
-        // Utility end
-    };
+      });
+      return totalCount;
+    }
+  }
+
+  function getLayerCount() {
+    return mapImplementation.GetLayerCount();
+  }
+
+  function getCenterFromExtent(extent) {
+    return mapImplementation.GetCenterFromExtent(extent);
+  }
+
+  function getScale() {
+    return mapImplementation.GetScale();
+  }
+
+  function getFeatureCollection(isySubLayer) {
+    return mapImplementation.GetFeatureCollection(isySubLayer);
+  }
+
+  function getFeaturesInMap(isySubLayer) {
+    return mapImplementation.GetFeaturesInMap(isySubLayer);
+  }
+
+  function getFeatureExtent(feature) {
+    return mapImplementation.GetFeatureExtent(feature);
+  }
+
+  function getLegendStyles(isySubLayer) {
+    return mapImplementation.GetLegendStyles(isySubLayer);
+  }
+
+  function getExtent() {
+    return mapImplementation.GetExtent();
+  }
+
+  function getUrlObject() {
+    return mapImplementation.GetUrlObject();
+  }
+
+  function getGeolocation() {
+    return mapImplementation.GetGeolocation();
+  }
+
+  function removeGeolocation() {
+    return mapImplementation.RemoveGeolocation();
+  }
+
+  function infoClickSimulation(coordinate) {
+    _handlePointSelect(coordinate);
+  }
+
+  function setTranslateOptions(translate) {
+    mapImplementation.SetTranslateOptions(translate);
+  }
+
+  function transformCoordinates(fromEpsg, toEpsg, coordinates) {
+    return mapImplementation.TransformCoordinates(fromEpsg, toEpsg, coordinates);
+  }
+
+  function transformFromGeographic(coordinates) {
+    return mapImplementation.TransformFromGeographic(coordinates);
+  }
+
+  function transformToGeographic(coordinates) {
+    return mapImplementation.TransformToGeographic(coordinates);
+  }
+
+  function removeIsyToken() {
+    mapImplementation.RemoveIsyToken();
+  }
+
+  function setIsyToken(token) {
+    mapImplementation.SetIsyToken(token);
+  }
+
+  function showCustomMessage(message) {
+    mapImplementation.ShowCustomMessage(message);
+  }
+
+  /*
+      Utility functions End
+   */
+
+  return {
+    // Start up start
+    Init: init,
+    // Start up end
+
+    /***********************************/
+
+    // Layer start
+    AddLayer: addLayer,
+    AddDataToLayer: addDataToLayer,
+    RemoveDataFromLayer: removeDataFromLayer,
+    ClearLayer: clearLayer,
+    ShowLayer: showLayer,
+    HideLayer: hideLayer,
+    GetOverlayLayers: getOverlayLayers,
+    GetBaseLayers: getBaseLayers,
+    GetLayerById: getLayerById,
+    GetFirstVisibleBaseLayer: getFirstVisibleBaseLayer,
+    SetBaseLayer: setBaseLayer,
+    SetStateFromUrlParams: setStateFromUrlParams,
+    SetLayerOpacity: setLayerOpacity,
+    MoveLayerToIndex: moveLayerToIndex,
+    MoveLayerAbove: moveLayerAbove,
+    MoveLayerToIndexInGroup: moveLayerToIndexInGroup,
+    // Layer end
+
+    /***********************************/
+
+    // Category start
+    GetCategoryById: getCategoryById,
+    GetCategories: getCategories,
+    // Category end
+
+    /***********************************/
+
+    // Groups start
+    GetGroupById: getGroupById,
+    GetGroups: getGroups,
+    // Category end
+
+    /***********************************/
+
+    // Export start
+    RenderSync: renderSync,
+    ExportMap: exportMap,
+    ActivateExport: activateExport,
+    DeactivateExport: deactivateExport,
+    // Export end
+
+    /***********************************/
+
+    // Feature Info start
+    ActivateInfoClick: activateInfoClick,
+    DeactivateInfoClick: deactivateInfoClick,
+    ShowHighlightedFeatures: showHighlightedFeatures,
+    ClearHighlightedFeatures: clearHighlightedFeatures,
+    SetHighlightStyle: setHighlightStyle,
+    SetInfoMarker: setInfoMarker,
+    SetImageInfoMarker: setImageInfoMarker,
+    GetSupportedGetFeatureInfoFormats: getSupportedGetFeatureInfoFormats,
+    GetSupportedGetFeatureFormats: getSupportedGetFeatureFormats,
+    RemoveInfoMarker: removeInfoMarker,
+    RemoveInfoMarkers: removeInfoMarkers,
+    ActivateBoxSelect: activateBoxSelect,
+    DeactivateBoxSelect: deactivateBoxSelect,
+    GetFeatureCollection: getFeatureCollection,
+    GetFeaturesInMap: getFeaturesInMap,
+    GetFeatureExtent: getFeatureExtent,
+    // Feature Info end
+
+    /***********************************/
+
+    // Feature edit start
+    InitEdit: initEdit,
+    ActivateEditClick: activateEditClick,
+    DeactivateEditClick: deactivateEditClick,
+    UpdateFeature: updateFeature,
+    InsertFeature: insertFeature,
+    DeleteFeature: deleteFeature,
+    // Feature edit end
+
+    /***********************************/
+
+    // Hover Info start
+    ActivateHoverInfo: activateHoverInfo,
+    DeactivateHoverInfo: deactivateHoverInfo,
+    // Hover Info end
+
+    /***********************************/
+
+    // Measure start
+    ActivateMeasure: activateMeasure,
+    DeactivateMeasure: deactivateMeasure,
+    // Measure end
+
+    /***********************************/
+
+    // Offline start
+    InitOffline: initOffline,
+    ActivateOffline: activateOffline,
+    StartCaching: startCaching,
+    StopCaching: stopCaching,
+    DeleteDatabase: deleteDatabase,
+    CacheDatabaseExist: cacheDatabaseExist,
+    CalculateTileCount: calculateTileCount,
+    GetResource: getResource,
+    GetConfigResource: getConfigResource,
+    GetLayerResource: getLayerResource,
+    DeactivateOffline: deactivateOffline,
+    GetResourceFromJson: getResourceFromJson,
+    // Offline end
+
+    /***********************************/
+
+    // MeasureLine start
+    ActivateMeasureLine: activateMeasureLine,
+    DeactivateMeasureLine: deactivateMeasureLine,
+    // MeasureLine end
+
+    /***********************************/
+
+    // AddLayerFeature start
+    ActivateAddLayerFeature: activateAddLayerFeature,
+    DeactivateAddLayerFeature: deactivateAddLayerFeature,
+    // AddLayerFeature end
+
+    /***********************************/
+
+    // AddFeatureGps start
+    ActivateAddFeatureGps: activateAddFeatureGps,
+    AddCoordinatesGps: addCoordinatesGps,
+    DeactivateAddFeatureGps: deactivateAddFeatureGps,
+    // AddFeatureGps end
+
+    /***********************************/
+
+    // ModifyFeature start
+    ActivateModifyFeature: activateModifyFeature,
+    DeactivateModifyFeature: deactivateModifyFeature,
+    // ModifyFeature end
+
+    /***********************************/
+
+    // DrawFeature start
+    ActivateDrawFeature: activateDrawFeature,
+    DeactivateDrawFeature: deactivateDrawFeature,
+    // DrawFeature end
+
+    /***********************************/
+
+    // PrintBoxSelect Start
+    ActivatePrintBoxSelect: activatePrintBoxSelect,
+    DeactivatePrintBoxSelect: deactivatePrintBoxSelect,
+    // PrintBoxSelect End
+
+    /***********************************/
+
+    // AddLayerUrl Start
+    ActivateAddLayerUrl: activateAddLayerUrl,
+    DeactivateAddLayerUrl: deactivateAddLayerUrl,
+    // AddLayerUrl End
+
+    /***********************************/
+
+    // Utility start
+    ArrangeLayers: arrangeLayers,
+    ConvertGmlToGeoJson: convertGmlToGeoJson,
+    SetLegendGraphics: setLegendGraphics,
+    ExtentToGeoJson: extentToGeoJson,
+    AddZoom: addZoom,
+    AddZoomSlider: addZoomSlider,
+    AddZoomToExtent: addZoomToExtent,
+    AddScaleLine: addScaleLine,
+    ZoomToLayer: zoomToLayer,
+    ZoomToLayers: zoomToLayers,
+    FitExtent: fitExtent,
+    GetCenter: getCenter,
+    SetCenter: setCenter,
+    GetZoom: getZoom,
+    SetZoom: setZoom,
+    GetRotation: getRotation,
+    SetRotation: setRotation,
+    GetEpsgCode: getEpsgCode,
+    GetVectorLayers: getVectorLayers,
+    GetCenterFromExtent: getCenterFromExtent,
+    GetScale: getScale,
+    ChangeView: changeView,
+    GetLegendStyles: getLegendStyles,
+    RedrawMap: redrawMap,
+    RefreshMap: refreshMap,
+    RefreshLayerByGuid: refreshLayerByGuid,
+    ShowInfoMarker: showInfoMarker,
+    ShowInfoMarkers: showInfoMarkers,
+    GetExtent: getExtent,
+    GetVisibleSubLayers: getVisibleSubLayers,
+    GetUrlObject: getUrlObject,
+    GetGeolocation: getGeolocation,
+    RemoveGeolocation: removeGeolocation,
+    InfoClickSimulation: infoClickSimulation,
+    SetTranslateOptions: setTranslateOptions,
+    TransformCoordinates: transformCoordinates,
+    TransformFromGeographic: transformFromGeographic,
+    TransformToGeographic: transformToGeographic,
+    DescribeFeature: describeFeature,
+    RemoveIsyToken: removeIsyToken,
+    SetIsyToken: setIsyToken,
+    ShowCustomMessage: showCustomMessage
+    //AddVectorTestData: addVectorTestData
+    // Utility end
+  };
 };
 
 var ISY = ISY || {};
@@ -2221,17 +2223,17 @@ ISY.MapAPI.Parsers.Base = function(factory) {
             var tableResult = result.substring(indexOfTableStart, result.length);
             var indexOfTableEnd = tableResult.indexOf("</body>");
             tableResult = tableResult.substring(0, indexOfTableEnd);
-            console.log(tableResult);
-            var jsonObject = xml2json.parser(tableResult);
-            console.log(jsonObject);
+            return xml2json.parser(tableResult);
+        } else {
+          return [];
         }
-        return [];
     }
 
     return {
         Parse: parse
     };
 };
+
 var ISY = ISY || {};
 ISY.MapAPI = ISY.MapAPI || {};
 ISY.MapAPI.Parsers = ISY.MapAPI.Parsers || {};
@@ -2792,820 +2794,6 @@ ISY.MapAPI.Tools.Tools = function(mapApi){
         GetTools: getTools
     };
 };
-/**
- * Created by to on 2015-01-29.
- */
-var ISY = ISY || {};
-ISY.MapImplementation = ISY.MapImplementation || {};
-ISY.MapImplementation.Leaflet = ISY.MapImplementation.Leaflet || {};
-
-ISY.MapImplementation.Leaflet.Map = function(repository, eventHandler, httpHelper, measure, featureInfo, mapExport){
-    var map;
-    var layerPool = [];
-
-    var proxyHost = "";
-
-    /*
-     Start up functions Start
-     */
-
-    function initMap(targetId, mapConfig){
-        proxyHost = mapConfig.proxyHost;
-        var newMapRes = [];
-        newMapRes[0]= mapConfig.newMaxRes;
-        for (var t = 1; t < mapConfig.numZoomLevels; t++) {
-            newMapRes[t] = newMapRes[t - 1] / 2;
-        }
-        /*
-        var sm = new ol.proj.Projection({
-            code: mapConfig.coordinate_system,
-            extent: mapConfig.extent,
-            units: mapConfig.extentUnits
-        });
-        */
-
-        /*var marker = new L.Marker(new L.LatLng(44.1373, -13.16813), {
-            title: 'Lerkendal'
-        });*/
-
-        var baselayerconfig = mapConfig.layers[0].subLayers[0];
-
-        /*var crs = new L.Proj.CRS(
-            'EPSG:32633',
-            '+proj=utm +zone=33 +ellps=WGS84 +datum=WGS84 +units=m +no_defs',
-            {
-                //origin: [572944, 7029918],
-                origin: [7039762, 270661],
-                //transformation: ??,
-                //scales: function(zoom) {return 1 / (234.375 / Math.pow(2, zoom));},
-                // use scales OR resolutions, not both
-                //bounds: baselayerconfig.extent,
-                resolutions: newMapRes
-            });*/
-
-        //var customcrs = L.CRS.proj4js('EPSG:25832', '+proj=utm +zone=32 +ellps=GRS80 +units=m +no_defs', new L.Transformation(0.5 / (Math.PI * L.Projection.Mercator.R_MAJOR), 0.5, -0.5 / (Math.PI * L.Projection.Mercator.R_MINOR), 0.5));
-        /*var trans = new L.Transformation(0.5 / (Math.PI * L.Projection.Mercator.R_MAJOR), 0.5, -0.5 / (Math.PI * L.Projection.Mercator.R_MINOR), 0.5);
-        trans = new L.Transformation(0.5 / Math.PI, 0.5, -0.5 / Math.PI, 0.5);
-        L.CRS.EPSG32633 = L.extend({}, L.CRS, {
-            code: 'EPSG:32633',
-            //projection: customcrs.projection,//L.Projection.SphericalMercator,
-            projection: L.Projection.SphericalMercator,
-            transformation: trans,
-
-            project: function (latlng) { // (LatLng) -> Point
-                var projectedPoint = this.projection.project(latlng),
-                    earthRadius = 6378137;
-                return projectedPoint.multiplyBy(earthRadius);
-            }
-        });*/
-
-        var crs = L.CRS.EPSG900913;
-
-        //var map = new L.Map('Krak-Map', { center: new L.LatLng(7039762, 270661), zoom: 17, crs: crs });
-        //crs.options.resolutions = newMapRes;
-
-        var baselayer = null;
-        switch (baselayerconfig.source){
-            case "TMS":
-                baselayer = new ISY.MapImplementation.Leaflet.Sources.Tms(baselayerconfig);
-                break;
-            case "WMS":
-                baselayer = new ISY.MapImplementation.Leaflet.Sources.Wms(baselayerconfig);
-                break;
-        }
-
-        map = new L.Map(targetId, {
-            //crs: crs,
-            //layers: [baselayer, marker],
-            layers: [baselayer],
-            //layers: [],
-            //center: new L.LatLng(44, -12.1),
-            //center: new L.LatLng(7039762, 270661),
-            center: new L.LatLng(63.4, 255250),
-            //center: new L.LatLng(mapConfig.center[1], mapConfig.center[0]),
-            crs: crs,
-            zoom: 3,
-            //zoomControl: false,
-            reuseTiles: true,
-            continuousWorld: true,
-            worldCopyJump: false,
-            //scale: function(zoom) {return 1 / (234.375 / Math.pow(2, zoom));},
-            scale: function(zoom) {return 1 / (mapConfig.newMaxRes / Math.pow(2, zoom));},
-            resolutions: newMapRes
-        });
-
-        /*var options = {
-            attributionControl: true,
-            bounceAtZoomLimits: true,
-            boxZoom: true,
-            //center: o.LatLng,
-            closePopupOnClick: true,
-            continuousWorld: true,
-            //crs: Object,
-            doubleClickZoom: true,
-            dragging: true,
-            easeLinearity: 0.25,
-            fadeAnimation: true,
-            inertia: true,
-            inertiaDeceleration: 3400,
-            inertiaMaxSpeed: Infinity,
-            inertiaThreshold: 18,
-            keyboard: true,
-            keyboardPanOffset: 80,
-            keyboardZoomOffset: 1,
-            //layers: Array[1],
-            markerZoomAnimation: true,
-            reuseTiles: true,
-            scrollWheelZoom: true,
-            tap: true,
-            tapTolerance: 15,
-            touchZoom: false,
-            trackResize: true,
-            worldCopyJump: false,
-            zoom: 3,
-            zoomAnimation: true,
-            zoomAnimationThreshold: 4,
-            zoomControl: false
-    };*/
-
-        L.control.scale({ imperial: false }).addTo(map);
-        L.control.mousePosition().addTo(map);
-        //map.addControl(L.Control.loading({ spinjs: true }));
-
-        /*
-        map = new ol.Map({
-            target: targetId,
-            renderer: mapConfig.renderer,
-            layers: [],
-            view: new ol.View({
-                projection: sm,
-                center: mapConfig.center,
-                zoom: mapConfig.zoom,
-                resolutions: newMapRes,
-                maxResolution: mapConfig.newMaxRes,
-                numZoomLevels: numZoomLevels
-            }),
-            controls: [],
-            overlays: []
-        });
-        */
-
-        _registerMapCallbacks();
-    }
-
-    function _registerMapCallbacks(){
-        //var view = map.getView();
-
-        /*var changeCenter = function(){
-            var mapViewChangedObj = _getUrlObject();
-            eventHandler.TriggerEvent(ISY.Events.EventTypes.ChangeCenter, mapViewChangedObj);
-        };*/
-
-        /*var changeResolution = function(){
-            var mapViewChangedObj = _getUrlObject();
-            eventHandler.TriggerEvent(ISY.Events.EventTypes.ChangeResolution, mapViewChangedObj);
-        };*/
-
-        var mapMoveend = function(){
-            var mapViewChangedObj = _getUrlObject();
-            eventHandler.TriggerEvent(ISY.Events.EventTypes.MapMoveend, mapViewChangedObj);
-        };
-
-        //view.on('change:center', changeCenter);
-        //view.on('change:resolution', changeResolution);
-        map.on('moveend', mapMoveend);
-    }
-
-    function changeView(viewPropertyObject){
-        var view = map.getView();
-        var lon, lat, zoom;
-        if(viewPropertyObject.lon){
-            lon = viewPropertyObject.lon;
-        }
-        if(viewPropertyObject.lat){
-            lat = viewPropertyObject.lat;
-        }
-        if(viewPropertyObject.zoom){
-            zoom = viewPropertyObject.zoom;
-        }
-
-        if(lon !== undefined && lat !== undefined){
-            var latitude = parseFloat(lat.replace(/,/g, '.'));
-            var longitude = parseFloat(lon.replace(/,/g, '.'));
-            if (isFinite(latitude) && isFinite(longitude)) {
-                view.setCenter([longitude, latitude]);
-            }
-        }
-
-        if(zoom !== undefined){
-            view.setZoom(zoom);
-        }
-    }
-
-    /*
-     Start up functions End
-     */
-
-    /*
-     Layer functions Start
-     Functionality to be moved to ISY.MapImplementation.Leaflet.Layers
-     */
-
-    function showLayer(isySubLayer){
-        var layer = _createLayer(isySubLayer);
-        map.addLayer(layer);
-
-        _trigLayersChanged();
-    }
-
-    function showBaseLayer(isySubLayer){
-        if (console){
-            console.log(isySubLayer.name);
-        }
-        //var layer = _createLayer(isySubLayer);
-        //map.getLayers().insertAt(0, layer);
-
-        _trigLayersChanged();
-    }
-
-    function hideLayer(isySubLayer){
-        if (console){
-            console.log(isySubLayer.name);
-        }
-        return null;
-        /*var layer = _getLayerByGuid(isySubLayer.id);
-        if(layer){
-            map.removeLayer(layer);
-            _trigLayersChanged();
-        }*/
-    }
-
-    function _createLayer(isySubLayer){
-        var layer;
-        var source;
-        var layerFromPool = _getLayerFromPool(isySubLayer);
-
-        if(layerFromPool !== null){
-            layer = layerFromPool;
-        }
-        else{
-            switch(isySubLayer.source){
-                case ISY.Domain.SubLayer.SOURCES.wmts:
-                    source = new ISY.MapImplementation.Leaflet.Sources.Wmts(isySubLayer);
-                    break;
-
-                case ISY.Domain.SubLayer.SOURCES.proxyWmts:
-                    isySubLayer.url = proxyHost + isySubLayer.url;
-                    source = new ISY.MapImplementation.Leaflet.Sources.Wmts(isySubLayer);
-                    break;
-
-                case ISY.Domain.SubLayer.SOURCES.wms:
-                    source = new ISY.MapImplementation.Leaflet.Sources.Wms(isySubLayer);
-                    break;
-                case ISY.Domain.SubLayer.SOURCES.tms:
-                    source = new ISY.MapImplementation.Leaflet.Sources.Tms(isySubLayer);
-                    break;
-                case ISY.Domain.SubLayer.SOURCES.proxyWms:
-                    isySubLayer.url = proxyHost + isySubLayer.url;
-                    source = new ISY.MapImplementation.Leaflet.Sources.Wms(isySubLayer);
-                    break;
-                case ISY.Domain.SubLayer.SOURCES.vector:
-                    source = new ISY.MapImplementation.Leaflet.Sources.Vector(isySubLayer, map.getView().getProjection());
-                    _loadVectorLayer(isySubLayer, source);
-                    break;
-                default:
-                    throw "Unsupported source: ISY.Domain.SubLayer.SOURCES.'" +
-                    isySubLayer.source +
-                    "'. For SubLayer with url " + isySubLayer.url +
-                    " and name " + isySubLayer.name + ".";
-            }
-
-            if(isySubLayer.source === ISY.Domain.SubLayer.SOURCES.vector){
-                layer = new ol.layer.Vector({
-                    source: source
-                });
-            }
-            else if (isySubLayer.tiled) {
-                layer = source;
-            } else {
-                layer = source;
-            }
-
-            layer.layerIndex = isySubLayer.layerIndex;
-            layer.guid = isySubLayer.id;
-
-            layerPool.push(layer);
-        }
-
-        return layer;
-    }
-
-    function _loadVectorLayer(isySubLayer, source){
-        var callback = function(data){
-            var fromProj = ol.proj.get(isySubLayer.coordinate_system);
-            var toProj = ol.proj.get(source.getProjection().getCode());
-            var features = source.parser.readFeatures(data);
-            for(var i = 0; i < features.length; i++) {
-                var feature = features[i];
-                feature.getGeometry().transform(fromProj, toProj);
-            }
-            source.addFeatures(features);
-        };
-        httpHelper.get(isySubLayer.url).success(callback);
-    }
-
-    function _getLayerFromPool(isySubLayer){
-        for(var i = 0; i < layerPool.length; i++){
-            var layerInPool = layerPool[i];
-            if(layerInPool.guid === isySubLayer.id){
-                return layerInPool;
-            }
-        }
-        return null;
-    }
-
-    function setLayerBrightness(isySubLayer, value){
-        // Require WebGL-rendering of map
-        var layer = _getLayerByGuid(isySubLayer.id);
-        if(layer && !isNaN(value)){
-            layer.setBrightness(Math.min(value,1));
-        }
-    }
-    function setLayerContrast(isySubLayer, value){
-        // Require WebGL-rendering of map
-        var layer = _getLayerByGuid(isySubLayer.id);
-        if(layer && !isNaN(value)){
-            layer.setContrast(Math.min(value,1));
-        }
-    }
-    function setLayerOpacity(isySubLayer, value){
-        var layer = _getLayerByGuid(isySubLayer.id);
-        if(layer && !isNaN(value)){
-            layer.setOpacity(Math.min(value,1));
-        }
-    }
-    function setLayerSaturation(isySubLayer, value){
-        // Require WebGL-rendering of map
-        var layer = _getLayerByGuid(isySubLayer.id);
-        if(layer && !isNaN(value)){
-            layer.setSaturation(Math.min(value,1));
-        }
-    }
-    function setLayerHue(isySubLayer, value){
-        // Require WebGL-rendering of map
-        var layer = _getLayerByGuid(isySubLayer.id);
-        if(layer && !isNaN(value)){
-            layer.setHue(Math.min(value,1));
-        }
-    }
-
-    /*
-    function _getLayersWithGuid(){
-        return map.getLayers().getArray().filter(function(elem){
-            return elem.guid !== undefined;
-        });
-    }
-
-    function _getLayerByGuid(guid){
-        var layers = _getLayersWithGuid();
-        for(var i = 0; i < layers.length; i++){
-            var layer = layers[i];
-            if(layer.guid === guid){
-                return layer;
-            }
-        }
-        return null;
-    }
-
-    function getLayerIndex(isySubLayer){
-        var layers = _getLayersWithGuid();
-        for(var i = 0; i < layers.length; i++){
-            var layer = layers[i];
-            if(layer.guid === isySubLayer.id){
-                return i;
-            }
-        }
-        return null;
-    }
-
-    function getLayerByName(layerTitle) {
-        var layers = _getLayersWithGuid();
-        for (var i = 0; i < layers.length; i++) {
-            if (layers[i].get('title') === layerTitle) {
-                return layers[i];
-            }
-        }
-        return null;
-    }
-
-    function moveLayerToIndex(isySubLayer, index){
-        var subLayerIndex = getLayerIndex(isySubLayer);
-        var layersArray = map.getLayers().getArray();
-        layersArray.splice(index, 0, layersArray.splice(subLayerIndex, 1)[0]);
-
-        _trigLayersChanged();
-    }
-
-    */
-    function _trigLayersChanged(){
-        var eventObject = _getUrlObject();
-        eventHandler.TriggerEvent(ISY.Events.EventTypes.ChangeLayers, eventObject);
-    }
-    /*
-
-    function _getGuidsForVisibleLayers() {
-        var visibleLayers = [];
-        var layers = _getLayersWithGuid();
-        for (var i = 0; i < layers.length; i++) {
-            var layer = layers[i];
-            if (layer.getVisible() === true) {
-                visibleLayers.push(layers[i]);
-            }
-        }
-
-        visibleLayers.sort(_compareMapLayerIndex);
-        var result = [];
-        for(var j = 0; j < visibleLayers.length; j++){
-            result.push(visibleLayers[j].guid);
-        }
-        return result.join(",");
-    }
-
-    function _compareMapLayerIndex(a, b) {
-        if (a.mapLayerIndex < b.mapLayerIndex){
-            return -1;
-        }
-        if (a.mapLayerIndex > b.mapLayerIndex){
-            return 1;
-        }
-        return 0;
-    }
-    */
-
-    /*
-     Layer functions End
-     */
-
-    /*
-     Map Export Start
-     Functionality in ISY.;ap.Leaflet.Export
-     */
-
-    var _resizeEvent = function(){
-        mapExport.WindowResized(map);
-    };
-
-    function activateExport(options) {
-        mapExport.Activate(options, map, redrawMap);
-        window.addEventListener('resize', _resizeEvent, false);
-    }
-
-    function deactivateExport() {
-        window.removeEventListener('resize', _resizeEvent, false);
-        mapExport.Deactivate(redrawMap);
-    }
-
-    function exportMap(callback){
-        mapExport.ExportMap(callback, map);
-    }
-
-    function redrawMap(){
-        map.updateSize();
-    }
-
-    function renderSync(){
-        map.renderSync();
-    }
-
-    /*
-     Map Export End
-     */
-
-    /*
-     Feature Info Start
-     Functionality in ISY.MapImplementation.Leaflet.FeatureInfo
-     */
-
-    function activateInfoClick(callback){
-        featureInfo.ActivateInfoClick(callback, map);
-    }
-
-    function deactivateInfoClick(){
-        featureInfo.DeactivateInfoClick(map);
-    }
-
-    function getFeatureInfoUrl(isySubLayer, coordinate){
-        return featureInfo.GetFeatureInfoUrl(isySubLayer, _getLayerFromPool(isySubLayer), coordinate, map.getView());
-    }
-
-    function showHighlightedFeatures(layerguid, features){
-        featureInfo.ShowHighlightedFeatures(layerguid, features, map);
-    }
-
-    function clearHighlightedFeatures(){
-        featureInfo.ClearHighlightedFeatures();
-    }
-
-    function showInfoMarker(coordinate, element){
-        featureInfo.ShowInfoMarker(coordinate, element, map);
-    }
-
-    function removeInfoMarker(element){
-        featureInfo.RemoveInfoMarker(element, map);
-    }
-
-    function setHighlightStyle(style){
-        featureInfo.SetHighlightStyle(style);
-    }
-
-    function activateBoxSelect(callback){
-        featureInfo.ActivateBoxSelect(callback, map);
-    }
-
-    function deactivateBoxSelect(){
-        featureInfo.DeactivateBoxSelect(map);
-    }
-
-    function getExtentForCoordinate(coordinate, pixelTolerance){
-        return featureInfo.GetExtentForCoordinate(coordinate, pixelTolerance, map.getView().getResolution());
-    }
-
-    function getFeaturesInExtent(isySubLayer, extent){
-        return featureInfo.GetFeaturesInExtent(extent, _getLayerFromPool(isySubLayer), map.getView().getResolution());
-    }
-
-    /*
-     Feature Info End
-     */
-
-    /*
-     Measure Start
-     Functionality in ISY.MapImplementation.Leaflet.Measure
-     */
-
-    function activateMeasure(callback){
-        measure.Activate(map, callback);
-        //var vector = measure.Activate(map, callback);
-
-    }
-
-    function deactivateMeasure(){
-        measure.Deactivate(map);
-    }
-
-    /*
-     Measure End
-     */
-
-    /*
-     Utility functions start
-     */
-
-    var _getUrlObject = function(){
-
-        var center = map.getCenter();
-        return {
-            lon: center.lng,
-            lat: center.lat,
-            z: map.getZoom()
-        };
-    };
-
-    var getCenter = function(){
-        var center = map.getCenter();
-        var zoom = map.getZoom();
-        return {
-            lon: center.lng,
-            lat: center.lat,
-            zoom: zoom
-        };
-    };
-
-    function transformBox(fromCrs, toCrs, boxExtent){
-        var returnExtent = boxExtent;
-
-        if(fromCrs !== "" && toCrs !== ""){
-            var fromProj = ol.proj.get(fromCrs);
-            var toProj = ol.proj.get(toCrs);
-            var transformedExtent = ol.proj.transformExtent(boxExtent, fromProj, toProj);
-
-            returnExtent = transformedExtent;
-            if(toCrs === "EPSG:4326"){
-                returnExtent = transformedExtent[1] + "," + transformedExtent[0] + "," + transformedExtent[3] + "," + transformedExtent[2];
-            }
-        }
-
-        return returnExtent;
-    }
-
-    function convertGmlToGeoJson(gml){
-        var xmlParser = new ol.format.WMSCapabilities();
-        var xmlFeatures = xmlParser.read(gml);
-        var gmlParser = new ol.format.GML();
-        var features = gmlParser.readFeatures(xmlFeatures);
-        var jsonParser = new ol.format.GeoJSON();
-        return jsonParser.writeFeatures(features);
-    }
-
-    function extentToGeoJson(x, y){
-        var point = new ol.geom.Point([x, y]);
-        var feature = new ol.Feature();
-        feature.setGeometry(point);
-        var geoJson = new ol.format.GeoJSON();
-        return geoJson.writeFeature(feature);
-    }
-
-    function addZoom() {
-        var zoom = new ol.control.Zoom();
-        map.addControl(zoom);
-    }
-
-    function addZoomSlider() {
-        var zoomslider = new ol.control.ZoomSlider();
-        map.addControl(zoomslider);
-    }
-
-    /*
-     Utility functions End
-     */
-
-    return {
-        // Start up start
-        InitMap: initMap,
-        ChangeView: changeView,
-        // Start up end
-
-        /***********************************/
-
-        // Layer start
-        ShowLayer: showLayer,
-        ShowBaseLayer: showBaseLayer,
-        HideLayer: hideLayer,
-        GetLayerByName: undefined,//getLayerByName,
-        SetLayerOpacity: setLayerOpacity,
-        SetLayerSaturation: setLayerSaturation,
-        SetLayerHue: setLayerHue,
-        SetLayerBrightness: setLayerBrightness,
-        SetLayerContrast: setLayerContrast,
-        MoveLayerToIndex: undefined,//moveLayerToIndex,
-        GetLayerIndex: undefined,//getLayerIndex,
-        // Layer end
-
-        /***********************************/
-
-        // Export start
-        RedrawMap: redrawMap,
-        RenderSync: renderSync,
-        ExportMap: exportMap,
-        ActivateExport: activateExport,
-        DeactivateExport: deactivateExport,
-        // Export end
-
-        /***********************************/
-
-        // Feature Info start
-        ActivateInfoClick: activateInfoClick,
-        DeactivateInfoClick: deactivateInfoClick,
-        GetInfoUrl: getFeatureInfoUrl,
-        ShowHighlightedFeatures: showHighlightedFeatures,
-        ClearHighlightedFeatures: clearHighlightedFeatures,
-        ShowInfoMarker: showInfoMarker,
-        SetHighlightStyle: setHighlightStyle,
-        RemoveInfoMarker: removeInfoMarker,
-        ActivateBoxSelect: activateBoxSelect,
-        DeactivateBoxSelect: deactivateBoxSelect,
-        GetFeaturesInExtent: getFeaturesInExtent,
-        GetExtentForCoordinate: getExtentForCoordinate,
-        // Feature Info end
-
-        /***********************************/
-
-        // Measure start
-        ActivateMeasure: activateMeasure,
-        DeactivateMeasure: deactivateMeasure,
-        // Measure end
-
-        /***********************************/
-
-        // Utility start
-        TransformBox: transformBox,
-        ConvertGmlToGeoJson: convertGmlToGeoJson,
-        ExtentToGeoJson: extentToGeoJson,
-        AddZoom: addZoom,
-        AddZoomSlider: addZoomSlider,
-        GetCenter: getCenter
-
-        // Utility end
-    };
-};
-
-ISY.MapImplementation.Leaflet.Map.RENDERERS = {
-    canvas: 'canvas',
-    webgl: 'webgl'
-};
-/**
- * Created by to on 2015-01-29.
- */
-var ISY = ISY || {};
-ISY.MapImplementation = ISY.MapImplementation || {};
-ISY.MapImplementation.Leaflet = ISY.MapImplementation.Leaflet || {};
-ISY.MapImplementation.Leaflet.Sources = ISY.MapImplementation.Leaflet.Sources || {};
-
-ISY.MapImplementation.Leaflet.Sources.Tms = function(isySubLayer){
-    /*
-    var projection = new ol.proj.Projection({
-        code: isySubLayer.coordinate_system,
-        extent: isySubLayer.extent,
-        units: isySubLayer.extentUnits
-    });
-
-    var projectionExtent = projection.getExtent();
-    var size = ol.extent.getWidth(projectionExtent) / 256;
-    var resolutions = new Array(14);
-    var matrixIds = new Array(14);
-    */
-    var numZoomLevels = 18;
-    /*
-    var matrixSet = isySubLayer.matrixSet;
-    if (matrixSet === null || matrixSet === '' || matrixSet === undefined)
-    {
-        matrixSet=isySubLayer.coordinate_system;
-    }
-    for (var z = 0; z < numZoomLevels; ++z) {
-        resolutions[z] = size / Math.pow(2, z);
-        matrixIds[z] = matrixSet + ":" + z;
-    }
-    */
-
-    var imageformat = isySubLayer.format;
-
-    var ipos = isySubLayer.format.indexOf("/");
-    if (ipos > 0){
-        imageformat = imageformat.substr(ipos + 1);
-    }
-
-    var urls = isySubLayer.url; //test
-    if (Array.isArray(urls)){
-        urls = isySubLayer.url[0];
-    }
-
-    return new L.TileLayer(
-        //urls + '/tms/1.0.0/' + isySubLayer.name + '@' + isySubLayer.coordinate_system + '@' + imageformat + '/{z}/{x}/{y}.' + imageformat,
-        urls + '/tms/1.0.0/' + isySubLayer.name + '@EPSG:32632@' + imageformat + '/{z}/{x}/{y}.' + imageformat,
-        {
-            attribution: isySubLayer.attribution,
-            minZoom: 0,
-            maxZoom: numZoomLevels,
-            //tileSize: 256,
-            tms: true,
-            continousWorld: true
-        });
-
-    /*
-    return new ol.source.WMTS({
-        url: isySubLayer.url,
-        layer: isySubLayer.name,
-        format: isySubLayer.format,
-        projection: projection,
-        matrixSet: matrixSet,
-        crossOrigin: isySubLayer.crossOrigin,
-        tileGrid: new ol.tilegrid.WMTS({
-            origin: ol.extent.getTopLeft(projectionExtent),
-            resolutions: resolutions,
-            matrixIds: matrixIds
-        })
-    });
-    */
-};
-
-/**
- * Created by to on 2015-01-30.
- */
-var ISY = ISY || {};
-ISY.MapImplementation = ISY.MapImplementation || {};
-ISY.MapImplementation.Leaflet = ISY.MapImplementation.Leaflet || {};
-ISY.MapImplementation.Leaflet.Sources = ISY.MapImplementation.Leaflet.Sources || {};
-
-ISY.MapImplementation.Leaflet.Sources.Wms = function(isySubLayer){
-    var urls = isySubLayer.url;
-    if (Array.isArray(urls)){
-        for (var i = 0; i < urls.length; i++){
-            urls[i] += '?';
-        }
-    } else {
-        urls += '?';
-    }
-    return new L.TileLayer.WMS(
-        urls,
-        {
-            attribution: isySubLayer.attribution,
-            layers: isySubLayer.name,
-            format: isySubLayer.format,
-            transparent: true,
-            version: "1.0.0"
-        });
-};
-
 // It is not not currently possible to do manually append points to the OpenLayers 3 ol.interaction.Draw
 
 var ISY = ISY || {};
@@ -3707,26 +2895,20 @@ ISY.MapImplementation.OL3.AddFeatureGps = function(eventHandler){
                 // set sketch
                 sketch = evt.feature;
 
-                var tooltipCoord = evt.coordinate;
-
                 listener = sketch.getGeometry().on('change', function(evt) {
                     var geom = evt.target;
                     var output;
                     if (geom instanceof ol.geom.Polygon) {
                         output = "";//formatArea(/** @type {ol.geom.Polygon} */ (geom));
-                        tooltipCoord = geom.getInteriorPoint().getCoordinates();
+                        evt.coordinate = geom.getInteriorPoint().getCoordinates();
                     } else if (geom instanceof ol.geom.LineString) {
                         output = "";//formatLength( /** @type {ol.geom.LineString} */ (geom));
-                        tooltipCoord = geom.getLastCoordinate();
+                        evt.coordinate = geom.getLastCoordinate();
                     }
                     //measureTooltipElement.innerHTML = output.string;
                     eventHandler.TriggerEvent(ISY.Events.EventTypes.MeasureMouseMove, output);
-                    //measureTooltip.setPosition(tooltipCoord);
+                    //measureTooltip.setPosition(evt.coordinate);
                 });
-
-
-
-
             }, this);
 
         draw.on('drawend',
@@ -3792,14 +2974,7 @@ ISY.MapImplementation.OL3.AddFeatureGps = function(eventHandler){
         map.addOverlay(helpTooltip);
     }
 
-    function  activate(map, options){
-
-        console.log(map, options);
-
-        //if (true){
-        //    return;
-        //}
-
+    function activate(map, options){
         isActive = true;
         translate = options.translate;
         typeObject = options.toolType;//type;
@@ -3847,7 +3022,6 @@ ISY.MapImplementation.OL3.AddFeatureGps = function(eventHandler){
     }
 
     function addCoordinates(coordinates){
-        console.log(coordinates);
         //var point = new ol.geom.Point([coordinates[0], coordinates[1]]);
         //var feature = new ol.Feature();
         //feature.setGeometry(point);
@@ -3860,6 +3034,7 @@ ISY.MapImplementation.OL3.AddFeatureGps = function(eventHandler){
         //sketch.setGeometry(geom);
         //draw.extend(feature);
         //sketch.setGeometry(point);
+        return coordinates;
     }
 
     return {
@@ -3868,6 +3043,7 @@ ISY.MapImplementation.OL3.AddFeatureGps = function(eventHandler){
         Deactivate: deactivate
     };
 };
+
 var ISY = ISY || {};
 ISY.MapImplementation = ISY.MapImplementation || {};
 ISY.MapImplementation.OL3 = ISY.MapImplementation.OL3 || {};
@@ -3875,11 +3051,9 @@ ISY.MapImplementation.OL3 = ISY.MapImplementation.OL3 || {};
 ISY.MapImplementation.OL3.AddLayerFeature = function (eventHandler) {
 
   var isActive = false;
-  var translate;
   var typeObject;
   var snappingFeatures;
   var sketch;
-  var startModify = false;
   var draw;
   var drawLayer;
   var modify;
@@ -4040,79 +3214,79 @@ var ISY = ISY || {};
 ISY.MapImplementation = ISY.MapImplementation || {};
 ISY.MapImplementation.OL3 = ISY.MapImplementation.OL3 || {};
 
-ISY.MapImplementation.OL3.AddLayerUrl = function(eventHandler){
+ISY.MapImplementation.OL3.AddLayerUrl = function (eventHandler) {
 
-    var mapProjection;
-    var isActive = false;
-    var drawLayer;
-    var source = new ol.source.Vector();
-    var style;
-    var layerId='propertyMarking';
+  var mapProjection;
+  var isActive = false;
+  var drawLayer;
+  var source = new ol.source.Vector();
+  var style;
+  var layerId = 'propertyMarking';
 
-    function _addLayer(map){
-        drawLayer = new ol.layer.Vector({
-            source: source,
-            style: style
-        });
-        drawLayer.set('id', layerId);
-        map.addLayer(drawLayer);
+  function _addLayer(map) {
+    drawLayer = new ol.layer.Vector({
+      source: source,
+      style: style
+    });
+    drawLayer.set('id', layerId);
+    map.addLayer(drawLayer);
+  }
+
+  var _getSourceFromUrl = function (options, map) {
+    if (options.url) {
+      source = new ol.source.Vector({
+        format: new ol.format.GML(),
+        url: options.url
+      });
+      source.on('addfeature',
+        function (event) {
+          if (options.geometryName) {
+            event.feature.setGeometryName(options.geometryName);
+          }
+          event.feature.getGeometry().transform('EPSG:4326', mapProjection);
+          var extent = source.getExtent();
+          map.getView().fit(extent, map.getSize());
+          eventHandler.TriggerEvent(ISY.Events.EventTypes.AddLayerUrlEnd, true);
+        }, this);
     }
+    return source;
+  };
 
-    var _getSourceFromUrl = function(options, map){
-        if(options.url) {
-            source = new ol.source.Vector({
-                format: new ol.format.GML(),
-                url: options.url
-            });
-            source.on('addfeature',
-                function(event){
-                    if(options.geometryName) {
-                        event.feature.setGeometryName(options.geometryName);
-                    }
-                    event.feature.getGeometry().transform('EPSG:4326', mapProjection);
-                    var extent = source.getExtent();
-                    map.getView().fit(extent,map.getSize());
-                    eventHandler.TriggerEvent(ISY.Events.EventTypes.AddLayerUrlEnd, true);
-                }, this);
-        }
-        return source;
-    };
+  function _removeOldLayer(map) {
+    map.getLayers().forEach(function (layer) {
+      if (layer.get('id') === layerId) {
+        map.removeLayer(layer);
+      }
+    });
+  }
 
-    function _removeOldLayer(map){
-        map.getLayers().forEach(function (layer) {
-                if (layer.get('id') === layerId) {
-                    map.removeLayer(layer);
-                }
-            }
-        );
+  function activate(map, options) {
+    if (!options.show) {
+      map.removeLayer(drawLayer);
+      deactivate();
+      return;
     }
+    isActive = true;
+    mapProjection = map.getView().getProjection();
+    style = options.style ? options.style : defaultStyle;
+    source = _getSourceFromUrl(options, map);
+    _removeOldLayer(map);
+    _addLayer(map);
+  }
 
-    function activate(map, options) {
-        if(!options.show) {
-            map.removeLayer(drawLayer);
-            deactivate();
-            return;
-        }
-        isActive = true;
-        mapProjection = map.getView().getProjection();
-        style = options.style ? options.style : defaultStyle;
-        source = _getSourceFromUrl(options, map);
-        _removeOldLayer(map);
-        _addLayer(map);
+  function deactivate() {
+    if (isActive) {
+      isActive = false;
+
     }
+  }
 
-    function deactivate(){
-        if (isActive) {
-            isActive = false;
-
-        }
-    }
-
-    return {
-        Activate: activate,
-        Deactivate: deactivate
-    };
+  return {
+    Activate: activate,
+    Deactivate: deactivate
+  };
 };
+
 var ISY = ISY || {};
 ISY.MapImplementation = ISY.MapImplementation || {};
 ISY.MapImplementation.OL3 = ISY.MapImplementation.OL3 || {};
@@ -4227,7 +3401,7 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler) {
     function showTooltip(evt, map) {
         createMeasureTooltip(map);
         // set sketch
-        sketch = evt.feature || evt.features.getArray()[0];
+        var sketch = evt.feature || evt.features.getArray()[0];
         listener = sketch.getGeometry().on('change', function (evt) {
             var output = getMeasurements(evt.target, map);
             sketch.setProperties({measurement: output});
@@ -4519,11 +3693,10 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler) {
         };
 
         if (style.getText().getStroke()) {
-            var textStroke = {
-                color: style.getText().getStroke().getColor(),
-                width: style.getText().getStroke().getWidth()
+            textStyle['stroke'] = {
+              color: style.getText().getStroke().getColor(),
+              width: style.getText().getStroke().getWidth()
             };
-            textStyle['stroke'] = textStroke;
         }
         return textStyle;
     }
@@ -4768,807 +3941,814 @@ var ISY = ISY || {};
 ISY.MapImplementation = ISY.MapImplementation || {};
 ISY.MapImplementation.OL3 = ISY.MapImplementation.OL3 || {};
 
-ISY.MapImplementation.OL3.Export = function(){
-    var layout = "";
-    var mapExportEvents;
-    var printRectangle;
-    var exportActive = false;
+ISY.MapImplementation.OL3.Export = function () {
+  var layout = "";
+  var mapExportEvents;
+  var printRectangle;
+  var exportActive = false;
 
-    function activate(options, map, redrawFunction) {
-        layout = options.layout;
-        exportActive = true;
-        printRectangle = _getScreenRectangle(map);
-        mapExportEvents = [
-            map.on('precompose', _handlePreCompose),
-            map.on('postcompose', _handlePostCompose)
-        ];
-        redrawFunction();
+  function activate(options, map, redrawFunction) {
+    layout = options.layout;
+    exportActive = true;
+    printRectangle = _getScreenRectangle(map);
+    mapExportEvents = [
+      map.on('precompose', _handlePreCompose),
+      map.on('postcompose', _handlePostCompose)
+    ];
+    redrawFunction();
+  }
+
+  function deactivate(redrawFunction) {
+    exportActive = false;
+    if (mapExportEvents) {
+      for (var i = 0; i < mapExportEvents.length; i++) {
+        ol.Observable.unByKey(mapExportEvents[i]);
+      }
+      redrawFunction();
+    }
+  }
+
+  function exportMap(callback, map) {
+    map.once('postcompose', function (event) {
+      var canvas = event.context.canvas;
+      callback(canvas, printRectangle);
+    });
+  }
+
+  function windowResized(map) {
+    if (exportActive) {
+      printRectangle = _getScreenRectangle(map);
+      map.render();
+    }
+  }
+
+  function _getScreenRectangle(map) {
+    var A4_RATIO = 210 / 297;
+    var mapSize = map.getSize();
+    var h, w;
+    if (layout.value === "a4portrait") {
+      w = mapSize[1] * A4_RATIO;
+      if (w > mapSize[0]) {
+        w = mapSize[0];
+        h = mapSize[0] / A4_RATIO;
+      } else {
+        h = mapSize[1];
+      }
+    } else {
+      h = mapSize[0] * A4_RATIO;
+      if (h > mapSize[1]) {
+        h = mapSize[1];
+        w = mapSize[1] / A4_RATIO;
+      } else {
+        w = mapSize[0];
+      }
     }
 
-    function deactivate(redrawFunction) {
-        exportActive = false;
-        if (mapExportEvents) {
-            for (var i = 0; i < mapExportEvents.length; i++) {
-                ol.Observable.unByKey(mapExportEvents[i]);
-            }
-            redrawFunction();
-        }
-    }
-
-    function exportMap(callback, map){
-        map.once('postcompose', function (event) {
-         var canvas = event.context.canvas;
-         callback(canvas, printRectangle);
-         });
-    }
-
-    function windowResized(map){
-        if (exportActive){
-            printRectangle = _getScreenRectangle(map);
-            map.render();
-        }
-    }
-
-    function _getScreenRectangle(map) {
-        var A4_RATIO = 210/297;
-        var mapSize = map.getSize();
-        var h,w;
-        if (layout.value === "a4portrait") {
-            w = mapSize[1] * A4_RATIO;
-            if (w>mapSize[0]){
-                w = mapSize[0];
-                h = mapSize[0] / A4_RATIO;
-            } else {
-                h = mapSize[1];
-            }
-        } else {
-            h = mapSize[0] * A4_RATIO;
-            if (h>mapSize[1]){
-                h = mapSize[1];
-                w = mapSize[1] / A4_RATIO;
-            } else {
-                w = mapSize[0];
-            }
-        }
-
-        var center = [mapSize[0] * ol.has.DEVICE_PIXEL_RATIO / 2 ,
-            mapSize[1] * ol.has.DEVICE_PIXEL_RATIO / 2];
-
-        return {
-            minx: center[0] - (w / 2),
-            miny: center[1] - (h / 2),
-            maxx: center[0] + (w / 2),
-            maxy: center[1] + (h / 2)
-        };
-    }
-
-    var _handlePreCompose = function(evt) {
-        var ctx = evt.context;
-        ctx.save();
-    };
-
-    var _handlePostCompose = function(evt) {
-        var ctx = evt.context;
-        var mapSize = _getMapSize(evt.target);
-
-        // Create polygon-overlay for export-area
-        ctx.beginPath();
-        // Outside polygon (clockwise)
-        ctx.moveTo(0, 0);
-        ctx.lineTo(mapSize.width, 0);
-        ctx.lineTo(mapSize.width, mapSize.height);
-        ctx.lineTo(0, mapSize.height);
-        ctx.lineTo(0, 0);
-        ctx.closePath();
-
-        // Inner polygon (counter-clockwise)
-        ctx.moveTo(printRectangle.minx, printRectangle.miny);
-        ctx.lineTo(printRectangle.minx, printRectangle.maxy);
-        ctx.lineTo(printRectangle.maxx, printRectangle.maxy);
-        ctx.lineTo(printRectangle.maxx, printRectangle.miny);
-        ctx.lineTo(printRectangle.minx, printRectangle.miny);
-        ctx.closePath();
-
-        ctx.fillStyle = 'rgba(25, 25, 25, 0.75)';
-        ctx.fill();
-
-        ctx.restore();
-    };
-
-    function _getMapSize(map) {
-        var mapSize = map.getSize();
-        return {
-            height: mapSize[1] * ol.has.DEVICE_PIXEL_RATIO,
-            width: mapSize[0] * ol.has.DEVICE_PIXEL_RATIO
-        };
-    }
+    var center = [mapSize[0] * ol.has.DEVICE_PIXEL_RATIO / 2,
+      mapSize[1] * ol.has.DEVICE_PIXEL_RATIO / 2
+    ];
 
     return {
-        Activate: activate,
-        Deactivate: deactivate,
-        ExportMap: exportMap,
-        WindowResized: windowResized
+      minx: center[0] - (w / 2),
+      miny: center[1] - (h / 2),
+      maxx: center[0] + (w / 2),
+      maxy: center[1] + (h / 2)
     };
+  }
+
+  var _handlePreCompose = function (evt) {
+    var ctx = evt.context;
+    ctx.save();
+  };
+
+  var _handlePostCompose = function (evt) {
+    var ctx = evt.context;
+    var mapSize = _getMapSize(evt.target);
+
+    // Create polygon-overlay for export-area
+    ctx.beginPath();
+    // Outside polygon (clockwise)
+    ctx.moveTo(0, 0);
+    ctx.lineTo(mapSize.width, 0);
+    ctx.lineTo(mapSize.width, mapSize.height);
+    ctx.lineTo(0, mapSize.height);
+    ctx.lineTo(0, 0);
+    ctx.closePath();
+
+    // Inner polygon (counter-clockwise)
+    ctx.moveTo(printRectangle.minx, printRectangle.miny);
+    ctx.lineTo(printRectangle.minx, printRectangle.maxy);
+    ctx.lineTo(printRectangle.maxx, printRectangle.maxy);
+    ctx.lineTo(printRectangle.maxx, printRectangle.miny);
+    ctx.lineTo(printRectangle.minx, printRectangle.miny);
+    ctx.closePath();
+
+    ctx.fillStyle = 'rgba(25, 25, 25, 0.75)';
+    ctx.fill();
+
+    ctx.restore();
+  };
+
+  function _getMapSize(map) {
+    var mapSize = map.getSize();
+    return {
+      height: mapSize[1] * ol.has.DEVICE_PIXEL_RATIO,
+      width: mapSize[0] * ol.has.DEVICE_PIXEL_RATIO
+    };
+  }
+
+  return {
+    Activate: activate,
+    Deactivate: deactivate,
+    ExportMap: exportMap,
+    WindowResized: windowResized
+  };
 };
+
 var ISY = ISY || {};
 ISY.MapImplementation = ISY.MapImplementation || {};
 ISY.MapImplementation.OL3 = ISY.MapImplementation.OL3 || {};
 ISY.MapImplementation.OL3.Sources = ISY.MapImplementation.OL3.Sources || {};
 
-ISY.MapImplementation.OL3.FeatureEditor = function(eventHandler) {
+ISY.MapImplementation.OL3.FeatureEditor = function (eventHandler) {
 
-    var editKey_ = "";
-    var points_ = []; // ol.geom.Point[]
-    var geometryName_ = "";
-    var transactionManager_ = null; // ISY.MapImplementation.OL3.Sources.WfsT
+  var editKey_ = "";
+  var points_ = []; // ol.geom.Point[]
+  var geometryName_ = "";
+  var transactionManager_ = null; // ISY.MapImplementation.OL3.Sources.WfsT
 
-    function init(url, featureType, featureNS, srsName, source, geometryName) {
-        if (featureNS === undefined){
-            featureNS = "http://kart4.nois.no/skjema/va";
-        }
-        transactionManager_ = new ISY.MapImplementation.OL3.Sources.WfsT(url, featureType, featureNS, srsName, source, eventHandler);
-        geometryName_ = geometryName;
+  function init(url, featureType, featureNS, srsName, source, geometryName) {
+    if (featureNS === undefined) {
+      featureNS = "http://kart4.nois.no/skjema/va";
     }
+    transactionManager_ = new ISY.MapImplementation.OL3.Sources.WfsT(url, featureType, featureNS, srsName, source, eventHandler);
+    geometryName_ = geometryName;
+  }
 
-    function activateEditSelect(callback, map){
-        if (map !== undefined){
-            editKey_ = map.on('singleclick', function(evt) {
-                callback(evt.coordinate);
-            });
-        }
+  function activateEditSelect(callback, map) {
+    if (map !== undefined) {
+      editKey_ = map.on('singleclick', function (evt) {
+        callback(evt.coordinate);
+      });
     }
+  }
 
-    function deactivateEditSelect(){
-            ol.Observable.unByKey(editKey_);
-            editKey_ = "";
-    }
+  function deactivateEditSelect() {
+    ol.Observable.unByKey(editKey_);
+    editKey_ = "";
+  }
 
-    function handlePointSelect(coordinate) {
-        var point = new ol.geom.Point(coordinate);
-        points_.push(point);
+  function handlePointSelect(coordinate) {
+    var point = new ol.geom.Point(coordinate);
+    points_.push(point);
 
-        // Temporary test
-        var feature = new ol.Feature({"navn": "ISY.MapLib-" + transactionManager_.GetFeatureType() + "-Insert"});
-        feature.setGeometryName(geometryName_);
-        feature.setGeometry(point);
-        transactionManager_.InsertFeature(feature);
-    }
+    // Temporary test
+    var feature = new ol.Feature({
+      navn: "ISY.MapLib-" + transactionManager_.GetFeatureType() + "-Insert"
+    });
+    feature.setGeometryName(geometryName_);
+    feature.setGeometry(point);
+    transactionManager_.InsertFeature(feature);
+  }
 
-    function updateFeature(feature) {
-        transactionManager_.UpdateFeature(feature);
-    }
+  function updateFeature(feature) {
+    transactionManager_.UpdateFeature(feature);
+  }
 
-    function insertFeature(feature, source){
-        return transactionManager_.InsertFeature(feature, source);
-    }
+  function insertFeature(feature, source) {
+    return transactionManager_.InsertFeature(feature, source);
+  }
 
-    function deleteFeature(feature){
-        return transactionManager_.DeleteFeature(feature);
-    }
+  function deleteFeature(feature) {
+    return transactionManager_.DeleteFeature(feature);
+  }
 
-    return {
-        Init: init,
-        ActivateEditSelect: activateEditSelect,
-        DeactivateEditSelect: deactivateEditSelect,
-        HandlePointSelect: handlePointSelect,
-        UpdateFeature: updateFeature,
-        InsertFeature: insertFeature,
-        DeleteFeature: deleteFeature
-    };
+  return {
+    Init: init,
+    ActivateEditSelect: activateEditSelect,
+    DeactivateEditSelect: deactivateEditSelect,
+    HandlePointSelect: handlePointSelect,
+    UpdateFeature: updateFeature,
+    InsertFeature: insertFeature,
+    DeleteFeature: deleteFeature
+  };
 };
 
 var ISY = ISY || {};
 ISY.MapImplementation = ISY.MapImplementation || {};
 ISY.MapImplementation.OL3 = ISY.MapImplementation.OL3 || {};
 
-ISY.MapImplementation.OL3.FeatureInfo = function(){
-    var highLightLayer = null;
-    var highlightStyle = null;
-    var infoKey = "";
-    var boundingBox;
-    var infoMarkerOverlay;
-    var infoMarkersOverlay = [];
+ISY.MapImplementation.OL3.FeatureInfo = function () {
+  var highLightLayer = null;
+  var highlightStyle = null;
+  var infoKey = "";
+  var boundingBox;
+  var infoMarkerOverlay;
+  var infoMarkersOverlay = [];
 
-    function showHighlightedFeatures(features, map){
-        _ensureHighlightLayer(map);
-        clearHighlightedFeatures();
+  function showHighlightedFeatures(features, map) {
+    _ensureHighlightLayer(map);
+    clearHighlightedFeatures();
 
-        var geoJsonParser = new ol.format.GeoJSON();
-        for(var i = 0; i < features.length; i++){
-            var feature = features[i];
-            if (feature.geometryObject !== undefined){
-                var mapFeature = geoJsonParser.readFeature(feature.geometryObject);
-                if (feature.crs) {
-                    mapFeature.getGeometry().transform(ol.proj.get(feature.crs), ol.proj.get(map.getView().getProjection().getCode()));
-                }
-                if (feature.hoverstyle) {
-                    mapFeature.setStyle(feature.hoverstyle);
-                }
-                highLightLayer.getSource().addFeature(mapFeature);
-            }else{
-                highLightLayer.getSource().addFeature(feature);
-            }
-        }
-    }
-
-    function clearHighlightedFeatures(){
-        if (highLightLayer !== null){
-            var vectorSource = highLightLayer.getSource();
-            vectorSource.clear();
-        }
-    }
-
-    function showInfoMarker(coordinate, element, map){
-        var $element = $(element);
-        var height = $element[0].height;
-        var width = $element[0].width;
-        infoMarkerOverlay = new ol.Overlay({
-            element: element,
-            stopEvent: false,
-            offset: [-width / 2, -height]
-        });
-        infoMarkerOverlay.setPosition(coordinate);
-        map.addOverlay(infoMarkerOverlay);
-    }
-
-    function showInfoMarkers(coordinates,element, map){
-        for (var i = 0; i < coordinates.length; i++){
-            var infoMarkerElement = document.createElement("img");
-            infoMarkerElement.src= "assets/img/pin-md-blueish.png";
-            infoMarkerElement.style.visibility = "visible";
-            var width = 0;
-            var height = 0;
-            var $element = $(element);
-            if ( $element[0].height !== 0 &&  $element[0].width !== 0){
-                width = $element[0].width;
-                height = $element[0].height;
-            }
-            var infoMarker = new ol.Overlay({
-                element: infoMarkerElement,
-                stopEvent: false,
-                offset:  [-width / 2, -height]
-            });
-            infoMarker.setPosition(coordinates[i]);
-            map.addOverlay(infoMarker);
-            infoMarkersOverlay.push(infoMarker);
-        }
-    }
-
-    function removeInfoMarker(element, map){
-        if (infoMarkerOverlay !== undefined){
-            map.removeOverlay(infoMarkerOverlay);
-        }
-    }
-
-    function removeInfoMarkers(element, map){
-        if (infoMarkersOverlay !== undefined){
-            for (var i = 0; i < infoMarkersOverlay.length; i++){
-                map.removeOverlay(infoMarkersOverlay[i]);
-            }
-        }
-    }
-
-    function getFeatureInfoUrl(isySubLayer, mapLayer, coordinate, view){
-        var viewResolution = view.getResolution();
-
-        var layerSource = mapLayer.getSource();
-        var projection = view.getProjection();
-
-        var url = layerSource.getGetFeatureInfoUrl(coordinate, viewResolution, projection, {'INFO_FORMAT': isySubLayer.featureInfo.getFeatureInfoFormat, 'feature_count': 10});
-        var decodedUrl = decodeURIComponent(url);
-        var queryString = decodedUrl.substring(decodedUrl.lastIndexOf('?'), decodedUrl.length).replace('?', '');
-        var queryStringEncoded = encodeURIComponent(queryString);
-        return isySubLayer.url[0] + '?' + queryStringEncoded;
-    }
-
-    function activateInfoClick(callback, map){
-        if (map !== undefined){
-        infoKey = map.on('singleclick', function(evt) {
-            callback(evt.coordinate);
-        });
-    }
-    }
-
-    function deactivateInfoClick(){
-        ol.Observable.unByKey(infoKey);
-        infoKey = "";
-    }
-
-    function activateBoxSelect(callback, map){
-        boundingBox = new ol.interaction.DragBox({
-            condition: ol.events.condition.always
-        });
-
-        map.addInteraction(boundingBox);
-
-        boundingBox.on('boxend', function(){
-            callback(boundingBox.getGeometry().getExtent());
-        });
-    }
-
-    function deactivateBoxSelect(map) {
-        if (map !== undefined) {
-            map.removeInteraction(boundingBox);
-        }
-    }
-
-    function _isVisible(mapLayer, resolution){
-        var minResolution = mapLayer.getMinResolution();
-        if (minResolution > 0 && minResolution > resolution){
-            return false;
-        }
-        var maxResolution = mapLayer.getMaxResolution();
-        return !(maxResolution !== Infinity && maxResolution < resolution);
-    }
-
-    function getFeaturesInExtent(extent, mapLayer, resolution){
-        if (mapLayer === undefined || extent === undefined) {
-            return undefined;
-        }
-
-       if (!_isVisible(mapLayer, resolution)){
-            return undefined;
-       }
-
-        var source = mapLayer.getSource();
-        var features = [];
-        source.forEachFeatureInExtent(extent, function(feature){
-            var featureGeometry = feature.getGeometry();
-            var hidden = feature.get("isHidden");
-            hidden = hidden === undefined ? false : hidden;
-            if (!hidden) {
-                if (featureGeometry !== undefined && featureGeometry.intersectsExtent(extent)) {
-                    features.push(feature);
-                }
-            }
-        });
-        var geoJson = new ol.format.GeoJSON();
-        var featureCollection = geoJson.writeFeaturesObject(features);
-        if (Array.isArray(featureCollection.features)) {
-            for (var i = 0; i < featureCollection.features.length; i++) {
-                featureCollection.features[i].olFeature = features[i];
-            }
-        } else {
-            featureCollection.features.olFeature = Array.isArray(features) ? features[0] : features;
-        }
-        var projection = source.getProjection();
-        if (projection) {
-            featureCollection.crs = _createCrsObjectForGeoJson(projection.getCode());
-        }
-        return featureCollection;
-    }
-
-    function getFeatureCollection(mapLayer){
-        if (mapLayer !== null){
-            var source = mapLayer.getSource();
-            var features = source.getFeatures();
-            var geoJson = new ol.format.GeoJSON();
-            var featureCollection = geoJson.writeFeaturesObject(features);
-            var projection = source.getProjection();
-            if (projection) {
-                featureCollection.crs = _createCrsObjectForGeoJson(source.getProjection().getCode());
-            }
-            return featureCollection;
-        }
-    }
-
-    function getFeaturesInMap(mapLayer){
-        if (mapLayer !== null){
-            var source = mapLayer.getSource();
-            return source.getFeatures();
-        }
-    }
-
-    function getFeatureExtent(feature){
-        var geoJsonParser = new ol.format.GeoJSON();
+    var geoJsonParser = new ol.format.GeoJSON();
+    for (var i = 0; i < features.length; i++) {
+      var feature = features[i];
+      if (feature.geometryObject !== undefined) {
         var mapFeature = geoJsonParser.readFeature(feature.geometryObject);
-        return mapFeature.getGeometry().getExtent();
+        if (feature.crs) {
+          mapFeature.getGeometry().transform(ol.proj.get(feature.crs), ol.proj.get(map.getView().getProjection().getCode()));
+        }
+        if (feature.hoverstyle) {
+          mapFeature.setStyle(feature.hoverstyle);
+        }
+        highLightLayer.getSource().addFeature(mapFeature);
+      } else {
+        highLightLayer.getSource().addFeature(feature);
+      }
+    }
+  }
+
+  function clearHighlightedFeatures() {
+    if (highLightLayer !== null) {
+      var vectorSource = highLightLayer.getSource();
+      vectorSource.clear();
+    }
+  }
+
+  function showInfoMarker(coordinate, element, map) {
+    var $element = $(element);
+    var height = $element[0].height;
+    var width = $element[0].width;
+    infoMarkerOverlay = new ol.Overlay({
+      element: element,
+      stopEvent: false,
+      offset: [-width / 2, -height]
+    });
+    infoMarkerOverlay.setPosition(coordinate);
+    map.addOverlay(infoMarkerOverlay);
+  }
+
+  function showInfoMarkers(coordinates, element, map) {
+    for (var i = 0; i < coordinates.length; i++) {
+      var infoMarkerElement = document.createElement("img");
+      infoMarkerElement.src = "assets/img/pin-md-blueish.png";
+      infoMarkerElement.style.visibility = "visible";
+      var width = 0;
+      var height = 0;
+      var $element = $(element);
+      if ($element[0].height !== 0 && $element[0].width !== 0) {
+        width = $element[0].width;
+        height = $element[0].height;
+      }
+      var infoMarker = new ol.Overlay({
+        element: infoMarkerElement,
+        stopEvent: false,
+        offset: [-width / 2, -height]
+      });
+      infoMarker.setPosition(coordinates[i]);
+      map.addOverlay(infoMarker);
+      infoMarkersOverlay.push(infoMarker);
+    }
+  }
+
+  function removeInfoMarker(element, map) {
+    if (infoMarkerOverlay !== undefined) {
+      map.removeOverlay(infoMarkerOverlay);
+    }
+  }
+
+  function removeInfoMarkers(element, map) {
+    if (infoMarkersOverlay !== undefined) {
+      for (var i = 0; i < infoMarkersOverlay.length; i++) {
+        map.removeOverlay(infoMarkersOverlay[i]);
+      }
+    }
+  }
+
+  function getFeatureInfoUrl(isySubLayer, mapLayer, coordinate, view) {
+    var viewResolution = view.getResolution();
+
+    var layerSource = mapLayer.getSource();
+    var projection = view.getProjection();
+
+    var url = layerSource.getGetFeatureInfoUrl(coordinate, viewResolution, projection, {
+      INFO_FORMAT: isySubLayer.featureInfo.getFeatureInfoFormat,
+      feature_count: 10
+    });
+    var decodedUrl = decodeURIComponent(url);
+    var queryString = decodedUrl.substring(decodedUrl.lastIndexOf('?'), decodedUrl.length).replace('?', '');
+    var queryStringEncoded = encodeURIComponent(queryString);
+    return isySubLayer.url[0] + '?' + queryStringEncoded;
+  }
+
+  function activateInfoClick(callback, map) {
+    if (map !== undefined) {
+      infoKey = map.on('singleclick', function (evt) {
+        callback(evt.coordinate);
+      });
+    }
+  }
+
+  function deactivateInfoClick() {
+    ol.Observable.unByKey(infoKey);
+    infoKey = "";
+  }
+
+  function activateBoxSelect(callback, map) {
+    boundingBox = new ol.interaction.DragBox({
+      condition: ol.events.condition.always
+    });
+
+    map.addInteraction(boundingBox);
+
+    boundingBox.on('boxend', function () {
+      callback(boundingBox.getGeometry().getExtent());
+    });
+  }
+
+  function deactivateBoxSelect(map) {
+    if (map !== undefined) {
+      map.removeInteraction(boundingBox);
+    }
+  }
+
+  function _isVisible(mapLayer, resolution) {
+    var minResolution = mapLayer.getMinResolution();
+    if (minResolution > 0 && minResolution > resolution) {
+      return false;
+    }
+    var maxResolution = mapLayer.getMaxResolution();
+    return !(maxResolution !== Infinity && maxResolution < resolution);
+  }
+
+  function getFeaturesInExtent(extent, mapLayer, resolution) {
+    if (mapLayer === undefined || extent === undefined) {
+      return undefined;
     }
 
-    function _createCrsObjectForGeoJson(crsCode){
-        return new CrsObject(crsCode.split(':'));
+    if (!_isVisible(mapLayer, resolution)) {
+      return undefined;
     }
 
-    function CrsObject(codes){
-        this.type = codes[0];
-        this.properties = new CrsProperties(codes[1]);
+    var source = mapLayer.getSource();
+    var features = [];
+    source.forEachFeatureInExtent(extent, function (feature) {
+      var featureGeometry = feature.getGeometry();
+      var hidden = feature.get("isHidden");
+      hidden = hidden === undefined ? false : hidden;
+      if (!hidden) {
+        if (featureGeometry !== undefined && featureGeometry.intersectsExtent(extent)) {
+          features.push(feature);
+        }
+      }
+    });
+    var geoJson = new ol.format.GeoJSON();
+    var featureCollection = geoJson.writeFeaturesObject(features);
+    if (Array.isArray(featureCollection.features)) {
+      for (var i = 0; i < featureCollection.features.length; i++) {
+        featureCollection.features[i].olFeature = features[i];
+      }
+    } else {
+      featureCollection.features.olFeature = Array.isArray(features) ? features[0] : features;
     }
-
-    function CrsProperties(code){
-        this.code = code;
+    var projection = source.getProjection();
+    if (projection) {
+      featureCollection.crs = _createCrsObjectForGeoJson(projection.getCode());
     }
+    return featureCollection;
+  }
 
-    function getExtentForCoordinate(coordinate, pixelTolerance, resolution){
-        var toleranceInMapUnits = pixelTolerance * resolution;
-        var n = coordinate[0];
-        var e = coordinate[1];
-        var minN = n - toleranceInMapUnits;
-        var minE = e - toleranceInMapUnits;
-        var maxN = n + toleranceInMapUnits;
-        var maxE = e + toleranceInMapUnits;
-        return [minN, minE, maxN, maxE];
+  function getFeatureCollection(mapLayer) {
+    if (mapLayer !== null) {
+      var source = mapLayer.getSource();
+      var features = source.getFeatures();
+      var geoJson = new ol.format.GeoJSON();
+      var featureCollection = geoJson.writeFeaturesObject(features);
+      var projection = source.getProjection();
+      if (projection) {
+        featureCollection.crs = _createCrsObjectForGeoJson(source.getProjection().getCode());
+      }
+      return featureCollection;
     }
+  }
 
-    function _ensureHighlightLayer(map){
-        if(highLightLayer === null){
+  function getFeaturesInMap(mapLayer) {
+    if (mapLayer !== null) {
+      var source = mapLayer.getSource();
+      return source.getFeatures();
+    }
+  }
 
-            if(highlightStyle === null){
-                _setDefaultHighlightStyle();
+  function getFeatureExtent(feature) {
+    var geoJsonParser = new ol.format.GeoJSON();
+    var mapFeature = geoJsonParser.readFeature(feature.geometryObject);
+    return mapFeature.getGeometry().getExtent();
+  }
+
+  function _createCrsObjectForGeoJson(crsCode) {
+    return new CrsObject(crsCode.split(':'));
+  }
+
+  function CrsObject(codes) {
+    this.type = codes[0];
+    this.properties = new CrsProperties(codes[1]);
+  }
+
+  function CrsProperties(code) {
+    this.code = code;
+  }
+
+  function getExtentForCoordinate(coordinate, pixelTolerance, resolution) {
+    var toleranceInMapUnits = pixelTolerance * resolution;
+    var n = coordinate[0];
+    var e = coordinate[1];
+    var minN = n - toleranceInMapUnits;
+    var minE = e - toleranceInMapUnits;
+    var maxN = n + toleranceInMapUnits;
+    var maxE = e + toleranceInMapUnits;
+    return [minN, minE, maxN, maxE];
+  }
+
+  function _ensureHighlightLayer(map) {
+    if (highLightLayer === null) {
+
+      if (highlightStyle === null) {
+        _setDefaultHighlightStyle();
+      }
+
+      var vectorSource = new ol.source.Vector({
+        projection: 'EPSG:4326',
+        // this is bogus, just to get the source initialized, can for sure be done a lot more appropriate.
+        object: {
+          type: "FeatureCollection",
+          totalFeatures: 1,
+          features: [{
+            type: "Feature",
+            id: "thc.1",
+            geometry: {
+              type: "Point",
+              coordinates: [21.7495, 71.721]
+            },
+            geometry_name: "the_geom",
+            properties: {
+              Year: 2003
             }
-
-            var vectorSource = new ol.source.Vector({
-                projection: 'EPSG:4326',
-                // this is bogus, just to get the source initialized, can for sure be done a lot more appropriate.
-                object: {
-                    "type":"FeatureCollection",
-                    "totalFeatures":1,
-                    "features":[
-                        {
-                            "type":"Feature",
-                            "id":"thc.1",
-                            "geometry":
-                            {
-                                "type":"Point",
-                                "coordinates":[21.7495,71.721]},
-                            "geometry_name":"the_geom",
-                            "properties":
-                            {
-                                "Year":2003
-                            }
-                        }
-                    ],
-                    "crs":
-                    {
-                        "type":"EPSG",
-                        "properties":
-                        {
-                            "code":"4326"
-                        }
-                    }
-                }
-            });
-            highLightLayer = new ol.layer.Vector({
-                source: vectorSource,
-                style: highlightStyle
-            });
-            map.addLayer(highLightLayer);
+          }],
+          crs: {
+            type: "EPSG",
+            properties: {
+              code: "4326"
+            }
+          }
         }
-        else {
-            map.removeLayer(highLightLayer);
-            map.addLayer(highLightLayer);
-        }
+      });
+      highLightLayer = new ol.layer.Vector({
+        source: vectorSource,
+        style: highlightStyle
+      });
+      map.addLayer(highLightLayer);
+    } else {
+      map.removeLayer(highLightLayer);
+      map.addLayer(highLightLayer);
     }
+  }
 
-    function setHighlightStyle(style){
-        highlightStyle = style;
-        highLightLayer.setStyle(highlightStyle);
-    }
+  function setHighlightStyle(style) {
+    highlightStyle = style;
+    highLightLayer.setStyle(highlightStyle);
+  }
 
-    function _setDefaultHighlightStyle(){
-        var defaultStyle = new ISY.MapImplementation.OL3.Styles.Default();
-        highlightStyle = defaultStyle.Styles;
-    }
+  function _setDefaultHighlightStyle() {
+    var defaultStyle = new ISY.MapImplementation.OL3.Styles.Default();
+    highlightStyle = defaultStyle.Styles;
+  }
 
-    return {
-        ShowHighlightedFeatures: showHighlightedFeatures,
-        ClearHighlightedFeatures: clearHighlightedFeatures,
-        SetHighlightStyle: setHighlightStyle,
-        ShowInfoMarker: showInfoMarker,
-        ShowInfoMarkers: showInfoMarkers,
-        RemoveInfoMarker: removeInfoMarker,
-        RemoveInfoMarkers: removeInfoMarkers,
-        GetFeatureInfoUrl: getFeatureInfoUrl,
-        ActivateInfoClick: activateInfoClick,
-        DeactivateInfoClick: deactivateInfoClick,
-        ActivateBoxSelect: activateBoxSelect,
-        DeactivateBoxSelect: deactivateBoxSelect,
-        GetFeaturesInExtent: getFeaturesInExtent,
-        GetExtentForCoordinate: getExtentForCoordinate,
-        GetFeatureCollection: getFeatureCollection,
-        GetFeatureExtent: getFeatureExtent,
-        GetFeaturesInMap: getFeaturesInMap
-    };
+  return {
+    ShowHighlightedFeatures: showHighlightedFeatures,
+    ClearHighlightedFeatures: clearHighlightedFeatures,
+    SetHighlightStyle: setHighlightStyle,
+    ShowInfoMarker: showInfoMarker,
+    ShowInfoMarkers: showInfoMarkers,
+    RemoveInfoMarker: removeInfoMarker,
+    RemoveInfoMarkers: removeInfoMarkers,
+    GetFeatureInfoUrl: getFeatureInfoUrl,
+    ActivateInfoClick: activateInfoClick,
+    DeactivateInfoClick: deactivateInfoClick,
+    ActivateBoxSelect: activateBoxSelect,
+    DeactivateBoxSelect: deactivateBoxSelect,
+    GetFeaturesInExtent: getFeaturesInExtent,
+    GetExtentForCoordinate: getExtentForCoordinate,
+    GetFeatureCollection: getFeatureCollection,
+    GetFeatureExtent: getFeatureExtent,
+    GetFeaturesInMap: getFeaturesInMap
+  };
 };
 
  ISY = ISY || {};
-ISY.MapImplementation = ISY.MapImplementation || {};
-ISY.MapImplementation.OL3 = ISY.MapImplementation.OL3 || {};
+ ISY.MapImplementation = ISY.MapImplementation || {};
+ ISY.MapImplementation.OL3 = ISY.MapImplementation.OL3 || {};
 
-ISY.MapImplementation.OL3.HoverInfo = function(){
-    // 1: ol.interaction.Select()
-    // 2: map.on('pointermove', function)
+ ISY.MapImplementation.OL3.HoverInfo = function () {
+   // 1: ol.interaction.Select()
+   // 2: map.on('pointermove', function)
 
-    var multiSelect = false;
-    var hoverVersion = 1;
-    var hoverInteraction;
-    var mapImplementation;
-    var hoverIsActive = false;
-    var hoverIsInitialized = false;
-    var mousemoveIsInitialized = false;
-    var featureOverlay;
-    var highlight;
-    var popup;
-    var mousePixel;
-    var mouseCoordinate;
+   var multiSelect = false;
+   var hoverVersion = 1;
+   var hoverInteraction;
+   var mapImplementation;
+   var hoverIsActive = false;
+   var hoverIsInitialized = false;
+   var mousemoveIsInitialized = false;
+   var featureOverlay;
+   var highlight;
+   var popup;
+   var mouseCoordinate;
 
-    function activateHoverInfo(map, a, mapImpl, options){
-        mapImplementation = mapImpl;
-        _setOptions(options);
-        _addInteraction(map);
-    }
+   function activateHoverInfo(map, a, mapImpl, options) {
+     mapImplementation = mapImpl;
+     _setOptions(options);
+     _addInteraction(map);
+   }
 
-    function deactivateHoverInfo(map) {
-        if (map !== undefined) {
-            hoverIsActive = false;
-            _removePopup();
-            switch (hoverVersion) {
-                case 1:
-                    if (hoverInteraction) {
-                        hoverInteraction.setActive(false);
-                        map.removeInteraction(hoverInteraction);
-                        //hoverInteraction.unbindAll(); // deprecated in OpenLayers v3.5.0
-                        hoverInteraction = undefined;
-                        hoverIsInitialized = false;
-                    }
-                    break;
-            }
-        }
-    }
+   function deactivateHoverInfo(map) {
+     if (map !== undefined) {
+       hoverIsActive = false;
+       _removePopup();
+       switch (hoverVersion) {
+         case 1:
+           if (hoverInteraction) {
+             hoverInteraction.setActive(false);
+             map.removeInteraction(hoverInteraction);
+             //hoverInteraction.unbindAll(); // deprecated in OpenLayers v3.5.0
+             hoverInteraction = undefined;
+             hoverIsInitialized = false;
+           }
+           break;
+       }
+     }
+   }
 
-    function _setOptions(options){
-        if (options){
-            if (options.multiSelect){
-                multiSelect = options.multiSelect;
-            }
-        }
-    }
+   function _setOptions(options) {
+     if (options) {
+       if (options.multiSelect) {
+         multiSelect = options.multiSelect;
+       }
+     }
+   }
 
-    function _removePopup(){
-        if (popup === undefined){
-            return;
-        }
-        var element = popup.getElement();
-        $(element).popover('destroy');
-        if (highlight && featureOverlay) {
-            featureOverlay.getSource().removeFeature(highlight);
-            highlight = undefined;
-        }
-    }
+   function _removePopup() {
+     if (popup === undefined) {
+       return;
+     }
+     var element = popup.getElement();
+     $(element).popover('destroy');
+     if (highlight && featureOverlay) {
+       featureOverlay.getSource().removeFeature(highlight);
+       highlight = undefined;
+     }
+   }
 
-    function _getFeatureByZIndexFromPixel(map, pixel){
-        var features = [];
-        map.forEachFeatureAtPixel(pixel, function (feature) {
-            var zindex = parseInt(mapImplementation.GetLayerByFeature(feature).guid, 10);
-            features.push({feature: feature, zindex: zindex});
-        });
-        features = _orderArrayByZIndex(features);
-        if (features === undefined) {
-            return undefined;
-        }
-        return features[0].feature;
-    }
+   function _getFeatureByZIndexFromPixel(map, pixel) {
+     var features = [];
+     map.forEachFeatureAtPixel(pixel, function (feature) {
+       var zindex = parseInt(mapImplementation.GetLayerByFeature(feature).guid, 10);
+       features.push({
+         feature: feature,
+         zindex: zindex
+       });
+     });
+     features = _orderArrayByZIndex(features);
+     if (features === undefined) {
+       return undefined;
+     }
+     return features[0].feature;
+   }
 
-    function _getFeatureByZIndex(featureArray){
-        var features = [];
-        featureArray.forEach(function (feature){
-            var layer = mapImplementation.GetLayerByFeature(feature);
-            if (layer) {
-                var zindex = parseInt(layer.guid, 10);
-                features.push({feature: feature, zindex: zindex});
-            }
-        });
-        features = _orderArrayByZIndex(features);
-        if (features === undefined) {
-            return undefined;
-        }
-        return features[0].feature;
-    }
+   function _getFeatureByZIndex(featureArray) {
+     var features = [];
+     featureArray.forEach(function (feature) {
+       var layer = mapImplementation.GetLayerByFeature(feature);
+       if (layer) {
+         var zindex = parseInt(layer.guid, 10);
+         features.push({
+           feature: feature,
+           zindex: zindex
+         });
+       }
+     });
+     features = _orderArrayByZIndex(features);
+     if (features === undefined) {
+       return undefined;
+     }
+     return features[0].feature;
+   }
 
-    function _compare(a,b) {
-        if (a.zindex < b.zindex) {
-            return 1;
-        }
-        if (a.zindex > b.zindex) {
-            return -1;
-        }
-        return 0;
-    }
+   function _compare(a, b) {
+     if (a.zindex < b.zindex) {
+       return 1;
+     }
+     if (a.zindex > b.zindex) {
+       return -1;
+     }
+     return 0;
+   }
 
-    function _orderArrayByZIndex(features){
-        if (features.length === 0) {
-            return undefined;
-        }
-        features.sort(_compare);
-        return features;
-    }
+   function _orderArrayByZIndex(features) {
+     if (features.length === 0) {
+       return undefined;
+     }
+     features.sort(_compare);
+     return features;
+   }
 
-    function _setMouseCoordinates(map, evt){
-        if (hoverIsActive) {
-            mousePixel = map.getEventPixel(evt.originalEvent);
-            mouseCoordinate = evt.coordinate;
-            if (popup) {
-                popup.setPosition(mouseCoordinate);
-            }
-        }
-    }
+   function _setMouseCoordinates(map, evt) {
+     if (hoverIsActive) {
+       mousePixel = map.getEventPixel(evt.originalEvent);
+       mouseCoordinate = evt.coordinate;
+       if (popup) {
+         popup.setPosition(mouseCoordinate);
+       }
+     }
+   }
 
-    function _displayFeatureInfo(map, evt) {
-        var event;
-        var feature;
-        var pixel;
-        switch (hoverVersion) {
-            case 1:
-                event = evt;
-                break;
-            case 2:
-                event = evt.originalEvent;
-                pixel = map.getEventPixel(event);
-                break;
-        }
-        switch(hoverVersion){
-            case 1:
-                feature = _getFeatureByZIndex(event.target.getFeatures().getArray());
-                break;
-            case 2:
-                feature = _getFeatureByZIndexFromPixel(map, pixel);
-                break;
-        }
-        if (popup === undefined) {
-            popup = new ol.Overlay({
-                element: document.getElementById('popup')
-            });
-            map.addOverlay(popup);
-        }
-        var element = popup.getElement();
-        if (feature) {
-            var featureProperties = feature.getProperties();
-            if (featureProperties !== undefined) {
-                var coordinate;
-                switch(hoverVersion){
-                    case 1:
-                        coordinate = mouseCoordinate;
-                        break;
-                    case 2:
-                        coordinate = evt.coordinate;
-                        break;
-                }
-                $(element).popover('destroy');
-                popup.setPosition(coordinate);
-                // the keys are quoted to prevent renaming in ADVANCED mode.
-                //var tooltip = feature.getId()
-                var tooltip = '';
-                var featureLayer = mapImplementation.GetLayerByFeature(feature);
-                var featureTooltip = featureLayer.tooltipTemplate;
-                if (featureTooltip) {
-                    var fieldname;
-                    var fieldvalue;
-                    var label = '';
-                    var pos0 = featureTooltip.indexOf('{');
-                    var pos1;
-                    while (pos0 >= 0) {
-                        if (pos0 > 0) {
-                            label += featureTooltip.substr(0, pos0);
-                            featureTooltip = featureTooltip.slice(pos0);
-                            pos0 = featureTooltip.indexOf('{');
-                        }
-                        pos1 = featureTooltip.indexOf('}');
-                        fieldname = featureTooltip.substr(pos0 + 1, pos1 - pos0 - 1);
-                        fieldvalue = feature.get(fieldname);
-                        if (fieldvalue) {
-                            label += fieldvalue;
-                        }
-                        featureTooltip = featureTooltip.slice(pos1 + 1);
-                        pos0 = featureTooltip.indexOf('{');
-                    }
-                    tooltip = label + featureTooltip;
-                }
-                if (tooltip.length > 0) {
-                    $(element).popover({
-                        'placement': 'top',
-                        'animation': false,
-                        'html': true,
-                        'content': '<div class="hover-info">' + tooltip + '</div>'
-                        //'content': tooltip
-                    });
-                    $(element).popover('show');
-                } else {
-                    $(element).popover('destroy');
-                }
-            }
-        } else {
-            $(element).popover('destroy');
-        }
-        if (feature !== highlight) {
-            if (highlight) {
-                featureOverlay.getSource().removeFeature(highlight);
-            }
-            if (feature) {
-                featureOverlay.getSource().addFeature(feature);
-            }
-            highlight = feature;
-        }
-    }
+   function _displayFeatureInfo(map, evt) {
+     var event;
+     var feature;
+     var pixel;
+     switch (hoverVersion) {
+       case 1:
+         event = evt;
+         break;
+       case 2:
+         event = evt.originalEvent;
+         pixel = map.getEventPixel(event);
+         break;
+     }
+     switch (hoverVersion) {
+       case 1:
+         feature = _getFeatureByZIndex(event.target.getFeatures().getArray());
+         break;
+       case 2:
+         feature = _getFeatureByZIndexFromPixel(map, pixel);
+         break;
+     }
+     if (popup === undefined) {
+       popup = new ol.Overlay({
+         element: document.getElementById('popup')
+       });
+       map.addOverlay(popup);
+     }
+     var element = popup.getElement();
+     if (feature) {
+       var featureProperties = feature.getProperties();
+       if (featureProperties !== undefined) {
+         var coordinate;
+         switch (hoverVersion) {
+           case 1:
+             coordinate = mouseCoordinate;
+             break;
+           case 2:
+             coordinate = evt.coordinate;
+             break;
+         }
+         $(element).popover('destroy');
+         popup.setPosition(coordinate);
+         // the keys are quoted to prevent renaming in ADVANCED mode.
+         //var tooltip = feature.getId()
+         var tooltip = '';
+         var featureLayer = mapImplementation.GetLayerByFeature(feature);
+         var featureTooltip = featureLayer.tooltipTemplate;
+         if (featureTooltip) {
+           var fieldname;
+           var fieldvalue;
+           var label = '';
+           var pos0 = featureTooltip.indexOf('{');
+           var pos1;
+           while (pos0 >= 0) {
+             if (pos0 > 0) {
+               label += featureTooltip.substr(0, pos0);
+               featureTooltip = featureTooltip.slice(pos0);
+               pos0 = featureTooltip.indexOf('{');
+             }
+             pos1 = featureTooltip.indexOf('}');
+             fieldname = featureTooltip.substr(pos0 + 1, pos1 - pos0 - 1);
+             fieldvalue = feature.get(fieldname);
+             if (fieldvalue) {
+               label += fieldvalue;
+             }
+             featureTooltip = featureTooltip.slice(pos1 + 1);
+             pos0 = featureTooltip.indexOf('{');
+           }
+           tooltip = label + featureTooltip;
+         }
+         if (tooltip.length > 0) {
+           $(element).popover({
+             placement: 'top',
+             animation: false,
+             html: true,
+             content: '<div class="hover-info">' + tooltip + '</div>'
+             //'content': tooltip
+           });
+           $(element).popover('show');
+         } else {
+           $(element).popover('destroy');
+         }
+       }
+     } else {
+       $(element).popover('destroy');
+     }
+     if (feature !== highlight) {
+       if (highlight) {
+         featureOverlay.getSource().removeFeature(highlight);
+       }
+       if (feature) {
+         featureOverlay.getSource().addFeature(feature);
+       }
+       highlight = feature;
+     }
+   }
 
-    function _getHoverStyle(feature, resolution){
-        return mapImplementation.GetHoverStyle(feature, resolution);
-    }
+   function _getHoverStyle(feature, resolution) {
+     return mapImplementation.GetHoverStyle(feature, resolution);
+   }
 
-    function _addInteraction(map) {
-        if (hoverIsActive) {
-            return;
-        }
-        hoverIsActive = true;
-        if (hoverIsInitialized){
-            switch (hoverVersion){
-                case 1:
-                    map.addInteraction(hoverInteraction);
-                    hoverInteraction.setActive(true);
-                    break;
-            }
-            return;
-        }
-        hoverIsInitialized = true;
-        featureOverlay = new ol.layer.Vector({
-            map: map,
-            source: new ol.source.Vector({
-                useSpatialIndex: false // optional, might improve performance
-            }),
-            style: _getHoverStyle,
-            updateWhileAnimating: true, // optional, for instant visual feedback
-            updateWhileInteracting: true // optional, for instant visual feedback
-        });
+   function _addInteraction(map) {
+     if (hoverIsActive) {
+       return;
+     }
+     hoverIsActive = true;
+     if (hoverIsInitialized) {
+       switch (hoverVersion) {
+         case 1:
+           map.addInteraction(hoverInteraction);
+           hoverInteraction.setActive(true);
+           break;
+       }
+       return;
+     }
+     hoverIsInitialized = true;
+     featureOverlay = new ol.layer.Vector({
+       map: map,
+       source: new ol.source.Vector({
+         useSpatialIndex: false // optional, might improve performance
+       }),
+       style: _getHoverStyle,
+       updateWhileAnimating: true, // optional, for instant visual feedback
+       updateWhileInteracting: true // optional, for instant visual feedback
+     });
 
-        switch (hoverVersion) {
-            case 1:
-                hoverInteraction = new ol.interaction.Select({
-                    condition: ol.events.condition.pointerMove,
-                    multi: multiSelect,
-                    style: function(feature, resolution){
-                        return mapImplementation.GetHoverStyle(feature, resolution);
-                    }
-                });
-                map.addInteraction(hoverInteraction);
-                hoverInteraction.on('select', function(evt){
-                    if (!hoverIsActive){
-                        return;
-                    }
-                    if (evt.dragging){
-                        return;
-                    }
-                    _displayFeatureInfo(map, evt);
-                });
-                if (!mousemoveIsInitialized) {
-                    mousemoveIsInitialized = true;
-                    map.on('pointermove', function (evt) {
-                        _setMouseCoordinates(map, evt);
-                    });
-                }
-                break;
-            case 2:
-                map.on('pointermove', function (evt) {
-                    if (!hoverIsActive) {
-                        return;
-                    }
-                    if (evt.dragging) {
-                        return;
-                    }
-                    _displayFeatureInfo(map, evt);
-                });
-                break;
-        }
-    }
+     switch (hoverVersion) {
+       case 1:
+         hoverInteraction = new ol.interaction.Select({
+           condition: ol.events.condition.pointerMove,
+           multi: multiSelect,
+           style: function (feature, resolution) {
+             return mapImplementation.GetHoverStyle(feature, resolution);
+           }
+         });
+         map.addInteraction(hoverInteraction);
+         hoverInteraction.on('select', function (evt) {
+           if (!hoverIsActive) {
+             return;
+           }
+           if (evt.dragging) {
+             return;
+           }
+           _displayFeatureInfo(map, evt);
+         });
+         if (!mousemoveIsInitialized) {
+           mousemoveIsInitialized = true;
+           map.on('pointermove', function (evt) {
+             _setMouseCoordinates(map, evt);
+           });
+         }
+         break;
+       case 2:
+         map.on('pointermove', function (evt) {
+           if (!hoverIsActive) {
+             return;
+           }
+           if (evt.dragging) {
+             return;
+           }
+           _displayFeatureInfo(map, evt);
+         });
+         break;
+     }
+   }
 
-    return {
-        ActivateHoverInfo: activateHoverInfo,
-        DeactivateHoverInfo: deactivateHoverInfo
-    };
+   return {
+     ActivateHoverInfo: activateHoverInfo,
+     DeactivateHoverInfo: deactivateHoverInfo
+   };
 
-};
+ };
+
 var ISY = ISY || {};
 ISY.MapImplementation = ISY.MapImplementation || {};
 ISY.MapImplementation.OL3 = ISY.MapImplementation.OL3 || {};
 
-ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, measure, featureInfo, mapExport, hoverInfo, measureLine, drawFeature, offline, addLayerFeature, modifyFeature, addFeatureGps, printBoxSelect, addLayerUrl){
+ISY.MapImplementation.OL3.Map = function (repository, eventHandler, httpHelper, measure, featureInfo, mapExport, hoverInfo, measureLine, drawFeature, offline, addLayerFeature, modifyFeature, addFeatureGps, printBoxSelect, addLayerUrl) {
     var map;
     var layerPool = [];
     var isySubLayerPool = [];
@@ -5576,7 +4756,6 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
     var mapResolutions;
     var mapScales;
     var hoverOptions;
-    var mapGroups;
     var featureEditor = new ISY.MapImplementation.OL3.FeatureEditor(eventHandler);
     var initialGeolocationChange = false;
 
@@ -5605,15 +4784,14 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
         Start up functions Start
      */
 
-    function initMap(targetId, mapConfig){
+  function initMap(targetId, mapConfig) {
         proxyHost = mapConfig.proxyHost;
         tokenHost = mapConfig.tokenHost;
         ticketHost = mapConfig.ticketHost;
-        mapGroups = mapConfig.groups;
         hoverOptions = mapConfig.hoverOptions;
         var numZoomLevels = mapConfig.numZoomLevels;
         var newMapRes = [];
-        newMapRes[0]= mapConfig.newMaxRes;
+    newMapRes[0] = mapConfig.newMaxRes;
         mapScales = [];
         mapScales[0] = mapConfig.newMaxScale;
         for (var t = 1; t < numZoomLevels; t++) {
@@ -5627,7 +4805,10 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
             units: mapConfig.extentUnits
         });
 
-        var interactions = ol.interaction.defaults({altShiftDragRotate:false, pinchRotate:false});
+    var interactions = ol.interaction.defaults({
+      altShiftDragRotate: false,
+      pinchRotate: false
+    });
 
         map = new ol.Map({
             target: targetId,
@@ -5650,16 +4831,15 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
             interactions: interactions
         });
         //TODO: fix initOffline
-        if (false){
+    if (false) {
             _initOffline();
         }
-
         _registerMapCallbacks();
 
-        if (mapConfig.showProgressBar){
+    if (mapConfig.showProgressBar) {
             _registerProgressBar();
         }
-        if (mapConfig.showMousePosition){
+    if (mapConfig.showMousePosition) {
             _registerMousePositionControl(mapConfig.mouseProjectionPrefix);
         }
         _registerMessageHandler();
@@ -5667,20 +4847,20 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
         ISY.MapImplementation.OL3.olMap = map;
     }
 
-    function _registerMapCallbacks(){
+  function _registerMapCallbacks() {
         var view = map.getView();
 
-        var changeCenter = function(){
+    var changeCenter = function () {
             var mapViewChangedObj = _getUrlObject();
             eventHandler.TriggerEvent(ISY.Events.EventTypes.ChangeCenter, mapViewChangedObj);
         };
 
-        var changeResolution = function(){
+    var changeResolution = function () {
             var mapViewChangedObj = _getUrlObject();
             eventHandler.TriggerEvent(ISY.Events.EventTypes.ChangeResolution, mapViewChangedObj);
         };
 
-        var mapMoveend = function(){
+    var mapMoveend = function () {
             _checkGktToken();
             _checkTicket();
             var mapViewChangedObj = _getUrlObject();
@@ -5692,7 +4872,7 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
         map.on('moveend', mapMoveend);
     }
 
-    function _registerMessageHandler(){
+  function _registerMessageHandler() {
         var layerMessageHandler = new ISY.MapImplementation.OL3.Sources.CustomMessageHandler(eventHandler, _getIsySubLayerFromPool);
         layerMessageHandler.Init(map);
 
@@ -5700,21 +4880,21 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
         customMessageHandler.InitMessage('');
     }
 
-    function _registerProgressBar(){
+  function _registerProgressBar() {
         var progressBar = new ISY.MapImplementation.OL3.ProgressBar(eventHandler);
         progressBar.Init(map);
     }
 
-    function _registerMousePositionControl(prefix){
+  function _registerMousePositionControl(prefix) {
         var element = document.getElementById('mouseposition');
         if (element) {
             var units = map.getView().getProjection().getUnits();
             var epsg = getEpsgCode();
             //var coordinateFunction = ol.coordinate.createStringXY(0);
-            if (prefix === undefined){
+      if (prefix === undefined) {
                 prefix = '';
             }
-            var coordinate2string = function(coord){
+      var coordinate2string = function (coord) {
                 var mousehtml = '' + prefix;
                 var geographic = false;
                 if (mousehtml.length > 0) {
@@ -5724,7 +4904,7 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
                             geographic = true;
                             break;
                         case 'm':
-                            switch(epsg){
+              switch (epsg) {
                                 case 'EPSG:25831':
                                 case 'EPSG:32631':
                                     mousehtml += '31 ';
@@ -5761,8 +4941,8 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
                             break;
                     }
                 }
-                if (geographic){
-                    mousehtml += Math.round(coord[1]*10000)/10000 + translateOptions['north'] + Math.round(coord[0]*10000)/10000 + translateOptions['east'];
+        if (geographic) {
+          mousehtml += Math.round(coord[1] * 10000) / 10000 + translateOptions['north'] + Math.round(coord[0] * 10000) / 10000 + translateOptions['east'];
                 } else {
                     mousehtml += parseInt(coord[1], 10) + translateOptions['north'] + parseInt(coord[0], 10) + translateOptions['east'];
                 }
@@ -5781,7 +4961,7 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
         }
     }
 
-    function _checkGktToken(){
+  function _checkGktToken() {
         var currentTime = (new Date()).getTime();
         if (currentTime < (lastGktCheck + 60000)) {
             // check if token has expired each minute
@@ -5791,13 +4971,13 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
         if (map.getLayers()) {
             map.getLayers().forEach(function (layer) {
                 var source = layer.getSource();
-                if (source && source.getParams){
+        if (source && source.getParams) {
                     var params = source.getParams();
                     if (params && params.GKT) {
                         //console.log(layer.typename + ' ' + params.GKT);
                         var initTime = source.get("timestamp");
                         if (initTime) {
-                            var elapsedTime = Math.round((currentTime - initTime)/1000);
+              var elapsedTime = Math.round((currentTime - initTime) / 1000);
                             if (elapsedTime > gktLifetime) {
                                 _setToken(source);
                             }
@@ -5808,7 +4988,7 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
         }
     }
 
-    function _checkTicket(){
+  function _checkTicket() {
         var currentTime = (new Date()).getTime();
         if (currentTime < (lastTicketCheck + 60000)) {
             // check if token has expired each minute
@@ -5818,12 +4998,12 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
         if (map.getLayers()) {
             map.getLayers().forEach(function (layer) {
                 var source = layer.getSource();
-                if (source && source.getParams){
+        if (source && source.getParams) {
                     var params = source.getParams();
                     if (params && params.ticket) {
                         var initTime = source.get("timestamp");
                         if (initTime) {
-                            var elapsedTime = Math.round((currentTime - initTime)/1000);
+              var elapsedTime = Math.round((currentTime - initTime) / 1000);
                             if (elapsedTime > ticketLifetime) {
                                 _setTicket(source);
                             }
@@ -5834,19 +5014,23 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
         }
     }
     // Adds GKT-token to existing source
-    function _setToken(source){
+  function _setToken(source) {
         //console.log("updating token");
         //console.log(layer.typename + ' - ' + source.get("timestamp") + ' - ' + params.GKT);
-        source.updateParams({GKT: _getToken()});
+    source.updateParams({
+      GKT: _getToken()
+    });
         source.set("timestamp", (new Date()).getTime());
     }
 
-    function _setTicket(source){
-        source.updateParams({ticket: _getTicket()});
+  function _setTicket(source) {
+    source.updateParams({
+      ticket: _getTicket()
+    });
         source.set("timestamp", (new Date()).getTime());
     }
 
-    function changeView(viewPropertyObject){
+  function changeView(viewPropertyObject) {
         if (map !== undefined) {
             var view = map.getView();
             var lon, lat, zoom;
@@ -5861,8 +5045,8 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
             }
 
             if (lon !== undefined && lat !== undefined) {
-                var latitude = typeof(lat) === 'number' ? lat : parseFloat(lat.replace(/,/g, '.'));
-                var longitude = typeof(lon) === 'number' ? lon : parseFloat(lon.replace(/,/g, '.'));
+        var latitude = typeof (lat) === 'number' ? lat : parseFloat(lat.replace(/,/g, '.'));
+        var longitude = typeof (lon) === 'number' ? lon : parseFloat(lon.replace(/,/g, '.'));
                 if (isFinite(latitude) && isFinite(longitude)) {
                     view.setCenter([longitude, latitude]);
                 }
@@ -5897,8 +5081,10 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
             //}
             if (isySubLayer.id && isySubLayer.name) {
                 for (var i = 0; i < features.length; ++i) {
-                    if (features[i].getProperties().Guid === undefined){
-                        features[i].setProperties({"Guid": new ISY.Utils.Guid().NewGuid()});
+          if (features[i].getProperties().Guid === undefined) {
+            features[i].setProperties({
+              Guid: new ISY.Utils.Guid().NewGuid()
+            });
                     }
                     features[i].setId(isySubLayer.name + '.' + features[i].getProperties().Guid);
                 }
@@ -5932,7 +5118,7 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
         }
     }
 
-    function _isLayerVisible(isySubLayer){
+  function _isLayerVisible(isySubLayer) {
         var layerexists = false;
         map.getLayers().forEach(function (maplayer) {
             if (!layerexists && maplayer.guid === isySubLayer.id) {
@@ -5942,7 +5128,7 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
         return layerexists;
     }
 
-    function showLayer(isySubLayer){
+  function showLayer(isySubLayer) {
         if (!_isLayerVisible(isySubLayer)) {
             var layer = _createLayer(isySubLayer);
             if (layer) {
@@ -5953,15 +5139,15 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
         }
     }
 
-    function getLegendStyles(isySubLayer){
+  function getLegendStyles(isySubLayer) {
         var layer = _getLayerFromPool(isySubLayer);
-        if (layer !== null){
+    if (layer !== null) {
             return getLegendStyleFromLayer(layer);
         }
         return undefined;
     }
 
-    function showBaseLayer(isySubLayer){
+  function showBaseLayer(isySubLayer) {
         if (!_isLayerVisible(isySubLayer)) {
             var layer = _createLayer(isySubLayer);
             if (layer) {
@@ -5971,7 +5157,7 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
         }
     }
 
-    function hideLayer(isySubLayer){
+  function hideLayer(isySubLayer) {
         if (_isLayerVisible(isySubLayer)) {
             var layer = _getLayerByGuid(isySubLayer.id);
             if (layer) {
@@ -5981,11 +5167,11 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
         }
     }
 
-    function _getProxyUrl(layerUrl, flattenproxy){
-        if (Array.isArray(layerUrl)){
+  function _getProxyUrl(layerUrl, flattenproxy) {
+    if (Array.isArray(layerUrl)) {
             layerUrl = layerUrl[0];
         }
-        if (flattenproxy){
+    if (flattenproxy) {
             if (Array.isArray(proxyHost)) {
                 return proxyHost[0] + layerUrl;
             }
@@ -5995,42 +5181,39 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
             return proxyHost + layerUrl;
         }
         var newLayerUrl = [];
-        for (var i = 0; i < proxyHost.length; i++){
+    for (var i = 0; i < proxyHost.length; i++) {
             newLayerUrl.push(proxyHost[i] + layerUrl);
         }
         return newLayerUrl;
     }
 
-    function _getToken(){
-        if (!tokenHost){
+  function _getToken() {
+    if (!tokenHost) {
             return null;
-        }
-        else if(!globalGkt || _checkGlobalGktTokenExpired()){
-            globalGkt=$.ajax({
+    } else if (!globalGkt || _checkGlobalGktTokenExpired()) {
+      globalGkt = $.ajax({
                 type: "GET",
                 url: tokenHost,
                 async: false
-            }).responseText.trim().replace(/\"/g, "");
+      }).responseText.trim().replace(/"/g, "");
             lastGlobalGktCheck = (new Date()).getTime();
         }
         return globalGkt;
     }
 
-    function _getTicket(){
-        if (!ticketHost){
+  function _getTicket() {
+    if (!ticketHost) {
             return null;
-        }
-        else if(!globalTicket || _checkGlobalTicketExpired()){
-            globalTicket=$.ajax({
+    } else if (!globalTicket || _checkGlobalTicketExpired()) {
+      globalTicket = $.ajax({
                 type: "GET",
                 url: ticketHost,
                 async: false
-            }).responseText.trim().replace(/\"/g, "");
+      }).responseText.trim().replace(/"/g, "");
             lastGlobalTicketCheck = (new Date()).getTime();
         }
         return globalTicket;
     }
-
 
     function _checkGlobalGktTokenExpired() {
         var currentTime = (new Date()).getTime();
@@ -6050,32 +5233,34 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
         return true;
     }
 
-    function _setLayerProperties(layer, isySubLayer){
+  function _setLayerProperties(layer, isySubLayer) {
         // For caching, remember layer config
         layer.set('config', isySubLayer);
-        layer.on('change',function(){
+    layer.on('change', function () {
             layer.set('loading', true);
         }, layer);
-        layer.on('render',function(){
+    layer.on('render', function () {
             // usikker på om render er riktig funksjon...
-            if (layer.get('loading')){
+      if (layer.get('loading')) {
                 layer.set('loading', undefined);
                 eventHandler.TriggerEvent(ISY.Events.EventTypes.LoadingLayerEnd, layer);
             }
         }, layer);
     }
 
-    function _createLayer(isySubLayer){
+  function _createLayer(isySubLayer) {
         var layer;
         var source;
         var layerFromPool = _getLayerFromPool(isySubLayer);
         var returnlayer = true;
         var parameters;
-        if (isyToken && isyToken.length > 0){
-            parameters = {isyToken: isyToken};
+    if (isyToken && isyToken.length > 0) {
+      parameters = {
+        isyToken: isyToken
+      };
         }
 
-        var styleCallback = function(response){
+    var styleCallback = function (response) {
             // For caching, remember layer config
             layer.set('config', isySubLayer);
             var scales = sldstyles[isySubLayer.id].ParseSld(response, parseInt(isySubLayer.id, 10));
@@ -6094,21 +5279,22 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
             _trigLayersChanged();
         };
 
-        if(layerFromPool !== null){
+    if (layerFromPool !== null) {
             layer = layerFromPool;
             // For caching, remember layer config
             layer.set('config', isySubLayer);
         } else {
-            switch(isySubLayer.source){
+      switch (isySubLayer.source) {
                 case ISY.Domain.SubLayer.SOURCES.wmts:
-                    if (isySubLayer.gatekeeper && isySubLayer.tiled && ((offline === undefined) ? true : !offline.IsActive())){
-                        if(parameters){
-                            parameters['gkt']= _getToken();
+          if (isySubLayer.gatekeeper && isySubLayer.tiled && ((offline === undefined) ? true : !offline.IsActive())) {
+            if (parameters) {
+              parameters['gkt'] = _getToken();
+            } else {
+              parameters = {
+                gkt: _getToken()
+              };
                         }
-                        else{
-                            parameters={'gkt': _getToken()};
                         }
-                    }
                     source = new ISY.MapImplementation.OL3.Sources.Wmts(isySubLayer, parameters);
                     break;
                 case ISY.Domain.SubLayer.SOURCES.proxyWmts:
@@ -6117,10 +5303,10 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
                     break;
                 case ISY.Domain.SubLayer.SOURCES.wms:
                     source = new ISY.MapImplementation.OL3.Sources.Wms(isySubLayer, parameters);
-                    if (isySubLayer.gatekeeper && isySubLayer.tiled && ((offline === undefined) ? true : !offline.IsActive())){
+          if (isySubLayer.gatekeeper && isySubLayer.tiled && ((offline === undefined) ? true : !offline.IsActive())) {
                         _setToken(source);
                     }
-                    if (isySubLayer.ticket && ((offline === undefined) ? true : !offline.IsActive())){
+          if (isySubLayer.ticket && ((offline === undefined) ? true : !offline.IsActive())) {
                         _setTicket(source);
                     }
                     break;
@@ -6152,7 +5338,7 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
                             " and name " + isySubLayer.name + ".";
             }
 
-            if(isySubLayer.source === ISY.Domain.SubLayer.SOURCES.vector){
+      if (isySubLayer.source === ISY.Domain.SubLayer.SOURCES.vector) {
                 if (isySubLayer.style) {
                     if (typeof isySubLayer.style === "object" || isySubLayer.style.indexOf("http") < 0) {
                         sldstyles[isySubLayer.id] = new ISY.MapImplementation.OL3.Styles.Json(isySubLayer.style);
@@ -6171,14 +5357,14 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
                                 return sldstyles[isySubLayer.id].GetStyle(feature, _getScaleByResolution(resolution));
                             }
                         });
-                        if (isySubLayer.style){
+            if (isySubLayer.style) {
                             returnlayer = false;
                             getConfigResource(isySubLayer.style, 'application/xml', styleCallback);
                         }
                         _setLayerProperties(layer, isySubLayer);
                     }
                 } else {
-                    layer= new ol.layer.Vector({
+          layer = new ol.layer.Vector({
                         source: new ol.source.Vector({
                             format: new ol.format.GeoJSON({
                                 defaultDataProjection: isySubLayer.coordinate_system
@@ -6188,8 +5374,7 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
                         })
                     });
                 }
-            }
-            else if (isySubLayer.source === ISY.Domain.SubLayer.SOURCES.wfs){
+      } else if (isySubLayer.source === ISY.Domain.SubLayer.SOURCES.wfs) {
                 sldstyles[isySubLayer.id] = new ISY.MapImplementation.OL3.Styles.Sld();
                 layer = new ol.layer.Vector({
                     source: source,
@@ -6197,13 +5382,12 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
                         return sldstyles[isySubLayer.id].GetStyle(feature, _getScaleByResolution(resolution));
                     }
                 });
-                if (isySubLayer.style){
+        if (isySubLayer.style) {
                     returnlayer = false;
                     getConfigResource(isySubLayer.style, 'application/xml', styleCallback);
                 }
                 _setLayerProperties(layer, isySubLayer);
-            }
-            else if (isySubLayer.tiled) {
+      } else if (isySubLayer.tiled) {
                 layer = new ol.layer.Tile({
                     extent: isySubLayer.extent,
                     opacity: isySubLayer.opacity,
@@ -6229,13 +5413,13 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
             if (isySubLayer.maxResolution !== undefined) {
                 layer.setMaxResolution(isySubLayer.maxResolution);
             }
-            if (isySubLayer.maxScale){
+      if (isySubLayer.maxScale) {
                 _setLayerMinresolution(layer, _getResolutionByScale(isySubLayer.maxScale), 'layer');
             }
-            if (isySubLayer.minScale){
+      if (isySubLayer.minScale) {
                 _setLayerMaxresolution(layer, _getResolutionByScale(isySubLayer.minScale), 'layer');
             }
-            if (returnlayer){
+      if (returnlayer) {
                 _addIsySubLayer(isySubLayer);
                 layerPool.push(layer);
             }
@@ -6246,10 +5430,10 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
         }
     }
 
-    function _setLayerMinresolution(layer, scale){ //}, debuginfo) {
+  function _setLayerMinresolution(layer, scale) { //}, debuginfo) {
         if (layer && scale) {
             var minRes = layer.getMinResolution();
-            if (minRes && minRes >= scale){
+      if (minRes && minRes >= scale) {
                 //console.log(minRes + ' > ' + scale);
                 return;
             }
@@ -6258,10 +5442,10 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
         }
     }
 
-    function _setLayerMaxresolution(layer, scale){ //, debuginfo) {
+  function _setLayerMaxresolution(layer, scale) { //, debuginfo) {
         if (layer && scale) {
             var maxRes = layer.getMaxResolution();
-            if (maxRes && maxRes <= scale){
+      if (maxRes && maxRes <= scale) {
                 //console.log(maxRes + ' < ' + scale);
                 return;
             }
@@ -6270,13 +5454,13 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
         }
     }
 
-    function _loadVectorLayer(isySubLayer, source){
-        var callback = function(data){
+  function _loadVectorLayer(isySubLayer, source) {
+    var callback = function (data) {
             data = typeof data === 'object' ? data : JSON.parse(data);
             var format = new ol.format.GeoJSON();
-            for(var i = 0; i < data.features.length; i++) {
+      for (var i = 0; i < data.features.length; i++) {
                 var feature = data.features[i];
-                if (feature.type){
+        if (feature.type) {
                     source.addFeature(format.readFeature(feature));
                 }
             }
@@ -6289,43 +5473,43 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
         });
     }
 
-    function _getLayerFromPool(isySubLayer){
-        for(var i = 0; i < layerPool.length; i++){
+  function _getLayerFromPool(isySubLayer) {
+    for (var i = 0; i < layerPool.length; i++) {
             var layerInPool = layerPool[i];
-            if(layerInPool.guid === isySubLayer.id){
+      if (layerInPool.guid === isySubLayer.id) {
                 return layerInPool;
             }
         }
         return null;
     }
 
-    function _getLayerFromPoolByGuid(guid){
-        for(var i = 0; i < layerPool.length; i++){
+  function _getLayerFromPoolByGuid(guid) {
+    for (var i = 0; i < layerPool.length; i++) {
             var layerInPool = layerPool[i];
-            if(layerInPool.guid === guid){
+      if (layerInPool.guid === guid) {
                 return layerInPool;
             }
         }
         return null;
     }
 
-    function _addIsySubLayer(isySubLayer){
+  function _addIsySubLayer(isySubLayer) {
         var itemExists = false;
-        for (var i = 0; i < isySubLayerPool.length; i++){
-            if (isySubLayer.id === isySubLayerPool[i].id){
+    for (var i = 0; i < isySubLayerPool.length; i++) {
+      if (isySubLayer.id === isySubLayerPool[i].id) {
                 itemExists = true;
                 break;
             }
         }
-        if (!itemExists){
+    if (!itemExists) {
             isySubLayerPool.push(isySubLayer);
         }
     }
 
-    function _getIsySubLayerFromPool(layer){
+  function _getIsySubLayerFromPool(layer) {
         var isySubLayer;
-        for (var i = 0; i < isySubLayerPool.length; i++){
-            if (isySubLayerPool[i].id === layer.guid){
+    for (var i = 0; i < isySubLayerPool.length; i++) {
+      if (isySubLayerPool[i].id === layer.guid) {
                 isySubLayer = isySubLayerPool[i];
                 break;
             }
@@ -6333,7 +5517,7 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
         return isySubLayer;
     }
 
-    function _getLayerFromPoolByFeature(feature){
+  function _getLayerFromPoolByFeature(feature) {
         var featureId = feature.get("layerguid");
         if (featureId === undefined) {
             featureId = feature.getId();
@@ -6359,8 +5543,8 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
                 }
             }
         } else {
-            for (var j = 0; j < layerPool.length; j++){
-                if (featureId === layerPool[j].guid){
+      for (var j = 0; j < layerPool.length; j++) {
+        if (featureId === layerPool[j].guid) {
                     return layerPool[j];
                 }
             }
@@ -6368,13 +5552,13 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
         return null;
     }
 
-    var _getScaleByResolution = function(resolution){
-        if (resolution === undefined){
+  var _getScaleByResolution = function (resolution) {
+    if (resolution === undefined) {
             return;
         }
         var scale;
-        for (var i = 0; i < mapResolutions.length; i++){
-            if (mapResolutions[i] === resolution){
+    for (var i = 0; i < mapResolutions.length; i++) {
+      if (mapResolutions[i] === resolution) {
                 scale = mapScales[i];
                 break;
             }
@@ -6382,86 +5566,90 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
         return scale;
     };
 
-    var _getResolutionByScale = function(scale){
-        if (scale === undefined){
+  var _getResolutionByScale = function (scale) {
+    if (scale === undefined) {
             scale = getScale();
         }
         if (scale === 1) {
             return mapResolutions[mapResolutions.length - 1];
         }
-        if (scale === Infinity){
+    if (scale === Infinity) {
             return undefined;
         }
         var zoomlevel = -1;
-        for (var i = 0; i < mapScales.length; i++){
-            if (mapScales[i] < scale){
+    for (var i = 0; i < mapScales.length; i++) {
+      if (mapScales[i] < scale) {
                 zoomlevel = i - 1;
                 break;
             }
         }
-        if (zoomlevel < 0){
+    if (zoomlevel < 0) {
             return mapResolutions[mapResolutions.length - 1];
         }
         return mapResolutions[zoomlevel];
     };
 
-    function setLayerBrightness(isySubLayer, value){
+  function setLayerBrightness(isySubLayer, value) {
         // Require WebGL-rendering of map
         var layer = _getLayerByGuid(isySubLayer.id);
-        if(layer && !isNaN(value)){
-            layer.setBrightness(Math.min(value,1));
-        }
-    }
-    function setLayerContrast(isySubLayer, value){
-        // Require WebGL-rendering of map
-        var layer = _getLayerByGuid(isySubLayer.id);
-        if(layer && !isNaN(value)){
-            layer.setContrast(Math.min(value,1));
-        }
-    }
-    function setLayerOpacity(isySubLayer, value){
-        var layer = _getLayerByGuid(isySubLayer.id);
-        if(layer && !isNaN(value)){
-            layer.setOpacity(Math.min(value,1));
-        }
-    }
-    function setLayerSaturation(isySubLayer, value){
-        // Require WebGL-rendering of map
-        var layer = _getLayerByGuid(isySubLayer.id);
-        if(layer && !isNaN(value)){
-            layer.setSaturation(Math.min(value,1));
-        }
-    }
-    function setLayerHue(isySubLayer, value){
-        // Require WebGL-rendering of map
-        var layer = _getLayerByGuid(isySubLayer.id);
-        if(layer && !isNaN(value)){
-            layer.setHue(Math.min(value,1));
+    if (layer && !isNaN(value)) {
+      layer.setBrightness(Math.min(value, 1));
         }
     }
 
-    function _getLayersWithGuid(){
-        return map.getLayers().getArray().filter(function(elem){
+  function setLayerContrast(isySubLayer, value) {
+        // Require WebGL-rendering of map
+        var layer = _getLayerByGuid(isySubLayer.id);
+    if (layer && !isNaN(value)) {
+      layer.setContrast(Math.min(value, 1));
+        }
+    }
+
+  function setLayerOpacity(isySubLayer, value) {
+        var layer = _getLayerByGuid(isySubLayer.id);
+    if (layer && !isNaN(value)) {
+      layer.setOpacity(Math.min(value, 1));
+        }
+    }
+
+  function setLayerSaturation(isySubLayer, value) {
+        // Require WebGL-rendering of map
+        var layer = _getLayerByGuid(isySubLayer.id);
+    if (layer && !isNaN(value)) {
+      layer.setSaturation(Math.min(value, 1));
+        }
+    }
+
+  function setLayerHue(isySubLayer, value) {
+        // Require WebGL-rendering of map
+        var layer = _getLayerByGuid(isySubLayer.id);
+    if (layer && !isNaN(value)) {
+      layer.setHue(Math.min(value, 1));
+        }
+    }
+
+  function _getLayersWithGuid() {
+    return map.getLayers().getArray().filter(function (elem) {
             return elem.guid !== undefined;
         });
     }
 
-    function _getLayerByGuid(guid){
+  function _getLayerByGuid(guid) {
         var layers = _getLayersWithGuid();
-        for(var i = 0; i < layers.length; i++){
+    for (var i = 0; i < layers.length; i++) {
             var layer = layers[i];
-            if(layer.guid === guid){
+      if (layer.guid === guid) {
                 return layer;
             }
         }
         return null;
     }
 
-    function getLayerIndex(isySubLayer){
+  function getLayerIndex(isySubLayer) {
         var layers = _getLayersWithGuid();
-        for(var i = 0; i < layers.length; i++){
+    for (var i = 0; i < layers.length; i++) {
             var layer = layers[i];
-            if(layer.guid === isySubLayer.id){
+      if (layer.guid === isySubLayer.id) {
                 return i;
             }
         }
@@ -6478,12 +5666,12 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
         return null;
     }
 
-    function moveLayerToIndex(isySubLayer, index){
+  function moveLayerToIndex(isySubLayer, index) {
         var subLayerIndex = getLayerIndex(isySubLayer);
         var layersArray = map.getLayers().getArray();
 
-        for(var i=0; i<layersArray.length; i++){
-            if (layersArray[i].guid === undefined){
+    for (var i = 0; i < layersArray.length; i++) {
+      if (layersArray[i].guid === undefined) {
                 layersArray.splice(i, 1);
                 break;
             }
@@ -6493,47 +5681,48 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
         _trigLayersChanged();
     }
 
-    function sortLayerBySortIndex(){
+  function sortLayerBySortIndex() {
         var layersArray = map.getLayers().getArray();
         _sortByKey(layersArray, 'sortingIndex');
         _trigLayersChanged();
     }
 
     function _sortByKey(array, key) {
-        return array.sort(function(a, b) {
-            var x = a[key]; var y = b[key];
+    return array.sort(function (a, b) {
+      var x = a[key];
+      var y = b[key];
             return ((x > y) ? -1 : ((x < y) ? 1 : 0));
         });
     }
 
-    function _getLayerById(layerId){
+  function _getLayerById(layerId) {
         var layers = map.getLayers().getArray();
-        for (var i = 0; i<layers.length; i++){
-            if (layers[i].guid === layerId){
+    for (var i = 0; i < layers.length; i++) {
+      if (layers[i].guid === layerId) {
                 return layers[i];
             }
         }
         return undefined;
     }
 
-    function updateLayerSortIndex(groups){
-        for (var i = 0; i < groups.length; i++){
-            if (groups[i].isyLayers !== undefined){
-                for (var j = 0; j < groups[i].isyLayers.length; j++){
-                    for (var k = 0; k < groups[i].isyLayers[j].subLayers.length; k++){
+  function updateLayerSortIndex(groups) {
+    for (var i = 0; i < groups.length; i++) {
+      if (groups[i].isyLayers !== undefined) {
+        for (var j = 0; j < groups[i].isyLayers.length; j++) {
+          for (var k = 0; k < groups[i].isyLayers[j].subLayers.length; k++) {
                         var layer = _getLayerById(groups[i].isyLayers[j].subLayers[k].id);
-                        if (layer !== undefined){
+            if (layer !== undefined) {
                             layer.sortingIndex = groups[i].isyLayers[j].subLayers[k].sortingIndex;
                         }
                     }
                 }
-                }else{
+      } else {
                     break;
                 }
         }
     }
 
-    function _trigLayersChanged(){
+  function _trigLayersChanged() {
         var eventObject = _getUrlObject();
         eventHandler.TriggerEvent(ISY.Events.EventTypes.ChangeLayers, eventObject);
     }
@@ -6550,17 +5739,17 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
 
         visibleLayers.sort(_compareMapLayerIndex);
         var result = [];
-        for(var j = 0; j < visibleLayers.length; j++){
+    for (var j = 0; j < visibleLayers.length; j++) {
             result.push(visibleLayers[j].guid);
         }
         return result.join(",");
     }
 
     function _compareMapLayerIndex(a, b) {
-        if (a.mapLayerIndex < b.mapLayerIndex){
+    if (a.mapLayerIndex < b.mapLayerIndex) {
             return -1;
         }
-        if (a.mapLayerIndex > b.mapLayerIndex){
+    if (a.mapLayerIndex > b.mapLayerIndex) {
             return 1;
         }
         return 0;
@@ -6575,7 +5764,7 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
         Functionality in ISY.;ap.OL3.Export
      */
 
-    var _resizeEvent = function(){
+  var _resizeEvent = function () {
         mapExport.WindowResized(map);
     };
 
@@ -6589,7 +5778,7 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
         mapExport.Deactivate(redrawMap);
     }
 
-    function exportMap(callback){
+  function exportMap(callback) {
         mapExport.ExportMap(callback, map);
     }
 
@@ -6600,40 +5789,42 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
     }
 
     function refreshMap() {
-        map.getLayers().forEach(function(layer){
+    map.getLayers().forEach(function (layer) {
             refreshLayer(layer);
         });
     }
 
-    function refreshLayerByGuid(guid, featureObj){
-        if (guid){
+  function refreshLayerByGuid(guid, featureObj) {
+    if (guid) {
             refreshLayer(_getLayerFromPoolByGuid(guid), undefined, featureObj);
         }
     }
 
-    function refreshIsyLayer(isySubLayer, featureObj){
+  function refreshIsyLayer(isySubLayer, featureObj) {
         refreshLayer(_getLayerFromPool(isySubLayer), isySubLayer, featureObj);
     }
 
-    function refreshLayer(layer, isySubLayer, featureObj){
-        if (layer === undefined){
+  function refreshLayer(layer, isySubLayer, featureObj) {
+    if (layer === undefined) {
             return;
         }
         if (isySubLayer === undefined) {
             isySubLayer = _getIsySubLayerFromPool(layer);
         }
-        if (isySubLayer === undefined){
+    if (isySubLayer === undefined) {
             return;
         }
         var parameters;
-        if (isyToken && isyToken.length > 0){
-            parameters = {isyToken: isyToken};
+    if (isyToken && isyToken.length > 0) {
+      parameters = {
+        isyToken: isyToken
+      };
         }
         var source;
-        switch(isySubLayer.source){
+    switch (isySubLayer.source) {
             case ISY.Domain.SubLayer.SOURCES.wmts:
                 source = new ISY.MapImplementation.OL3.Sources.Wmts(isySubLayer, parameters);
-                if (isySubLayer.gatekeeper && ((offline === undefined) ? true : !offline.IsActive())){
+        if (isySubLayer.gatekeeper && ((offline === undefined) ? true : !offline.IsActive())) {
                     _setToken(source);
                 }
                 break;
@@ -6642,7 +5833,7 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
                 break;
             case ISY.Domain.SubLayer.SOURCES.wms:
                 source = new ISY.MapImplementation.OL3.Sources.Wms(isySubLayer, parameters);
-                if (isySubLayer.gatekeeper && isySubLayer.tiled && ((offline === undefined) ? true : !offline.IsActive())){
+        if (isySubLayer.gatekeeper && isySubLayer.tiled && ((offline === undefined) ? true : !offline.IsActive())) {
                     _setToken(source);
                 }
                 break;
@@ -6665,15 +5856,17 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
         }
     }
 
-    var setIsyToken = function(token){
-        if (token.length === 0){
+  var setIsyToken = function (token) {
+    if (token.length === 0) {
             return;
         }
-        if (isyToken && isyToken === token){
+    if (isyToken && isyToken === token) {
             return;
         }
         isyToken = token;
-        var parameters = {isyToken: isyToken};
+    var parameters = {
+      isyToken: isyToken
+    };
         for (var i = 0; i < isySubLayerPool.length; i++) {
             isySubLayerPool[i].isyToken = isyToken;
             var isySubLayer = isySubLayerPool[i];
@@ -6709,9 +5902,11 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
         }
     };
 
-    var removeIsyToken = function(){
+  var removeIsyToken = function () {
         isyToken = undefined;
-        var parameters = {isyToken: ''};
+    var parameters = {
+      isyToken: ''
+    };
         for (var i = 0; i < isySubLayerPool.length; i++) {
             isySubLayerPool[i].isyToken = isyToken;
             var isySubLayer = isySubLayerPool[i];
@@ -6747,11 +5942,11 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
         }
     };
 
-    function showCustomMessage(message){
+  function showCustomMessage(message) {
         customMessageHandler.ShowCustomMessage(message);
     }
 
-    function renderSync(){
+  function renderSync() {
         map.renderSync();
     }
 
@@ -6764,61 +5959,61 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
         Functionality in ISY.MapImplementation.OL3.FeatureInfo
      */
 
-    function activateInfoClick(callback){
+  function activateInfoClick(callback) {
         featureInfo.ActivateInfoClick(callback, map);
     }
 
-    function deactivateInfoClick(){
+  function deactivateInfoClick() {
         featureInfo.DeactivateInfoClick(map);
     }
 
-    function getFeatureInfoUrl(isySubLayer, coordinate){
+  function getFeatureInfoUrl(isySubLayer, coordinate) {
         return proxyHost + featureInfo.GetFeatureInfoUrl(isySubLayer, _getLayerFromPool(isySubLayer), coordinate, map.getView());
     }
 
-    function showHighlightedFeatures(layerguid, features){
+  function showHighlightedFeatures(layerguid, features) {
         featureInfo.ShowHighlightedFeatures(_getFeaturesAndAddHoverStyle(layerguid, features), map);
     }
 
-    function clearHighlightedFeatures(){
+  function clearHighlightedFeatures() {
         featureInfo.ClearHighlightedFeatures();
     }
 
-    function showInfoMarker(coordinate, element){
+  function showInfoMarker(coordinate, element) {
         featureInfo.ShowInfoMarker(coordinate, element, map);
     }
 
-    function showInfoMarkers(coordinates, element){
+  function showInfoMarkers(coordinates, element) {
         featureInfo.ShowInfoMarkers(coordinates, element, map);
     }
 
-    function removeInfoMarker(element){
+  function removeInfoMarker(element) {
         featureInfo.RemoveInfoMarker(element, map);
     }
 
-    function removeInfoMarkers(element){
+  function removeInfoMarkers(element) {
         featureInfo.RemoveInfoMarkers(element, map);
     }
 
-    function setHighlightStyle(style){
+  function setHighlightStyle(style) {
         featureInfo.SetHighlightStyle(style);
     }
 
-    function activateBoxSelect(callback){
+  function activateBoxSelect(callback) {
         featureInfo.ActivateBoxSelect(callback, map);
     }
 
-    function deactivateBoxSelect(){
+  function deactivateBoxSelect() {
         featureInfo.DeactivateBoxSelect(map);
     }
 
     function initEdit(isySubLayer) {
-        if (isySubLayer.featureNS === '' || isySubLayer.featureNS === undefined){
+    if (isySubLayer.featureNS === '' || isySubLayer.featureNS === undefined) {
             //_describeFeature(isySubLayer);
             return false;
         }
         var layerFromPool = _getLayerFromPool(isySubLayer);
-        if (layerFromPool !== null){
+    if (layerFromPool !== null) {
             featureEditor.Init(
                 isySubLayer.url,
                 isySubLayer.name,
@@ -6828,13 +6023,13 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
                 isySubLayer.geometryName
             );
             return true;
-        }else{
+    } else {
             _createLayer(isySubLayer);
             initEdit(isySubLayer);
         }
     }
 
-    Array.prototype.where = function(matcher) {
+  Array.prototype.where = function (matcher) {
         var result = [];
         for (var i = 0; i < this.length; i++) {
             if (matcher(this[i])) {
@@ -6848,10 +6043,10 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
         //Get elements and convert to array
         var elems = Array.prototype.slice.call(response.getElementsByTagName(tag), 0);
 
-        var matcher = function(el) {
-            if (exactName){
+    var matcher = function (el) {
+      if (exactName) {
                 return el.getAttribute(attr).toLowerCase() === attrValue.toLowerCase();
-            }else{
+      } else {
                 return el.getAttribute(attr).indexOf(attrValue) > -1 || attrValue.indexOf(el.getAttribute(attr)) > -1;
             }
         };
@@ -6860,12 +6055,12 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
     }
 
 
-    function _parseResponse(response){
+  function _parseResponse(response) {
 
         var subLayerName = describedSubLayer.name.split(":");
-        if (subLayerName.length > 0){
+    if (subLayerName.length > 0) {
             subLayerName = subLayerName[subLayerName.length - 1];
-        }else{
+    } else {
             return;
         }
 
@@ -6873,9 +6068,9 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
 
         var elementGeometryName = _getElementsByAttribute("element", "type", isyLayerGeometryType, elementNodeByName, false)[0];
 
-        if (elementGeometryName === undefined){
+    if (elementGeometryName === undefined) {
             return;
-        }else{
+    } else {
             elementGeometryName = elementGeometryName.getAttribute("name");
         }
 
@@ -6920,10 +6115,10 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
         });
         describedSource.set('type', 'ol.source.Vector');
         var url = isySubLayer.url;
-        if (Array.isArray(isySubLayer.url)){
+    if (Array.isArray(isySubLayer.url)) {
             url = isySubLayer.url[0];
         }
-        if (url.toLowerCase().indexOf("service=wfs") < 0){
+    if (url.toLowerCase().indexOf("service=wfs") < 0) {
             url += "service=WFS&";
         }
         url += 'request=DescribeFeatureType&' +
@@ -6931,7 +6126,7 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
 
         $.ajax({
             url: url
-        }).done(function(response) {
+    }).done(function (response) {
             _parseResponse(response);
         });
     }
@@ -6952,35 +6147,35 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
         featureEditor.UpdateFeature(feature);
     }
 
-    function insertFeature(feature, source){
+  function insertFeature(feature, source) {
         return featureEditor.InsertFeature(feature, source);
     }
 
-    function deleteFeature(feature){
+  function deleteFeature(feature) {
         return featureEditor.DeleteFeature(feature);
     }
 
-    function getExtentForCoordinate(coordinate, pixelTolerance){
+  function getExtentForCoordinate(coordinate, pixelTolerance) {
         return featureInfo.GetExtentForCoordinate(coordinate, pixelTolerance, map.getView().getResolution());
     }
 
-    function getFeaturesInExtent(isySubLayer, extent){
+  function getFeaturesInExtent(isySubLayer, extent) {
         return featureInfo.GetFeaturesInExtent(extent, _getLayerFromPool(isySubLayer), map.getView().getResolution());
     }
 
-    function getFeatureCollection(isySubLayer){
+  function getFeatureCollection(isySubLayer) {
         return featureInfo.GetFeatureCollection(_getLayerFromPool(isySubLayer));
     }
 
-    function getFeaturesInMap(isySubLayer){
+  function getFeaturesInMap(isySubLayer) {
         return featureInfo.GetFeaturesInMap(_getLayerFromPool(isySubLayer));
     }
 
-    function getLayerByFeature(feature){
+  function getLayerByFeature(feature) {
         return _getLayerFromPoolByFeature(feature);
     }
 
-    function getHoverStyle(feature, resolution){
+  function getHoverStyle(feature, resolution) {
         //var featureId = feature.getId();
         //if (featureId.indexOf('.') > 0) {
         //    featureId = featureId.slice(0, featureId.indexOf('.'));
@@ -6990,7 +6185,7 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
         //    featureId = tempFeatureId.slice(0, tempFeatureId.indexOf('_'));
         //}
         var layer = this.GetLayerByFeature(feature);
-        if (layer){
+    if (layer) {
             if (sldstyles[layer.guid]) {
                 return sldstyles[layer.guid].GetHoverStyle(feature, _getScaleByResolution(resolution));
             } else {
@@ -6999,22 +6194,22 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
         }
     }
 
-    function _getFeaturesAndAddHoverStyle(layerguid, features){
+  function _getFeaturesAndAddHoverStyle(layerguid, features) {
         if (layerguid === undefined) {
             return features;
         }
         var scale = _getScaleByResolution(map.getView().getResolution());
         var feature;
-        var featureAttribute = function(attr){
-            for (var j = 0; j < feature.attributes.length; j++){
-                if (attr === feature.attributes[j][0]){
+    var featureAttribute = function (attr) {
+      for (var j = 0; j < feature.attributes.length; j++) {
+        if (attr === feature.attributes[j][0]) {
                     return feature.attributes[j][1];
                 }
             }
         };
-        for (var i = 0; i < features.length; i++){
+    for (var i = 0; i < features.length; i++) {
             feature = features[i];
-            if (features[i].get === undefined){
+      if (features[i].get === undefined) {
                 features[i].get = featureAttribute;
             }
             var hoverstyle = sldstyles[layerguid].GetHoverStyle(features[i], scale);
@@ -7025,7 +6220,7 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
         return features;
     }
 
-    function getFeatureExtent(feature){
+  function getFeatureExtent(feature) {
         return featureInfo.GetFeatureExtent(feature);
     }
     /*
@@ -7036,11 +6231,11 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
      HoverInfo Start
      */
 
-    function activateHoverInfo(callback){
+  function activateHoverInfo(callback) {
         hoverInfo.ActivateHoverInfo(map, callback, this, hoverOptions);
     }
 
-    function deactivateHoverInfo(){
+  function deactivateHoverInfo() {
         hoverInfo.DeactivateHoverInfo(map);
     }
 
@@ -7052,21 +6247,21 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
      Measure Start
      Functionality in ISY.MapImplementation.OL3.Measure
      */
-    function activateMeasure(callback, options){
+  function activateMeasure(callback, options) {
         measure.Activate(map, callback, options);
     }
 
-    function deactivateMeasure(){
+  function deactivateMeasure() {
         measure.Deactivate(map);
     }
 
-    function activateMeasureLine(callback, options){
+  function activateMeasureLine(callback, options) {
         measureLine.Activate(map, callback, options);
         //var vector = measure.Activate(map, callback);
 
     }
 
-    function deactivateMeasureLine(){
+  function deactivateMeasureLine() {
         measureLine.Deactivate(map);
     }
 
@@ -7078,11 +6273,11 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
      AddLayerFeature Start
      Functionality in ISY.MapImplementation.OL3.AddLayerFeature
      */
-    function activateAddLayerFeature(options){
+  function activateAddLayerFeature(options) {
         addLayerFeature.Activate(map, options);
     }
 
-    function deactivateAddLayerFeature(){
+  function deactivateAddLayerFeature() {
         addLayerFeature.Deactivate(map);
     }
 
@@ -7094,15 +6289,15 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
      AddFeatureGps Start
      Functionality in ISY.MapImplementation.OL3.AddFeatureGps
      */
-    function activateAddFeatureGps(options){
+  function activateAddFeatureGps(options) {
         addFeatureGps.Activate(map, options);
     }
 
-    function addCoordinatesGps(coordinates){
+  function addCoordinatesGps(coordinates) {
         addFeatureGps.AddCoordinates(coordinates);
     }
 
-    function deactivateAddFeatureGps(){
+  function deactivateAddFeatureGps() {
         addFeatureGps.Deactivate(map);
     }
 
@@ -7115,11 +6310,11 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
      Modify Feature Start
      */
 
-    function activateModifyFeature(options){
+  function activateModifyFeature(options) {
         modifyFeature.Activate(map, options);
     }
 
-    function deactivateModifyFeature(){
+  function deactivateModifyFeature() {
         modifyFeature.Deactivate(map);
     }
 
@@ -7132,11 +6327,11 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
      DrawFeature Start
      */
 
-    function activateDrawFeature(callback, options){
+  function activateDrawFeature(callback, options) {
         drawFeature.Activate(map, callback, options);
     }
 
-    function deactivateDrawFeature(){
+  function deactivateDrawFeature() {
         drawFeature.Deactivate(map);
     }
 
@@ -7167,20 +6362,20 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
         }
     }
 
-    function stopCaching(){
+  function stopCaching() {
         offline.StopCaching();
     }
 
-    function deleteDatabase(callback, zoomlevels, eventhandler){
+  function deleteDatabase(callback, zoomlevels, eventhandler) {
         offline.DeleteDatabase(callback, zoomlevels, eventhandler);
     }
 
-    function cacheDatabaseExist(){
+  function cacheDatabaseExist() {
         return offline.CacheDatabaseExist();
     }
 
-    function calculateTileCount(zoomLevelMin, zoomLevelMax, extentView){
-        if (offline){
+  function calculateTileCount(zoomLevelMin, zoomLevelMax, extentView) {
+    if (offline) {
            return offline.CalculateTileCount(zoomLevelMin, zoomLevelMax, extentView);
         }
     }
@@ -7197,8 +6392,8 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
         }
     }
 
-    function getResourceFromJson(url, contentType, callback){
-        if (offline){
+  function getResourceFromJson(url, contentType, callback) {
+    if (offline) {
             offline.GetResourceFromJson(url, contentType, callback);
         }
     }
@@ -7225,13 +6420,13 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
     /*
       PrintBoxSelect Start
      */
-    var activatePrintBoxSelect = function (options){
+  var activatePrintBoxSelect = function (options) {
         printBoxSelect.Activate(map, options);
-    } ;
+  };
 
-    var deactivatePrintBoxSelect = function (){
+  var deactivatePrintBoxSelect = function () {
         printBoxSelect.Deactivate(map);
-    } ;
+  };
 
     /*
      PrintBoxSelect End
@@ -7241,13 +6436,13 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
     /*
      AddLayerUrl Start
      */
-    var activateAddLayerUrl = function (options){
+  var activateAddLayerUrl = function (options) {
         addLayerUrl.Activate(map, options);
-    } ;
+  };
 
-    var deactivateAddLayerUrl = function (){
+  var deactivateAddLayerUrl = function () {
         addLayerUrl.Deactivate(map);
-    } ;
+  };
 
     /*
      AddLayerUrl End
@@ -7259,8 +6454,8 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
         Utility functions start
      */
 
-    var _getUrlObject = function(){
-        if (map !== undefined){
+  var _getUrlObject = function () {
+    if (map !== undefined) {
             var retVal = {
                 layers: _getGuidsForVisibleLayers()
             };
@@ -7268,10 +6463,10 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
             var view = map.getView();
             var center = view.getCenter();
             var zoom = view.getZoom();
-            if(zoom){
+      if (zoom) {
                 retVal.zoom = zoom.toString();
             }
-            if(center){
+      if (center) {
                 retVal.lat = center[1].toFixed(2);
                 retVal.lon = center[0].toFixed(2);
             }
@@ -7279,9 +6474,9 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
         }
     };
 
-    var zoomToLayer = function(isySubLayer){
+  var zoomToLayer = function (isySubLayer) {
         var layer = _getLayerFromPool(isySubLayer);
-        if (layer){
+    if (layer) {
             var extent;
             if (typeof layer.getSource().getExtent !== "undefined") {
               extent = layer.getSource().getExtent();
@@ -7289,32 +6484,32 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
               extent = layer.getSource().getTileGrid().getExtent();
             }
             if (Array.isArray(extent) && extent[0] !== Infinity) {
-                if (!ol.extent.containsCoordinate(extent, map.getView().getCenter())){
+        if (!ol.extent.containsCoordinate(extent, map.getView().getCenter())) {
                     map.getView().fit(extent, map.getSize());
                 }
             }
         }
     };
 
-    var zoomToLayers = function(isySubLayers){
+  var zoomToLayers = function (isySubLayers) {
         var layersExtent = [Infinity, Infinity, -Infinity, -Infinity];
-        var setNewExtent = function(newExtent){
-            if (layersExtent[0] > newExtent[0]){
+    var setNewExtent = function (newExtent) {
+      if (layersExtent[0] > newExtent[0]) {
                 layersExtent[0] = newExtent[0];
             }
-            if (layersExtent[1] > newExtent[1]){
+      if (layersExtent[1] > newExtent[1]) {
                 layersExtent[1] = newExtent[1];
             }
-            if (layersExtent[2] < newExtent[2]){
+      if (layersExtent[2] < newExtent[2]) {
                 layersExtent[2] = newExtent[2];
             }
-            if (layersExtent[3] < newExtent[3]){
+      if (layersExtent[3] < newExtent[3]) {
                 layersExtent[3] = newExtent[3];
             }
         };
-        isySubLayers.forEach(function(isySubLayer){
+    isySubLayers.forEach(function (isySubLayer) {
             var layer = _getLayerFromPool(isySubLayer);
-            if (layer){
+      if (layer) {
                 var extent = layer.getSource().getExtent();
                 if (Array.isArray(extent) && extent[0] !== Infinity) {
                     setNewExtent(extent);
@@ -7326,11 +6521,11 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
         }
     };
 
-    var fitExtent = function(extent){
+  var fitExtent = function (extent) {
         map.getView().fit(extent, map.getSize());
     };
 
-    var getCenter = function(){
+  var getCenter = function () {
         var retVal;
         var view = map.getView();
         var center = view.getCenter();
@@ -7343,9 +6538,9 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
         return retVal;
     };
 
-    var setCenter = function(center) {
+  var setCenter = function (center) {
         var view = map.getView();
-        if (center.epsg){
+    if (center.epsg) {
             center = transformEpsgCoordinate(center, getEpsgCode());
         }
         view.setCenter([center.lon, center.lat]);
@@ -7354,22 +6549,22 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
         }
     };
 
-    var getZoom = function(){
+  var getZoom = function () {
         var view = map.getView();
         return view.getZoom();
     };
 
-    var setZoom = function(zoom){
+  var setZoom = function (zoom) {
         var view = map.getView();
         return view.setZoom(zoom);
     };
 
-    var getRotation = function(){
+  var getRotation = function () {
         var view = map.getView();
         return view.getRotation();
     };
 
-    var setRotation = function(angle, anchor){
+  var setRotation = function (angle, anchor) {
         var view = map.getView();
         if (anchor) {
             view.rotate(angle, anchor);
@@ -7378,19 +6573,19 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
         }
     };
 
-    var getEpsgCode = function() {
+  var getEpsgCode = function () {
         var view = map.getView();
         var projection = view.getProjection();
         return projection.getCode();
     };
 
-    function transformEpsgCoordinate(coord, toCrs){
-        if(coord.epsg !== "" && toCrs !== "" && coord.epsg !== toCrs){
+  function transformEpsgCoordinate(coord, toCrs) {
+    if (coord.epsg !== "" && toCrs !== "" && coord.epsg !== toCrs) {
             //var fromProj = ol.proj.get(coord.epsg);
             //var toProj = ol.proj.get(toCrs);
             var transformedCoord = ol.proj.transform([coord.lon, coord.lat], coord.epsg, toCrs);
 
-            if(toCrs === "EPSG:4326"){
+      if (toCrs === "EPSG:4326") {
                 transformedCoord = [transformedCoord[1], transformedCoord[0]];
             }
             coord.lon = transformedCoord[0];
@@ -7401,16 +6596,16 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
         return coord;
     }
 
-    function transformBox(fromCrs, toCrs, boxExtent){
+  function transformBox(fromCrs, toCrs, boxExtent) {
         var returnExtent = boxExtent;
-        if(fromCrs !== "" && toCrs !== "" && fromCrs !== toCrs){
+    if (fromCrs !== "" && toCrs !== "" && fromCrs !== toCrs) {
             //var fromProj = ol.proj.get(fromCrs);
             //var toProj = ol.proj.get(toCrs);
             //var transformedExtent = ol.proj.transformExtent(boxExtent, fromProj, toProj);
             var transformedExtent = ol.proj.transformExtent(boxExtent, fromCrs, toCrs);
 
             returnExtent = transformedExtent;
-            if(toCrs === "EPSG:4326"){
+      if (toCrs === "EPSG:4326") {
                 returnExtent = transformedExtent[1] + "," + transformedExtent[0] + "," + transformedExtent[3] + "," + transformedExtent[2];
             }
         }
@@ -7418,7 +6613,7 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
         return returnExtent;
     }
 
-    function convertGmlToGeoJson(gml){
+  function convertGmlToGeoJson(gml) {
         var xmlParser = new ol.format.WMSCapabilities();
         var xmlFeatures = xmlParser.read(gml);
         var gmlParser = new ol.format.GML();
@@ -7427,7 +6622,7 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
         return jsonParser.writeFeatures(features);
     }
 
-    function extentToGeoJson(x, y){
+  function extentToGeoJson(x, y) {
         var point = new ol.geom.Point([x, y]);
         var feature = new ol.Feature();
         feature.setGeometry(point);
@@ -7446,7 +6641,9 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
     }
 
     function addZoomToExtent(extent) {
-        var zoomToExtent = new ol.control.ZoomToExtent({"extent": extent});
+    var zoomToExtent = new ol.control.ZoomToExtent({
+      "extent": extent
+    });
         map.addControl(zoomToExtent);
     }
 
@@ -7455,7 +6652,7 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
         map.addControl(scaleLine);
     }
 
-    var getVectorLayers = function(isySubLayer, data){
+  var getVectorLayers = function (isySubLayer, data) {
         var vectors = [];
         var source = ISY.MapImplementation.OL3.Sources.Vector(isySubLayer.subLayers[0], map.getView().getProjection());
 
@@ -7471,34 +6668,34 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
         return vectors;
     };
 
-    var getLayerCount = function(){
+  var getLayerCount = function () {
         if (map) {
             return map.getLayers().getArray().length;
         }
         return 0;
     };
 
-    var getCenterFromExtent = function(extent){
+  var getCenterFromExtent = function (extent) {
       return ol.extent.getCenter(extent);
     };
 
-    var getScale = function(){
+  var getScale = function () {
         return mapScales[map.getView().getZoom()];
     };
 
-    var getLegendStyleFromLayer = function(layer){
-            if (sldstyles[layer.guid] !== undefined){
+  var getLegendStyleFromLayer = function (layer) {
+    if (sldstyles[layer.guid] !== undefined) {
                 return sldstyles[layer.guid].GetStyleForLegend();
-            }else{
+    } else {
                 return undefined;
             }
     };
 
-    var getExtent = function(){
+  var getExtent = function () {
         return map.getView().calculateExtent(map.getSize());
     };
 
-    var getUrlObject = function(){
+  var getUrlObject = function () {
         return _getUrlObject();
     };
 
@@ -7512,9 +6709,9 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
         _trigLayersChanged();
     }
 
-    function _drawGeolocation(center, radius){
+  function _drawGeolocation(center, radius) {
         var geolocationLayer = _getLayerByGuid(99999);
-        if (geolocationLayer !== null){
+    if (geolocationLayer !== null) {
             var geolocationSource = geolocationLayer.getSource();
             geolocationSource.clear();
             var geolocationStyle = new ol.style.Style({
@@ -7542,29 +6739,29 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
             });
             geolocationFeature.setStyle(geolocationStyle);
             geolocationSource.addFeature(geolocationFeature);
-            if (initialGeolocationChange){
+      if (initialGeolocationChange) {
                 initialGeolocationChange = false;
                 var geolocextent = geolocationFeature.getGeometry().getExtent();
-                geolocextent[0] -= 5*radius;
-                geolocextent[1] -= 5*radius;
-                geolocextent[2] += 5*radius;
-                geolocextent[3] += 5*radius;
+        geolocextent[0] -= 5 * radius;
+        geolocextent[1] -= 5 * radius;
+        geolocextent[2] += 5 * radius;
+        geolocextent[3] += 5 * radius;
                 map.getView().fit(geolocextent, map.getSize());
             }
         }
     }
 
-    function _geolocationChange(){
+  function _geolocationChange() {
         var view = map.getView();
         var center = geolocation.getPosition();
-        if (center === undefined){
+    if (center === undefined) {
             return;
         }
         view.setCenter(center);
         _drawGeolocation(center, geolocation.getAccuracy());
         var geolocationObject = {
             center: center,
-            accuracy: Math.round(geolocation.getAccuracy()*10)/10,
+      accuracy: Math.round(geolocation.getAccuracy() * 10) / 10,
             altitude: geolocation.getAltitude(),
             altitudeAccuracy: geolocation.getAltitudeAccuracy(),
             heading: geolocation.getHeading(),
@@ -7573,11 +6770,11 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
         eventHandler.TriggerEvent(ISY.Events.EventTypes.GeolocationUpdated, geolocationObject);
     }
 
-    var getGeolocation = function(){
+  var getGeolocation = function () {
         var view = map.getView();
         var mapProjection = view.getProjection();
         geolocation = new ol.Geolocation({
-            projection:  mapProjection,
+      projection: mapProjection,
             tracking: true,
             trackingOptions: {
                 //enableHighAccuracy: true,
@@ -7594,36 +6791,36 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
         geolocation.on('change:accuracy', _geolocationChange);
     };
 
-    var removeGeolocation = function(){
+  var removeGeolocation = function () {
         var geolocationLayer = _getLayerByGuid(99999);
-        if (geolocationLayer !== null){
+    if (geolocationLayer !== null) {
             map.removeLayer(geolocationLayer);
             _trigLayersChanged();
         }
 
-        if (geolocation !== undefined){
+    if (geolocation !== undefined) {
             geolocation.un('change:position', _geolocationChange);
             geolocation.un('change:accuracy', _geolocationChange);
             geolocation = undefined;
         }
     };
 
-    var getProxyHost = function(){
+  var getProxyHost = function () {
         return proxyHost;
     };
 
-    var setTranslateOptions = function(translate){
+  var setTranslateOptions = function (translate) {
         translateOptions = translate;
     };
 
-    var transformCoordinates = function(fromEpsg, toEpsg, coordinates){
+  var transformCoordinates = function (fromEpsg, toEpsg, coordinates) {
         if (proj4.defs(fromEpsg) && proj4.defs(toEpsg)) {
             var transformObject = proj4(fromEpsg, toEpsg);
             return transformObject.forward(coordinates);
         }
     };
 
-    var transformFromGeographic = function(coordinates){
+  var transformFromGeographic = function (coordinates) {
         // If no coordinates are given an object with two methods is returned,
         // its methods are forward which projects from the first projection to
         // the second and inverse which projects from the second to the first.
@@ -7634,7 +6831,7 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
         }
     };
 
-    var transformToGeographic = function(coordinates){
+  var transformToGeographic = function (coordinates) {
         // If no coordinates are given an object with two methods is returned,
         // its methods are forward which projects from the first projection to
         // the second and inverse which projects from the second to the first.
@@ -7859,839 +7056,843 @@ var ISY = ISY || {};
 ISY.MapImplementation = ISY.MapImplementation || {};
 ISY.MapImplementation.OL3 = ISY.MapImplementation.OL3 || {};
 
-ISY.MapImplementation.OL3.Measure = function(eventHandler){
+ISY.MapImplementation.OL3.Measure = function (eventHandler) {
 
-    var isActive = false;
-    var circleFeature; // The circle feature
-    var circleRadius; // Distance for the initial circle
-    var circleOverlay; // Overlay for the circle
-    var translate;
+  var isActive = false;
+  var circleFeature; // The circle feature
+  var circleRadius; // Distance for the initial circle
+  var circleOverlay; // Overlay for the circle
+  var translate;
 
-    /**
-     * Currently drawn feature.
-     * @type {ol.Feature}
-     */
-    var sketch;
-
-
-    /**
-     * The help tooltip element.
-     * @type {Element}
-     */
-    var helpTooltipElement;
+  /**
+   * Currently drawn feature.
+   * @type {ol.Feature}
+   */
+  var sketch;
 
 
-    /**
-     * Overlay to show the help messages.
-     * @type {ol.Overlay}
-     */
-    var helpTooltip;
+  /**
+   * The help tooltip element.
+   * @type {Element}
+   */
+  var helpTooltipElement;
 
 
-    /**
-     * The measure tooltip element.
-     * @type {Element}
-     */
-    var measureTooltipElement;
+  /**
+   * Overlay to show the help messages.
+   * @type {ol.Overlay}
+   */
+  var helpTooltip;
 
 
-    /**
-     * Overlay to show the measurement.
-     * @type {ol.Overlay}
-     */
-    var measureTooltip;
+  /**
+   * The measure tooltip element.
+   * @type {Element}
+   */
+  var measureTooltipElement;
 
 
-    /**
-     * Message to show when the user is drawing a polygon.
-     * @type {string}
-     */
-    //var continuePolygonMsg = 'Click to continue drawing the polygon';
+  /**
+   * Overlay to show the measurement.
+   * @type {ol.Overlay}
+   */
+  var measureTooltip;
 
 
-    /**
-     * Message to show when the user is drawing a line.
-     * @type {string}
-     */
-    var continueLineMsg = 'Click to continue drawing the line';
+  /**
+   * Message to show when the user is drawing a polygon.
+   * @type {string}
+   */
+  //var continuePolygonMsg = 'Click to continue drawing the polygon';
 
 
-    /**
-     * Handle pointer move.
-     * @param {ol.MapBrowserEvent} evt
-     */
-    var pointerMoveHandler = function(evt) {
-        if (evt.dragging || !isActive) {
-            return;
-        }
-        /** @type {string} */
-        var helpMsg = translate['start_measure'];//'Click to start drawing';
+  /**
+   * Message to show when the user is drawing a line.
+   * @type {string}
+   */
+  var continueLineMsg = 'Click to continue drawing the line';
 
-        if (sketch) {
-            var geom = (sketch.getGeometry());
-            if (geom instanceof ol.geom.Polygon) {
-                helpMsg = translate['continue_measure'];//continuePolygonMsg;
-            } else if (geom instanceof ol.geom.LineString) {
-                helpMsg = continueLineMsg;
+
+  /**
+   * Handle pointer move.
+   * @param {ol.MapBrowserEvent} evt
+   */
+  var pointerMoveHandler = function (evt) {
+    if (evt.dragging || !isActive) {
+      return;
+    }
+    /** @type {string} */
+    var helpMsg = translate['start_measure']; //'Click to start drawing';
+
+    if (sketch) {
+      var geom = (sketch.getGeometry());
+      if (geom instanceof ol.geom.Polygon) {
+        helpMsg = translate['continue_measure']; //continuePolygonMsg;
+      } else if (geom instanceof ol.geom.LineString) {
+        helpMsg = continueLineMsg;
+      }
+    }
+    helpTooltipElement.innerHTML = helpMsg;
+    helpTooltip.setPosition(evt.coordinate);
+
+    $(helpTooltipElement).removeClass('hidden');
+  };
+
+  var draw; // global so we can remove it later
+  var drawLayer;
+
+  function addInteraction(map) {
+    circleOverlay = new ol.layer.Vector({
+      map: map,
+      source: new ol.source.Vector({
+        useSpatialIndex: false // optional, might improve performance
+      }),
+      updateWhileAnimating: true, // optional, for instant visual feedback
+      updateWhileInteracting: true // optional, for instant visual feedback
+    });
+    //map.addOverlay(circleOverlay);
+    var type = 'Polygon'; // (typeSelect.value === 'area' ? 'Polygon' : 'LineString');
+    var source = new ol.source.Vector();
+    draw = new ol.interaction.Draw({
+      source: source,
+      type: /** @type {ol.geom.GeometryType} */ (type)
+    });
+    var measureStyle = new ISY.MapImplementation.OL3.Styles.Measure();
+    drawLayer = new ol.layer.Vector({
+      source: source,
+      style: measureStyle.Styles()
+    });
+
+    map.addInteraction(draw);
+    map.addLayer(drawLayer);
+
+    createMeasureTooltip(map);
+    createHelpTooltip(map);
+
+    var listener;
+    draw.on('drawstart',
+      function (evt) {
+        // set sketch
+        sketch = evt.feature;
+
+        var firstPoint = sketch.getGeometry().getCoordinates()[0][0];
+        circleFeature = new ol.Feature(new ol.geom.Circle(firstPoint, 0));
+        circleOverlay.getSource().addFeature(circleFeature);
+
+        /** @type {ol.Coordinate|undefined} */
+        var tooltipCoord = evt.coordinate;
+
+        listener = sketch.getGeometry().on('change', function (evt) {
+          var geom = evt.target;
+          var output;
+          var circleArea;
+          if (geom instanceof ol.geom.Polygon) {
+            output = formatArea( /** @type {ol.geom.Polygon} */ (geom));
+            tooltipCoord = geom.getInteriorPoint().getCoordinates();
+            _formatPolygonLength(geom);
+            var circleGeom = _drawCircle(geom);
+            if (circleGeom !== null) {
+              circleArea = formatArea(circleGeom);
             }
-        }
-        helpTooltipElement.innerHTML = helpMsg;
-        helpTooltip.setPosition(evt.coordinate);
+          } else if (geom instanceof ol.geom.LineString) {
+            output = formatLength( /** @type {ol.geom.LineString} */ (geom));
+            tooltipCoord = geom.getLastCoordinate();
+          }
+          var circleCoordinates = geom.getCoordinates()[0];
+          if (circleCoordinates.length === 2) {
+            measureTooltipElement.innerHTML = circleArea.string;
+          } else {
+            measureTooltipElement.innerHTML = output.string;
+          }
 
-        $(helpTooltipElement).removeClass('hidden');
-    };
-
-    var draw; // global so we can remove it later
-    var drawLayer;
-    function addInteraction(map) {
-        circleOverlay = new ol.layer.Vector({
-            map: map,
-            source: new ol.source.Vector({
-                useSpatialIndex: false // optional, might improve performance
-            }),
-            updateWhileAnimating: true, // optional, for instant visual feedback
-            updateWhileInteracting: true // optional, for instant visual feedback
+          eventHandler.TriggerEvent(ISY.Events.EventTypes.MeasureMouseMove, output);
+          measureTooltip.setPosition(tooltipCoord);
         });
-        //map.addOverlay(circleOverlay);
-        var type ='Polygon';// (typeSelect.value === 'area' ? 'Polygon' : 'LineString');
-        var source = new ol.source.Vector();
-        draw = new ol.interaction.Draw({
-            source: source,
-            type: /** @type {ol.geom.GeometryType} */ (type)
-        });
-        var measureStyle = new ISY.MapImplementation.OL3.Styles.Measure();
-        drawLayer = new ol.layer.Vector({
-            source: source,
-            style: measureStyle.Styles()
-        });
+      }, this);
 
-        map.addInteraction(draw);
-        map.addLayer(drawLayer);
-
+    draw.on('drawend',
+      function () {
+        measureTooltipElement.className = 'tooltip tooltip-static';
+        measureTooltip.setOffset([0, -7]);
+        // unset sketch
+        sketch = null;
+        // unset tooltip so that a new one can be created
+        measureTooltipElement = null;
         createMeasureTooltip(map);
-        createHelpTooltip(map);
+        ol.Observable.unByKey(listener);
+      }, this);
+  }
 
-        var listener;
-        draw.on('drawstart',
-            function(evt) {
-                // set sketch
-                sketch = evt.feature;
-
-                var firstPoint = sketch.getGeometry().getCoordinates()[0][0];
-                circleFeature = new ol.Feature(new ol.geom.Circle(firstPoint, 0));
-                circleOverlay.getSource().addFeature(circleFeature);
-
-                /** @type {ol.Coordinate|undefined} */
-                var tooltipCoord = evt.coordinate;
-
-                listener = sketch.getGeometry().on('change', function(evt) {
-                    var geom = evt.target;
-                    var output;
-                    var circleArea;
-                    if (geom instanceof ol.geom.Polygon) {
-                        output = formatArea(/** @type {ol.geom.Polygon} */ (geom));
-                        tooltipCoord = geom.getInteriorPoint().getCoordinates();
-                        _formatPolygonLength(geom);
-                        var circleGeom = _drawCircle(geom);
-                        if (circleGeom !== null){
-                            circleArea = formatArea(circleGeom);
-                        }
-                    } else if (geom instanceof ol.geom.LineString) {
-                        output = formatLength( /** @type {ol.geom.LineString} */ (geom));
-                        tooltipCoord = geom.getLastCoordinate();
-                    }
-                    var circleCoordinates = geom.getCoordinates()[0];
-                    if (circleCoordinates.length === 2){
-                        measureTooltipElement.innerHTML = circleArea.string;
-                    }else{
-                        measureTooltipElement.innerHTML = output.string;
-                    }
-
-                    eventHandler.TriggerEvent(ISY.Events.EventTypes.MeasureMouseMove, output);
-                    measureTooltip.setPosition(tooltipCoord);
-                });
-            }, this);
-
-        draw.on('drawend',
-            function() {
-                measureTooltipElement.className = 'tooltip tooltip-static';
-                measureTooltip.setOffset([0, -7]);
-                // unset sketch
-                sketch = null;
-                // unset tooltip so that a new one can be created
-                measureTooltipElement = null;
-                createMeasureTooltip(map);
-                ol.Observable.unByKey(listener);
-            }, this);
+  function _drawCircle(geom) {
+    var circleCoordinates = geom.getCoordinates()[0];
+    if (circleCoordinates.length === 2) {
+      circleFeature.getGeometry().setRadius(circleRadius);
+      return Math.PI * Math.pow(circleRadius, 2);
+    } else {
+      circleFeature.getGeometry().setRadius(0);
+      return null;
     }
+  }
 
-    function _drawCircle(geom){
-        var circleCoordinates = geom.getCoordinates()[0];
-        if (circleCoordinates.length === 2) {
-            circleFeature.getGeometry().setRadius(circleRadius);
-            return Math.PI * Math.pow(circleRadius, 2);
-        }
-        else{
-            circleFeature.getGeometry().setRadius(0);
-            return null;
-        }
+  function _formatPolygonLength(polygon) {
+    return _formatLength(polygon.getCoordinates()[0]);
+  }
+
+  /**
+   * Creates a new help tooltip
+   */
+  function createHelpTooltip(map) {
+    if (helpTooltipElement) {
+      if (helpTooltipElement.parentNode !== null) {
+        helpTooltipElement.parentNode.removeChild(helpTooltipElement);
+      }
     }
+    helpTooltipElement = document.createElement('div');
+    helpTooltipElement.className = 'tooltip hidden';
+    helpTooltip = new ol.Overlay({
+      element: helpTooltipElement,
+      offset: [15, 0],
+      positioning: 'center-left'
+    });
+    map.addOverlay(helpTooltip);
+  }
 
-    function _formatPolygonLength(polygon){
-            return _formatLength(polygon.getCoordinates()[0]);
-        }
 
-    /**
-     * Creates a new help tooltip
-     */
-    function createHelpTooltip(map) {
-        if (helpTooltipElement) {
-            if (helpTooltipElement.parentNode !== null){
-                helpTooltipElement.parentNode.removeChild(helpTooltipElement);
-            }
-        }
-        helpTooltipElement = document.createElement('div');
-        helpTooltipElement.className = 'tooltip hidden';
-        helpTooltip = new ol.Overlay({
-            element: helpTooltipElement,
-            offset: [15, 0],
-            positioning: 'center-left'
-        });
-        map.addOverlay(helpTooltip);
+  /**
+   * Creates a new measure tooltip
+   */
+  function createMeasureTooltip(map) {
+    if (measureTooltipElement) {
+      if (measureTooltipElement.parentNode !== null) {
+        measureTooltipElement.parentNode.removeChild(measureTooltipElement);
+      }
     }
+    measureTooltipElement = document.createElement('div');
+    measureTooltipElement.className = 'tooltip tooltip-measure';
+    measureTooltip = new ol.Overlay({
+      element: measureTooltipElement,
+      offset: [0, -15],
+      positioning: 'bottom-center'
+    });
+    map.addOverlay(measureTooltip);
+  }
 
-
-    /**
-     * Creates a new measure tooltip
-     */
-    function createMeasureTooltip(map) {
-        if (measureTooltipElement) {
-            if (measureTooltipElement.parentNode !== null){
-                measureTooltipElement.parentNode.removeChild(measureTooltipElement);
-            }
-        }
-        measureTooltipElement = document.createElement('div');
-        measureTooltipElement.className = 'tooltip tooltip-measure';
-        measureTooltip = new ol.Overlay({
-            element: measureTooltipElement,
-            offset: [0, -15],
-            positioning: 'bottom-center'
-        });
-        map.addOverlay(measureTooltip);
+  /**
+   * format length output
+   * @param {ol.geom.LineString} line
+   * @return {string}
+   */
+  function _formatLength(coordinates) {
+    var length = _getLength(coordinates);
+    circleRadius = length;
+    length = Math.round(length * 100) / 100;
+    var output;
+    var value;
+    var unit;
+    if (length > 100) {
+      unit = 'km';
+      value = Math.round(length / 1000 * 100) / 100;
+      output = value + ' ' + unit;
+    } else {
+      unit = 'm';
+      value = Math.round(length * 100) / 100;
+      output = value + ' ' + unit;
     }
-
-    /**
-     * format length output
-     * @param {ol.geom.LineString} line
-     * @return {string}
-     */
-    function _formatLength (coordinates) {
-        var length = _getLength(coordinates);
-        circleRadius = length;
-        length = Math.round(length*100)/100;
-        var output;
-        var value;
-        var unit;
-        if (length > 100) {
-            unit = 'km';
-            value = Math.round(length / 1000 * 100) / 100;
-            output = value + ' ' + unit;
-        } else {
-            unit = 'm';
-            value = Math.round(length * 100) / 100;
-            output = value + ' ' + unit;
-        }
-        return {
-            string: output,
-            unit: unit,
-            value: value
-        };
-    }
-
-    var formatLength = function(line) {
-        var length = Math.round(line.getLength() * 100) / 100;
-        var output;
-        if (length > 100) {
-            output = (Math.round(length / 1000 * 100) / 100) +
-                ' ' + 'km';
-        } else {
-            output = (Math.round(length * 100) / 100) +
-                ' ' + 'm';
-        }
-        return output;
-    };
-
-    function _getLength(coordinates){
-        var length;
-        if(coordinates.length > 0){
-            var stride = coordinates[0].length; // 2D or 3D
-            var flatCoordinates = _flatternCoordinates(coordinates);
-            length = _getFlatLength(flatCoordinates, 0, flatCoordinates.length, stride);
-        }
-        return length;
-    }
-
-    function _flatternCoordinates(coordinates){
-        var flatCoordinates = [];
-        for(var i = 0; i < coordinates.length; i++){
-            var thisCoordinate = coordinates[i];
-            for(var j = 0; j < thisCoordinate.length; j++){
-                flatCoordinates.push(thisCoordinate[j]);
-            }
-        }
-        return flatCoordinates;
-    }
-
-    function _getFlatLength(flatCoordinates, offset, end, stride) {
-        var x1 = flatCoordinates[offset];
-        var y1 = flatCoordinates[offset + 1];
-        var length = 0;
-        var i;
-        for (i = offset + stride; i < end; i += stride) {
-            var x2 = flatCoordinates[i];
-            var y2 = flatCoordinates[i + 1];
-            length += Math.sqrt((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1));
-            x1 = x2;
-            y1 = y2;
-        }
-        return length;
-    }
-
-
-    /**
-     * format length output
-     * @param {ol.geom.Polygon} polygon
-     * @return {string}
-     */
-    var formatArea = function(polygon) {
-            var output;
-            var unit;
-            var value;
-            var area;// = polygon.getArea();
-            if (polygon.getArea === undefined){
-                area = polygon;
-            }else{
-                area = polygon.getArea();
-            }
-
-
-            if (area > 100000) {
-                unit = 'km<sup>2</sup>';
-                value = Math.round(area / 1000000 * 100) / 100;
-                output = value + ' ' + unit;
-            }else if(area < 100000 && area > 1000){
-                unit = 'da';
-                value = Math.round(area / 1000 * 100) / 100;
-                output = value + ' ' + unit;
-            } else {
-                unit = 'm<sup>2</sup>';
-                value = Math.round(area * 100) / 100;
-                output = value + ' ' + unit;
-            }
-            return  {
-                string: output,
-                unit: unit,
-                value: value,
-                order: 2
-            };
-    };
-
-    function  activate(map, options){
-        isActive = true;
-        translate = options.translate;
-        map.on('pointermove', pointerMoveHandler);
-
-        $(map.getViewport()).on('mouseout', function() {
-            $(helpTooltipElement).addClass('hidden');
-        });
-        addInteraction(map);
-    }
-
-    function deactivate(map){
-        if (isActive) {
-            isActive = false;
-            if (map !== undefined) {
-                map.removeLayer(drawLayer);
-                measureTooltipElement.className = 'tooltip tooltip-static';
-                measureTooltip.setOffset([0, -7]);
-                circleFeature.getGeometry().setRadius(0);
-                measureTooltipElement = null;
-                map.removeInteraction(draw);
-                map.removeOverlay(circleOverlay);
-                map.removeOverlay(measureTooltip);
-                map.removeOverlay(helpTooltip);
-                if (helpTooltipElement) {
-                    helpTooltipElement.parentNode.removeChild(helpTooltipElement);
-                }
-                if (measureTooltipElement) {
-                    measureTooltipElement.parentNode.removeChild(measureTooltipElement);
-                }
-                var tooltipStaticElements = document.getElementsByClassName('tooltip tooltip-static');
-                while(tooltipStaticElements.length > 0){
-                    var staticElement = tooltipStaticElements[0];
-                    staticElement.parentNode.removeChild(staticElement);
-                }
-            }
-            eventHandler.TriggerEvent(ISY.Events.EventTypes.MeasureEnd);
-        }
-    }
-
     return {
-        Activate: activate,
-        Deactivate: deactivate
+      string: output,
+      unit: unit,
+      value: value
     };
-};
-var ISY = ISY || {};
-ISY.MapImplementation = ISY.MapImplementation || {};
-ISY.MapImplementation.OL3 = ISY.MapImplementation.OL3 || {};
+  }
 
-ISY.MapImplementation.OL3.MeasureLine = function(eventHandler){
+  var formatLength = function (line) {
+    var length = Math.round(line.getLength() * 100) / 100;
+    var output;
+    if (length > 100) {
+      output = (Math.round(length / 1000 * 100) / 100) +
+        ' ' + 'km';
+    } else {
+      output = (Math.round(length * 100) / 100) +
+        ' ' + 'm';
+    }
+    return output;
+  };
 
-    var isActive = false;
-    var translate;
+  function _getLength(coordinates) {
+    var length;
+    if (coordinates.length > 0) {
+      var stride = coordinates[0].length; // 2D or 3D
+      var flatCoordinates = _flatternCoordinates(coordinates);
+      length = _getFlatLength(flatCoordinates, 0, flatCoordinates.length, stride);
+    }
+    return length;
+  }
 
-    /**
-     * Currently drawn feature.
-     * @type {ol.Feature}
-     */
-    var sketch;
+  function _flatternCoordinates(coordinates) {
+    var flatCoordinates = [];
+    for (var i = 0; i < coordinates.length; i++) {
+      var thisCoordinate = coordinates[i];
+      for (var j = 0; j < thisCoordinate.length; j++) {
+        flatCoordinates.push(thisCoordinate[j]);
+      }
+    }
+    return flatCoordinates;
+  }
 
-
-    /**
-     * The help tooltip element.
-     * @type {Element}
-     */
-    var helpTooltipElement;
-
-
-    /**
-     * Overlay to show the help messages.
-     * @type {ol.Overlay}
-     */
-    var helpTooltip;
-
-
-    /**
-     * The measure tooltip element.
-     * @type {Element}
-     */
-    var measureTooltipElement;
-
-
-    /**
-     * Overlay to show the measurement.
-     * @type {ol.Overlay}
-     */
-    var measureTooltip;
-
-
-    /**
-     * Message to show when the user is drawing a polygon.
-     * @type {string}
-     */
-    var continuePolygonMsg = 'Click to continue drawing the polygon';
-
-
-    /**
-     * Message to show when the user is drawing a line.
-     * @type {string}
-     */
-    //var continueLineMsg = 'Click to continue drawing the line';
+  function _getFlatLength(flatCoordinates, offset, end, stride) {
+    var x1 = flatCoordinates[offset];
+    var y1 = flatCoordinates[offset + 1];
+    var length = 0;
+    var i;
+    for (i = offset + stride; i < end; i += stride) {
+      var x2 = flatCoordinates[i];
+      var y2 = flatCoordinates[i + 1];
+      length += Math.sqrt((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1));
+      x1 = x2;
+      y1 = y2;
+    }
+    return length;
+  }
 
 
-    /**
-     * Handle pointer move.
-     * @param {ol.MapBrowserEvent} evt
-     */
-    var pointerMoveHandler = function(evt) {
-        if (evt.dragging || !isActive) {
-            return;
-        }
-        /** @type {string} */
-        var helpMsg = translate['start_measure_line'];//'Click to start drawing';
-
-        if (sketch) {
-            var geom = (sketch.getGeometry());
-            if (geom instanceof ol.geom.Polygon) {
-                helpMsg = continuePolygonMsg;
-            } else if (geom instanceof ol.geom.LineString) {
-                helpMsg = translate['continue_measure_line'];
-            }
-        }
-        helpTooltipElement.innerHTML = helpMsg;
-        helpTooltip.setPosition(evt.coordinate);
-
-        $(helpTooltipElement).removeClass('hidden');
-    };
-
-    var draw; // global so we can remove it later
-    var drawLayer;
-    function addInteraction(map) {
-        var type ='LineString';// (typeSelect.value === 'area' ? 'Polygon' : 'LineString');
-        var source = new ol.source.Vector();
-        draw = new ol.interaction.Draw({
-            source: source,
-            type: /** @type {ol.geom.GeometryType} */ (type)
-        });
-        var measureStyle = new ISY.MapImplementation.OL3.Styles.Measure();
-        drawLayer = new ol.layer.Vector({
-                    source: source,
-                    style: measureStyle.Styles()
-                });
-
-        map.addInteraction(draw);
-        map.addLayer(drawLayer);
-
-        createMeasureTooltip(map);
-        createHelpTooltip(map);
-
-        var listener;
-        draw.on('drawstart',
-            function(evt) {
-                // set sketch
-                sketch = evt.feature;
-
-                /** @type {ol.Coordinate|undefined} */
-                var tooltipCoord = evt.coordinate;
-
-                listener = sketch.getGeometry().on('change', function(evt) {
-                    var geom = evt.target;
-                    var output;
-                    if (geom instanceof ol.geom.Polygon) {
-                        output = formatArea(/** @type {ol.geom.Polygon} */ (geom));
-                        tooltipCoord = geom.getInteriorPoint().getCoordinates();
-                    } else if (geom instanceof ol.geom.LineString) {
-                        output = formatLength( /** @type {ol.geom.LineString} */ (geom));
-                        tooltipCoord = geom.getLastCoordinate();
-                    }
-                    measureTooltipElement.innerHTML = output.string;
-                    eventHandler.TriggerEvent(ISY.Events.EventTypes.MeasureMouseMove, output);
-                    measureTooltip.setPosition(tooltipCoord);
-                });
-            }, this);
-
-        draw.on('drawend',
-            function() {
-                measureTooltipElement.className = 'tooltip tooltip-static';
-                measureTooltip.setOffset([0, -7]);
-                // unset sketch
-                sketch = null;
-                // unset tooltip so that a new one can be created
-                measureTooltipElement = null;
-                createMeasureTooltip(map);
-                ol.Observable.unByKey(listener);
-            }, this);
+  /**
+   * format length output
+   * @param {ol.geom.Polygon} polygon
+   * @return {string}
+   */
+  var formatArea = function (polygon) {
+    var output;
+    var unit;
+    var value;
+    var area; // = polygon.getArea();
+    if (polygon.getArea === undefined) {
+      area = polygon;
+    } else {
+      area = polygon.getArea();
     }
 
 
-    /**
-     * Creates a new help tooltip
-     */
-    function createHelpTooltip(map) {
-        if (helpTooltipElement) {
-            if (helpTooltipElement.parentNode !== null){
-                helpTooltipElement.parentNode.removeChild(helpTooltipElement);
-            }
-        }
-        helpTooltipElement = document.createElement('div');
-        helpTooltipElement.className = 'tooltip hidden';
-        helpTooltip = new ol.Overlay({
-            element: helpTooltipElement,
-            offset: [15, 0],
-            positioning: 'center-left'
-        });
-        map.addOverlay(helpTooltip);
+    if (area > 100000) {
+      unit = 'km<sup>2</sup>';
+      value = Math.round(area / 1000000 * 100) / 100;
+      output = value + ' ' + unit;
+    } else if (area < 100000 && area > 1000) {
+      unit = 'da';
+      value = Math.round(area / 1000 * 100) / 100;
+      output = value + ' ' + unit;
+    } else {
+      unit = 'm<sup>2</sup>';
+      value = Math.round(area * 100) / 100;
+      output = value + ' ' + unit;
     }
-
-
-    /**
-     * Creates a new measure tooltip
-     */
-    function createMeasureTooltip(map) {
-        if (measureTooltipElement) {
-            if (measureTooltipElement.parentNode !== null){
-                measureTooltipElement.parentNode.removeChild(measureTooltipElement);
-            }
-        }
-        measureTooltipElement = document.createElement('div');
-        measureTooltipElement.className = 'tooltip tooltip-measure';
-        measureTooltip = new ol.Overlay({
-            element: measureTooltipElement,
-            offset: [0, -15],
-            positioning: 'bottom-center'
-        });
-        map.addOverlay(measureTooltip);
-    }
-
-    /**
-     * format length output
-     * @param {ol.geom.LineString} line
-     * @return {string}
-     */
-    var formatLength = function(line) {
-        var length = Math.round(line.getLength() * 100) / 100;
-        var output;
-        var unit;
-        var value;
-        if (length > 1000) {
-            unit = 'km';
-            value = Math.round(length / 1000 * 100) / 100;
-            output = value + ' ' + unit;
-        } else {
-            unit = 'm';
-            value = Math.round(length * 100) / 100;
-            output = value + ' ' + unit;
-        }
-        return {
-            string: output,
-            unit: unit,
-            value: value,
-            order: 1
-        };
-    };
-
-
-    /**
-     * format length output
-     * @param {ol.geom.Polygon} polygon
-     * @return {string}
-     */
-    var formatArea = function(polygon) {
-        var area = polygon.getArea();
-        var output;
-        if (area > 10000) {
-            output = (Math.round(area / 1000000 * 100) / 100) +
-                ' ' + 'km<sup>2</sup>';
-        } else {
-            output = (Math.round(area * 100) / 100) +
-                ' ' + 'm<sup>2</sup>';
-        }
-        return output;
-    };
-
-    function  activate(map, options){
-        isActive = true;
-        translate = options.translate;
-        map.on('pointermove', pointerMoveHandler);
-
-        $(map.getViewport()).on('mouseout', function() {
-            $(helpTooltipElement).addClass('hidden');
-        });
-        addInteraction(map);
-    }
-
-    function deactivate(map){
-            if (isActive) {
-                isActive = false;
-                if (map !== undefined) {
-                    map.removeLayer(drawLayer);
-                    measureTooltipElement.className = 'tooltip tooltip-static';
-                    measureTooltip.setOffset([0, -7]);
-                    measureTooltipElement = null;
-                    map.removeInteraction(draw);
-                    map.removeOverlay(measureTooltip);
-                    map.removeOverlay(helpTooltip);
-                    if (helpTooltipElement) {
-                        helpTooltipElement.parentNode.removeChild(helpTooltipElement);
-                    }
-                    if (measureTooltipElement) {
-                        measureTooltipElement.parentNode.removeChild(measureTooltipElement);
-                    }
-                    var tooltipStaticElements = document.getElementsByClassName('tooltip tooltip-static');
-                    while(tooltipStaticElements.length > 0){
-                        var staticElement = tooltipStaticElements[0];
-                        staticElement.parentNode.removeChild(staticElement);
-                    }
-                }
-                eventHandler.TriggerEvent(ISY.Events.EventTypes.MeasureEnd);
-            }
-    }
-
     return {
-        Activate: activate,
-        Deactivate: deactivate
+      string: output,
+      unit: unit,
+      value: value,
+      order: 2
     };
-};
-var ISY = ISY || {};
-ISY.MapImplementation = ISY.MapImplementation || {};
-ISY.MapImplementation.OL3 = ISY.MapImplementation.OL3 || {};
+  };
 
-ISY.MapImplementation.OL3.ModifyFeature = function(eventHandler){
+  function activate(map, options) {
+    isActive = true;
+    translate = options.translate;
+    map.on('pointermove', pointerMoveHandler);
 
-    var isActive = false;
-    var translate;
-    var typeObject;
-    var features;
-    var snappingFeatures;
+    $(map.getViewport()).on('mouseout', function () {
+      $(helpTooltipElement).addClass('hidden');
+    });
+    addInteraction(map);
+  }
 
-    /**
-     * Currently drawn feature.
-     * @type {ol.Feature}
-     */
-    var sketch;
-
-
-    /**
-     * The help tooltip element.
-     * @type {Element}
-     */
-    var helpTooltipElement;
-
-
-    /**
-     * Overlay to show the help messages.
-     * @type {ol.Overlay}
-     */
-    var helpTooltip;
-
-    /**
-     * Message to show when the user is drawing a line.
-     * @type {string}
-     */
-    //var continueLineMsg = 'Click to continue drawing the line';
-
-
-    /**
-     * Handle pointer move.
-     * @param {ol.MapBrowserEvent} evt
-     */
-    var pointerMoveHandler = function(evt) {
-        if (!isActive) {
-            return;
-        }
-        /** @type {string} */
-        var helpMsg = translate['start_modify'];//'Click to start drawing';
-
-        //if (sketch) {
-        //    var geom = (sketch.getGeometry());
-        //    if (geom instanceof ol.geom.Polygon) {
-        //        helpMsg = translate['continue_drawing'];//continuePolygonMsg;
-        //    } else if (geom instanceof ol.geom.LineString) {
-        //        helpMsg = continueLineMsg;
-        //    }
-        //}
-        if (helpTooltipElement !== undefined){
-        helpTooltipElement.innerHTML = helpMsg;
-        helpTooltip.setPosition(evt.coordinate);
-
-        $(helpTooltipElement).removeClass('hidden');
-        }
-    };
-
-    var modify; // global so we can remove it later
-    var snapping;
-
-    function addInteraction(map) {
-        if (typeObject === "Line"){
-            typeObject = "LineString";
-        }
-        var newFeatures = new ol.Collection(features);
-        modify = new ol.interaction.Modify({
-            features: newFeatures,
-
-            deleteCondition: function(event) {
-                return ol.events.condition.shiftKeyOnly(event) &&
-                    ol.events.condition.singleClick(event);
-            }
-        });
-
-        map.addInteraction(modify);
-        initSnapping(map);
-        createHelpTooltip(map);
-
-        var listener;
-        modify.on('modifyend',
-            function(evt) {
-                ol.Observable.unByKey(listener);
-                sketch = evt.features.getArray()[0];  //evt.feature;
-                eventHandler.TriggerEvent(ISY.Events.EventTypes.ModifyFeatureEnd, sketch);
-            }, this);
-
-    }
-
-    function initSnapping(map){
-        var snappingFeaturesCollection = new ol.Collection(snappingFeatures);
-        snapping = new ol.interaction.Snap({
-            features: snappingFeaturesCollection
-        });
-
-        map.addInteraction(snapping);
-    }
-
-    /**
-     * Creates a new help tooltip
-     */
-    function createHelpTooltip(map) {
-        if (helpTooltipElement) {
-            if (helpTooltipElement.parentNode !== null){
-                helpTooltipElement.parentNode.removeChild(helpTooltipElement);
-            }
-        }
-        helpTooltipElement = document.createElement('div');
-        helpTooltipElement.className = 'tooltip hidden';
-        helpTooltip = new ol.Overlay({
-            element: helpTooltipElement,
-            offset: [15, 0],
-            positioning: 'center-left'
-        });
-        map.addOverlay(helpTooltip);
-    }
-
-    function  activate(map, options){
-        isActive = true;
-        translate = options.translate;
-        features = [];
-        if (!Array.isArray(options.features)){
-            features.push(options.features);
-        } else {
-
-            for (var i = 0; i < options.features.length; i++) {
-                features.push(options.features[i]);
-            }
-        }
-        snappingFeatures = options.snappingFeatures;
-
-        map.on('pointermove', pointerMoveHandler);
-
-        $(map.getViewport()).on('mouseout', function() {
-            $(helpTooltipElement).addClass('hidden');
-        });
-        addInteraction(map);
-    }
-
-    function _removeOverlays(map){
-
+  function deactivate(map) {
+    if (isActive) {
+      isActive = false;
+      if (map !== undefined) {
+        map.removeLayer(drawLayer);
+        measureTooltipElement.className = 'tooltip tooltip-static';
+        measureTooltip.setOffset([0, -7]);
+        circleFeature.getGeometry().setRadius(0);
+        measureTooltipElement = null;
+        map.removeInteraction(draw);
+        map.removeOverlay(circleOverlay);
+        map.removeOverlay(measureTooltip);
         map.removeOverlay(helpTooltip);
-        if (helpTooltipElement !== null) {
-            if (helpTooltipElement.parentNode !== null){
-                helpTooltipElement.parentNode.removeChild(helpTooltipElement);
-            }
+        if (helpTooltipElement) {
+          helpTooltipElement.parentNode.removeChild(helpTooltipElement);
         }
-
+        if (measureTooltipElement) {
+          measureTooltipElement.parentNode.removeChild(measureTooltipElement);
+        }
         var tooltipStaticElements = document.getElementsByClassName('tooltip tooltip-static');
-        while(tooltipStaticElements.length > 0){
-            var staticElement = tooltipStaticElements[0];
-            staticElement.parentNode.removeChild(staticElement);
+        while (tooltipStaticElements.length > 0) {
+          var staticElement = tooltipStaticElements[0];
+          staticElement.parentNode.removeChild(staticElement);
         }
+      }
+      eventHandler.TriggerEvent(ISY.Events.EventTypes.MeasureEnd);
     }
+  }
 
-    function deactivate(map){
-        if (isActive) {
-            isActive = false;
-            sketch = null;
-            if (map !== undefined) {
-                map.removeInteraction(modify);
-                map.removeInteraction(snapping);
-                _removeOverlays(map);
-            }
-        }
-    }
-
-    return {
-        Activate: activate,
-        Deactivate: deactivate
-    };
+  return {
+    Activate: activate,
+    Deactivate: deactivate
+  };
 };
+
+var ISY = ISY || {};
+ISY.MapImplementation = ISY.MapImplementation || {};
+ISY.MapImplementation.OL3 = ISY.MapImplementation.OL3 || {};
+
+ISY.MapImplementation.OL3.MeasureLine = function (eventHandler) {
+
+  var isActive = false;
+  var translate;
+
+  /**
+   * Currently drawn feature.
+   * @type {ol.Feature}
+   */
+  var sketch;
+
+
+  /**
+   * The help tooltip element.
+   * @type {Element}
+   */
+  var helpTooltipElement;
+
+
+  /**
+   * Overlay to show the help messages.
+   * @type {ol.Overlay}
+   */
+  var helpTooltip;
+
+
+  /**
+   * The measure tooltip element.
+   * @type {Element}
+   */
+  var measureTooltipElement;
+
+
+  /**
+   * Overlay to show the measurement.
+   * @type {ol.Overlay}
+   */
+  var measureTooltip;
+
+
+  /**
+   * Message to show when the user is drawing a polygon.
+   * @type {string}
+   */
+  var continuePolygonMsg = 'Click to continue drawing the polygon';
+
+
+  /**
+   * Message to show when the user is drawing a line.
+   * @type {string}
+   */
+  //var continueLineMsg = 'Click to continue drawing the line';
+
+
+  /**
+   * Handle pointer move.
+   * @param {ol.MapBrowserEvent} evt
+   */
+  var pointerMoveHandler = function (evt) {
+    if (evt.dragging || !isActive) {
+      return;
+    }
+    /** @type {string} */
+    var helpMsg = translate['start_measure_line']; //'Click to start drawing';
+
+    if (sketch) {
+      var geom = (sketch.getGeometry());
+      if (geom instanceof ol.geom.Polygon) {
+        helpMsg = continuePolygonMsg;
+      } else if (geom instanceof ol.geom.LineString) {
+        helpMsg = translate['continue_measure_line'];
+      }
+    }
+    helpTooltipElement.innerHTML = helpMsg;
+    helpTooltip.setPosition(evt.coordinate);
+
+    $(helpTooltipElement).removeClass('hidden');
+  };
+
+  var draw; // global so we can remove it later
+  var drawLayer;
+
+  function addInteraction(map) {
+    var type = 'LineString'; // (typeSelect.value === 'area' ? 'Polygon' : 'LineString');
+    var source = new ol.source.Vector();
+    draw = new ol.interaction.Draw({
+      source: source,
+      type: /** @type {ol.geom.GeometryType} */ (type)
+    });
+    var measureStyle = new ISY.MapImplementation.OL3.Styles.Measure();
+    drawLayer = new ol.layer.Vector({
+      source: source,
+      style: measureStyle.Styles()
+    });
+
+    map.addInteraction(draw);
+    map.addLayer(drawLayer);
+
+    createMeasureTooltip(map);
+    createHelpTooltip(map);
+
+    var listener;
+    draw.on('drawstart',
+      function (evt) {
+        // set sketch
+        sketch = evt.feature;
+
+        /** @type {ol.Coordinate|undefined} */
+        var tooltipCoord = evt.coordinate;
+
+        listener = sketch.getGeometry().on('change', function (evt) {
+          var geom = evt.target;
+          var output;
+          if (geom instanceof ol.geom.Polygon) {
+            output = formatArea( /** @type {ol.geom.Polygon} */ (geom));
+            tooltipCoord = geom.getInteriorPoint().getCoordinates();
+          } else if (geom instanceof ol.geom.LineString) {
+            output = formatLength( /** @type {ol.geom.LineString} */ (geom));
+            tooltipCoord = geom.getLastCoordinate();
+          }
+          measureTooltipElement.innerHTML = output.string;
+          eventHandler.TriggerEvent(ISY.Events.EventTypes.MeasureMouseMove, output);
+          measureTooltip.setPosition(tooltipCoord);
+        });
+      }, this);
+
+    draw.on('drawend',
+      function () {
+        measureTooltipElement.className = 'tooltip tooltip-static';
+        measureTooltip.setOffset([0, -7]);
+        // unset sketch
+        sketch = null;
+        // unset tooltip so that a new one can be created
+        measureTooltipElement = null;
+        createMeasureTooltip(map);
+        ol.Observable.unByKey(listener);
+      }, this);
+  }
+
+
+  /**
+   * Creates a new help tooltip
+   */
+  function createHelpTooltip(map) {
+    if (helpTooltipElement) {
+      if (helpTooltipElement.parentNode !== null) {
+        helpTooltipElement.parentNode.removeChild(helpTooltipElement);
+      }
+    }
+    helpTooltipElement = document.createElement('div');
+    helpTooltipElement.className = 'tooltip hidden';
+    helpTooltip = new ol.Overlay({
+      element: helpTooltipElement,
+      offset: [15, 0],
+      positioning: 'center-left'
+    });
+    map.addOverlay(helpTooltip);
+  }
+
+
+  /**
+   * Creates a new measure tooltip
+   */
+  function createMeasureTooltip(map) {
+    if (measureTooltipElement) {
+      if (measureTooltipElement.parentNode !== null) {
+        measureTooltipElement.parentNode.removeChild(measureTooltipElement);
+      }
+    }
+    measureTooltipElement = document.createElement('div');
+    measureTooltipElement.className = 'tooltip tooltip-measure';
+    measureTooltip = new ol.Overlay({
+      element: measureTooltipElement,
+      offset: [0, -15],
+      positioning: 'bottom-center'
+    });
+    map.addOverlay(measureTooltip);
+  }
+
+  /**
+   * format length output
+   * @param {ol.geom.LineString} line
+   * @return {string}
+   */
+  var formatLength = function (line) {
+    var length = Math.round(line.getLength() * 100) / 100;
+    var output;
+    var unit;
+    var value;
+    if (length > 1000) {
+      unit = 'km';
+      value = Math.round(length / 1000 * 100) / 100;
+      output = value + ' ' + unit;
+    } else {
+      unit = 'm';
+      value = Math.round(length * 100) / 100;
+      output = value + ' ' + unit;
+    }
+    return {
+      string: output,
+      unit: unit,
+      value: value,
+      order: 1
+    };
+  };
+
+
+  /**
+   * format length output
+   * @param {ol.geom.Polygon} polygon
+   * @return {string}
+   */
+  var formatArea = function (polygon) {
+    var area = polygon.getArea();
+    var output;
+    if (area > 10000) {
+      output = (Math.round(area / 1000000 * 100) / 100) +
+        ' ' + 'km<sup>2</sup>';
+    } else {
+      output = (Math.round(area * 100) / 100) +
+        ' ' + 'm<sup>2</sup>';
+    }
+    return output;
+  };
+
+  function activate(map, options) {
+    isActive = true;
+    translate = options.translate;
+    map.on('pointermove', pointerMoveHandler);
+
+    $(map.getViewport()).on('mouseout', function () {
+      $(helpTooltipElement).addClass('hidden');
+    });
+    addInteraction(map);
+  }
+
+  function deactivate(map) {
+    if (isActive) {
+      isActive = false;
+      if (map !== undefined) {
+        map.removeLayer(drawLayer);
+        measureTooltipElement.className = 'tooltip tooltip-static';
+        measureTooltip.setOffset([0, -7]);
+        measureTooltipElement = null;
+        map.removeInteraction(draw);
+        map.removeOverlay(measureTooltip);
+        map.removeOverlay(helpTooltip);
+        if (helpTooltipElement) {
+          helpTooltipElement.parentNode.removeChild(helpTooltipElement);
+        }
+        if (measureTooltipElement) {
+          measureTooltipElement.parentNode.removeChild(measureTooltipElement);
+        }
+        var tooltipStaticElements = document.getElementsByClassName('tooltip tooltip-static');
+        while (tooltipStaticElements.length > 0) {
+          var staticElement = tooltipStaticElements[0];
+          staticElement.parentNode.removeChild(staticElement);
+        }
+      }
+      eventHandler.TriggerEvent(ISY.Events.EventTypes.MeasureEnd);
+    }
+  }
+
+  return {
+    Activate: activate,
+    Deactivate: deactivate
+  };
+};
+
+var ISY = ISY || {};
+ISY.MapImplementation = ISY.MapImplementation || {};
+ISY.MapImplementation.OL3 = ISY.MapImplementation.OL3 || {};
+
+ISY.MapImplementation.OL3.ModifyFeature = function (eventHandler) {
+
+  var isActive = false;
+  var translate;
+  var typeObject;
+  var features;
+  var snappingFeatures;
+
+  /**
+   * Currently drawn feature.
+   * @type {ol.Feature}
+   */
+  var sketch;
+
+
+  /**
+   * The help tooltip element.
+   * @type {Element}
+   */
+  var helpTooltipElement;
+
+
+  /**
+   * Overlay to show the help messages.
+   * @type {ol.Overlay}
+   */
+  var helpTooltip;
+
+  /**
+   * Message to show when the user is drawing a line.
+   * @type {string}
+   */
+  //var continueLineMsg = 'Click to continue drawing the line';
+
+
+  /**
+   * Handle pointer move.
+   * @param {ol.MapBrowserEvent} evt
+   */
+  var pointerMoveHandler = function (evt) {
+    if (!isActive) {
+      return;
+    }
+    /** @type {string} */
+    var helpMsg = translate['start_modify']; //'Click to start drawing';
+
+    //if (sketch) {
+    //    var geom = (sketch.getGeometry());
+    //    if (geom instanceof ol.geom.Polygon) {
+    //        helpMsg = translate['continue_drawing'];//continuePolygonMsg;
+    //    } else if (geom instanceof ol.geom.LineString) {
+    //        helpMsg = continueLineMsg;
+    //    }
+    //}
+    if (helpTooltipElement !== undefined) {
+      helpTooltipElement.innerHTML = helpMsg;
+      helpTooltip.setPosition(evt.coordinate);
+
+      $(helpTooltipElement).removeClass('hidden');
+    }
+  };
+
+  var modify; // global so we can remove it later
+  var snapping;
+
+  function addInteraction(map) {
+    if (typeObject === "Line") {
+      typeObject = "LineString";
+    }
+    var newFeatures = new ol.Collection(features);
+    modify = new ol.interaction.Modify({
+      features: newFeatures,
+
+      deleteCondition: function (event) {
+        return ol.events.condition.shiftKeyOnly(event) &&
+          ol.events.condition.singleClick(event);
+      }
+    });
+
+    map.addInteraction(modify);
+    initSnapping(map);
+    createHelpTooltip(map);
+
+    var listener;
+    modify.on('modifyend',
+      function (evt) {
+        ol.Observable.unByKey(listener);
+        sketch = evt.features.getArray()[0]; //evt.feature;
+        eventHandler.TriggerEvent(ISY.Events.EventTypes.ModifyFeatureEnd, sketch);
+      }, this);
+
+  }
+
+  function initSnapping(map) {
+    var snappingFeaturesCollection = new ol.Collection(snappingFeatures);
+    snapping = new ol.interaction.Snap({
+      features: snappingFeaturesCollection
+    });
+
+    map.addInteraction(snapping);
+  }
+
+  /**
+   * Creates a new help tooltip
+   */
+  function createHelpTooltip(map) {
+    if (helpTooltipElement) {
+      if (helpTooltipElement.parentNode !== null) {
+        helpTooltipElement.parentNode.removeChild(helpTooltipElement);
+      }
+    }
+    helpTooltipElement = document.createElement('div');
+    helpTooltipElement.className = 'tooltip hidden';
+    helpTooltip = new ol.Overlay({
+      element: helpTooltipElement,
+      offset: [15, 0],
+      positioning: 'center-left'
+    });
+    map.addOverlay(helpTooltip);
+  }
+
+  function activate(map, options) {
+    isActive = true;
+    translate = options.translate;
+    features = [];
+    if (!Array.isArray(options.features)) {
+      features.push(options.features);
+    } else {
+
+      for (var i = 0; i < options.features.length; i++) {
+        features.push(options.features[i]);
+      }
+    }
+    snappingFeatures = options.snappingFeatures;
+
+    map.on('pointermove', pointerMoveHandler);
+
+    $(map.getViewport()).on('mouseout', function () {
+      $(helpTooltipElement).addClass('hidden');
+    });
+    addInteraction(map);
+  }
+
+  function _removeOverlays(map) {
+
+    map.removeOverlay(helpTooltip);
+    if (helpTooltipElement !== null) {
+      if (helpTooltipElement.parentNode !== null) {
+        helpTooltipElement.parentNode.removeChild(helpTooltipElement);
+      }
+    }
+
+    var tooltipStaticElements = document.getElementsByClassName('tooltip tooltip-static');
+    while (tooltipStaticElements.length > 0) {
+      var staticElement = tooltipStaticElements[0];
+      staticElement.parentNode.removeChild(staticElement);
+    }
+  }
+
+  function deactivate(map) {
+    if (isActive) {
+      isActive = false;
+      sketch = null;
+      if (map !== undefined) {
+        map.removeInteraction(modify);
+        map.removeInteraction(snapping);
+        _removeOverlays(map);
+      }
+    }
+  }
+
+  return {
+    Activate: activate,
+    Deactivate: deactivate
+  };
+};
+
 var ISY = ISY || {};
 ISY.MapImplementation = ISY.MapImplementation || {};
 ISY.MapImplementation.OL3 = ISY.MapImplementation.OL3 || {};
@@ -9095,10 +8296,9 @@ ISY.MapImplementation.OL3.Offline = function(){
                     addrevision = true;
                     projectXml = response;
                     pouchAttachment = btoa(unescape(encodeURIComponent(JSON.stringify(response))));
-                }).error(function(){
+                }).fail(function(){
                     addrevision = false;
                     _getOfflineResource(url, isConfig, callback);
-
                 });
                 //projectXml = $.ajax(
                 //    { type: 'GET', url: url, async: false }
@@ -9570,7 +8770,7 @@ ISY.MapImplementation.OL3.Offline = function(){
     //};
 
     var _getCircleStyle = function() {
-        var iconStyle = new ol.style.Style({
+        return new ol.style.Style({
             stroke: new ol.style.Stroke({
                 color: 'rgba(0,0,0,0.3)',
                 width: 1
@@ -9579,17 +8779,15 @@ ISY.MapImplementation.OL3.Offline = function(){
                 color: 'rgba(160,0,0,0.9)'
             })
         });
-        return iconStyle;
     };
 
     var _getSquareStyle = function() {
-        var iconStyle = new ol.style.Style({
+        return new ol.style.Style({
             stroke: new ol.style.Stroke({
                 color: 'rgba(160,0,0,0.7)',
                 width: 2
             })
         });
-        return iconStyle;
     };
 
     var _addCircle = function(c) {
@@ -9792,8 +8990,8 @@ ISY.MapImplementation.OL3.PrintBoxSelect = function (eventHandler) {
       }
     }
     return {
-      'sone': sone,
-      'localProj': localProj
+      sone: sone,
+      localProj: localProj
     };
   };
   var getBiSone = function (geometry, sone) {
@@ -9915,7 +9113,7 @@ ISY.MapImplementation.OL3.PrintBoxSelect = function (eventHandler) {
   };
 
   var _getStyle = function () {
-    var style = new ol.style.Style({
+    return new ol.style.Style({
       stroke: new ol.style.Stroke({
         color: '#ee9900',
         width: 1,
@@ -9926,7 +9124,6 @@ ISY.MapImplementation.OL3.PrintBoxSelect = function (eventHandler) {
         opacity: 0.4
       })
     });
-    return style;
   };
 
   var _removeKineticDragPan = function (map, copyOld) {
@@ -9992,182 +9189,182 @@ var ISY = ISY || {};
 ISY.MapImplementation = ISY.MapImplementation || {};
 ISY.MapImplementation.OL3 = ISY.MapImplementation.OL3 || {};
 
-ISY.MapImplementation.OL3.ProgressBar = function(eventHandler){
-    var olMap;
-    var _progress;
-    /*
-     Start up functions Start
-     */
+ISY.MapImplementation.OL3.ProgressBar = function (eventHandler) {
+  var olMap;
+  var _progress;
+  /*
+   Start up functions Start
+   */
 
-    function init(map){
-        olMap = map;
-        eventHandler.RegisterEvent(ISY.Events.EventTypes.ChangeLayers, _registerProgress);
+  function init(map) {
+    olMap = map;
+    eventHandler.RegisterEvent(ISY.Events.EventTypes.ChangeLayers, _registerProgress);
+  }
+
+  function _registerProgress() {
+    var element = document.getElementById('progressbar');
+    if (element === undefined || element === null) {
+      return;
     }
+    _progress = new Progress(element);
+    olMap.getLayers().forEach(function (layer) {
+      var source = layer.getSource();
+      if (source) {
+        var sourceType = source.get('type');
+        switch (sourceType) {
+          case 'ol.source.Vector':
+            source.on('vectorloadstart', function () {
+              _progress.addLoading();
+            });
+            source.on('vectorloadend', function () {
+              _progress.addLoaded();
+            });
+            break;
+          case 'ol.source.ImageWMS':
+            source.on('imageloadstart', function () {
+              _progress.addLoading();
+            });
 
-    function _registerProgress(){
-        var element = document.getElementById('progressbar');
-        if (element === undefined || element === null){
-            return;
+            source.on('imageloadend', function () {
+              _progress.addLoaded();
+            });
+            source.on('imageloaderror', function () {
+              _progress.addLoaded();
+            });
+            break;
+          case 'ol.source.TileWMS':
+            source.on('tileloadstart', function () {
+              _progress.addLoading();
+            });
+
+            source.on('tileloadend', function () {
+              _progress.addLoaded();
+            });
+            source.on('tileloaderror', function () {
+              _progress.addLoaded();
+            });
+            break;
+          case undefined:
+            break;
+          default:
+            break;
         }
-        _progress = new Progress(element);
-        olMap.getLayers().forEach(function(layer){
-            var source = layer.getSource();
-            if (source) {
-                var sourceType = source.get('type');
-                switch (sourceType) {
-                    case 'ol.source.Vector':
-                        source.on('vectorloadstart', function () {
-                            _progress.addLoading();
-                        });
-                        source.on('vectorloadend', function () {
-                            _progress.addLoaded();
-                        });
-                        break;
-                    case 'ol.source.ImageWMS':
-                        source.on('imageloadstart', function () {
-                            _progress.addLoading();
-                        });
+      }
+    });
+  }
 
-                        source.on('imageloadend', function () {
-                            _progress.addLoaded();
-                        });
-                        source.on('imageloaderror', function () {
-                            _progress.addLoaded();
-                        });
-                        break;
-                    case 'ol.source.TileWMS':
-                        source.on('tileloadstart', function () {
-                            _progress.addLoading();
-                        });
+  /**
+   * Renders a progress bar.
+   * @param {Element} el The target element.
+   * @constructor
+   */
+  function Progress(el) {
+    this.el = el;
+    this.loading = 0;
+    this.loaded = 0;
+  }
 
-                        source.on('tileloadend', function () {
-                            _progress.addLoaded();
-                        });
-                        source.on('tileloaderror', function () {
-                            _progress.addLoaded();
-                        });
-                        break;
-                    case undefined:
-                        break;
-                    default:
-                        console.log(source.get('type'));
-                        break;
-                }
-            }
-        });
+
+  /**
+   * Increment the count of loading tiles.
+   */
+  Progress.prototype.addLoading = function () {
+    if (this.loading === 0) {
+      this.show();
     }
+    ++this.loading;
+    this.update();
+  };
 
-    /**
-     * Renders a progress bar.
-     * @param {Element} el The target element.
-     * @constructor
-     */
-    function Progress(el) {
-        this.el = el;
-        this.loading = 0;
-        this.loaded = 0;
+
+  /**
+   * Increment the count of loaded tiles.
+   */
+  Progress.prototype.addLoaded = function () {
+    var this_ = this;
+    ++this_.loaded;
+    if (this_.loaded > this_.loading) {
+      this_.loaded = this_.loading;
     }
+    this_.update();
+  };
 
 
-    /**
-     * Increment the count of loading tiles.
-     */
-    Progress.prototype.addLoading = function() {
-        if (this.loading === 0) {
-            this.show();
-        }
-        ++this.loading;
-        this.update();
-    };
+  /**
+   * Update the progress bar.
+   */
+  Progress.prototype.update = function () {
+    this.el.style.width = (this.loaded / this.loading * 100).toFixed(1) + '%';
+    if (this.loading === this.loaded) {
+      this.loading = 0;
+      this.loaded = 0;
+      var this_ = this;
+      setTimeout(function () {
+        this_.hide();
+      }, 500);
+    }
+  };
 
 
-    /**
-     * Increment the count of loaded tiles.
-     */
-    Progress.prototype.addLoaded = function() {
-        var this_ = this;
-        ++this_.loaded;
-        if (this_.loaded > this_.loading){
-            this_.loaded = this_.loading;
-        }
-        this_.update();
-    };
+  /**
+   * Show the progress bar.
+   */
+  Progress.prototype.show = function () {
+    this.el.style.visibility = 'visible';
+  };
 
 
-    /**
-     * Update the progress bar.
-     */
-    Progress.prototype.update = function() {
-        this.el.style.width = (this.loaded / this.loading * 100).toFixed(1) + '%';
-        if (this.loading === this.loaded) {
-            this.loading = 0;
-            this.loaded = 0;
-            var this_ = this;
-            setTimeout(function() {
-                this_.hide();
-            }, 500);
-        }
-    };
+  /**
+   * Hide the progress bar.
+   */
+  Progress.prototype.hide = function () {
+    if (this.loading === this.loaded) {
+      this.el.style.visibility = 'hidden';
+      this.el.style.width = 0;
+    }
+  };
 
-
-    /**
-     * Show the progress bar.
-     */
-    Progress.prototype.show = function() {
-        this.el.style.visibility = 'visible';
-    };
-
-
-    /**
-     * Hide the progress bar.
-     */
-    Progress.prototype.hide = function() {
-        if (this.loading === this.loaded) {
-            this.el.style.visibility = 'hidden';
-            this.el.style.width = 0;
-        }
-    };
-
-    return {
-        // Start up start
-        Init: init
-        // Start up end
-    };
+  return {
+    // Start up start
+    Init: init
+    // Start up end
+  };
 };
 
 var ISY = ISY || {};
 ISY.MapImplementation = ISY.MapImplementation || {};
 ISY.MapImplementation.OL3 = ISY.MapImplementation.OL3 || {};
 
-ISY.MapImplementation.OL3.Utilities = function(){
-    function convertGmlToGeoJson(gml){
-        var xmlParser = new ol.format.WMSCapabilities();
-        var xmlFeatures = xmlParser.read(gml);
-        var gmlParser = new ol.format.GML();
-        var features = gmlParser.readFeatures(xmlFeatures);
-        var jsonParser = new ol.format.GeoJSON();
-        return jsonParser.writeFeatures(features);
-    }
+ISY.MapImplementation.OL3.Utilities = function () {
+  function convertGmlToGeoJson(gml) {
+    var xmlParser = new ol.format.WMSCapabilities();
+    var xmlFeatures = xmlParser.read(gml);
+    var gmlParser = new ol.format.GML();
+    var features = gmlParser.readFeatures(xmlFeatures);
+    var jsonParser = new ol.format.GeoJSON();
+    return jsonParser.writeFeatures(features);
+  }
 
-    function extentToGeoJson(x, y){
-        var point = new ol.geom.Point([x, y]);
-        var feature = new ol.Feature();
-        feature.setGeometry(point);
-        var geoJson = new ol.format.GeoJSON();
-        return geoJson.writeFeature(feature);
-    }
+  function extentToGeoJson(x, y) {
+    var point = new ol.geom.Point([x, y]);
+    var feature = new ol.Feature();
+    feature.setGeometry(point);
+    var geoJson = new ol.format.GeoJSON();
+    return geoJson.writeFeature(feature);
+  }
 
-    return {
-        ConvertGmlToGeoJson: convertGmlToGeoJson,
-        ExtentToGeoJson: extentToGeoJson
-    };
+  return {
+    ConvertGmlToGeoJson: convertGmlToGeoJson,
+    ExtentToGeoJson: extentToGeoJson
+  };
 };
+
 var ISY = ISY || {};
 ISY.MapImplementation = ISY.MapImplementation || {};
 ISY.MapImplementation.OL3 = ISY.MapImplementation.OL3 || {};
 ISY.MapImplementation.OL3.Sources = ISY.MapImplementation.OL3.Sources || {};
 
-ISY.MapImplementation.OL3.Sources.CustomMessageHandler = function(eventHandler, _getIsySubLayerFromPool){
+ISY.MapImplementation.OL3.Sources.CustomMessageHandler = function (eventHandler, _getIsySubLayerFromPool) {
     var olMap;
     var _message = 'Service down: ';
     var _messageHandler;
@@ -10176,7 +9373,7 @@ ISY.MapImplementation.OL3.Sources.CustomMessageHandler = function(eventHandler, 
      Start up functions Start
      */
 
-    function init(map, message){
+  function init(map, message) {
         olMap = map;
         if (message && message.length > 0) {
             _message = message;
@@ -10185,22 +9382,22 @@ ISY.MapImplementation.OL3.Sources.CustomMessageHandler = function(eventHandler, 
         eventHandler.RegisterEvent(ISY.Events.EventTypes.ChangeLayers, _registerMessageHandler);
     }
 
-    function initMessage(message){
+  function initMessage(message) {
         if (message !== undefined) {
             _message = message;
         }
         _registerMessageHandler();
     }
 
-    function showCustomMessage(message){
+  function showCustomMessage(message) {
         if (_messageHandler) {
             _messageHandler.showMessage(message);
         }
     }
 
-    function _registerMessageHandler(){
+  function _registerMessageHandler() {
         var element = document.getElementById('messagecontainer');
-        if (element === undefined || element === null){
+    if (element === undefined || element === null) {
             return;
         }
         _messageHandler = new CustomMessageHandler(element);
@@ -10232,87 +9429,89 @@ ISY.MapImplementation.OL3.Sources.CustomMessageHandler = function(eventHandler, 
         }
     }
 
-    function CustomMessageHandler(el){
+  function CustomMessageHandler(el) {
         this.el = el;
         this.messages = [];
         this.looping = false;
         this.visible = false;
     }
 
-    CustomMessageHandler.prototype.showMessage = function(message, event){
+  CustomMessageHandler.prototype.showMessage = function (message, event) {
         var self = this;
         message = self.getResponse(message, event);
         if (self.messages.length === 0) {
             self.messages.push(message);
         } else {
             var addItem = true;
-            self.messages.forEach(function(item){
-                if (addItem && item === message){
+      self.messages.forEach(function (item) {
+        if (addItem && item === message) {
                     addItem = false;
                 }
             });
-            if (addItem){
+      if (addItem) {
                 self.messages.push(message);
             }
         }
         self.show();
     };
 
-    CustomMessageHandler.prototype.getResponse = function(message, event){
-        try{
+  CustomMessageHandler.prototype.getResponse = function (message, event) {
+    try {
             var image = event.tile.getImage();
-            if (image && image.src && (image.src.toLowerCase().indexOf('&gkt=') < 0 || image.src.toLowerCase().indexOf('?gkt=') < 0)){
+      if (image && image.src && (image.src.toLowerCase().indexOf('&gkt=') < 0 || image.src.toLowerCase().indexOf('?gkt=') < 0)) {
                 var response = $.ajax({
                     type: "GET",
                     url: image.src,
                     async: false
                 }).responseText;
                 var responseObject = xml2json.parser(response);
-                if (responseObject && responseObject.serviceexceptionreport && responseObject.serviceexceptionreport.serviceexception){
+        if (responseObject && responseObject.serviceexceptionreport && responseObject.serviceexceptionreport.serviceexception) {
                     var gkterror = responseObject.serviceexceptionreport.serviceexception.split('\n');
                     return message + '<br>' + gkterror[2] + ' ' + gkterror[3].substr(0, gkterror[3].indexOf(' Token:'));
                 }
             }
-        } catch(err) { }
+    } catch (err) {
+      return err;
+    }
         return message;
     };
 
 
-    CustomMessageHandler.prototype.show = function(){
+  CustomMessageHandler.prototype.show = function () {
         var self = this;
-        if (self.visible){
+    if (self.visible) {
             return;
         }
         self.visible = true;
         self.el.innerHTML = '';
         self.el.style.opacity = 1;
         self.el.style.visibility = 'visible';
-        if (!self.looping){
+    if (!self.looping) {
             self.looping = true;
             self.loopMessages();
         }
     };
 
-    CustomMessageHandler.prototype.hide = function(){
+  CustomMessageHandler.prototype.hide = function () {
         var self = this;
-        if (!self.visible){
+    if (!self.visible) {
             return;
         }
         self.looping = false;
         self.visible = false;
         self.el.style.opacity = 0;
-        setTimeout(function(){
+    setTimeout(function () {
             self.el.style.visibility = 'hidden';
         }, 2000);
     };
 
-    CustomMessageHandler.prototype.loopMessages = function(self){
-        if (self === undefined){
+  CustomMessageHandler.prototype.loopMessages = function (self) {
+    if (self === undefined) {
             self = this;
         }
-        if (self.messages.length > 0){
+    if (self.messages.length > 0) {
             self.el.innerHTML = _message + self.messages.pop();
-            setTimeout(function(){
+      setTimeout(function () {
                 self.loopMessages(self);
             }, 1000);
         } else {
@@ -10334,239 +9533,241 @@ ISY.MapImplementation = ISY.MapImplementation || {};
 ISY.MapImplementation.OL3 = ISY.MapImplementation.OL3 || {};
 ISY.MapImplementation.OL3.Sources = ISY.MapImplementation.OL3.Sources || {};
 
-ISY.MapImplementation.OL3.Sources.Vector = function(isySubLayer){
-    var source;
-    //var projection = ol.proj.get(isySubLayer.coordinate_system);
+ISY.MapImplementation.OL3.Sources.Vector = function (isySubLayer) {
+  var source;
+  //var projection = ol.proj.get(isySubLayer.coordinate_system);
 
-    switch (isySubLayer.format){
-        case ISY.Domain.SubLayer.FORMATS.geoJson:
-            source = new ol.source.Vector({
-                format: new ol.format.GeoJSON({
-                    defaultDataProjection: isySubLayer.coordinate_system
-                }),
-                url: isySubLayer.url});
-            source.set('type', 'ol.source.Vector');
-            break;
-    }
+  switch (isySubLayer.format) {
+    case ISY.Domain.SubLayer.FORMATS.geoJson:
+      source = new ol.source.Vector({
+        format: new ol.format.GeoJSON({
+          defaultDataProjection: isySubLayer.coordinate_system
+        }),
+        url: isySubLayer.url
+      });
+      source.set('type', 'ol.source.Vector');
+      break;
+  }
 
-    return source;
+  return source;
 };
+
 var ISY = ISY || {};
 ISY.MapImplementation = ISY.MapImplementation || {};
 ISY.MapImplementation.OL3 = ISY.MapImplementation.OL3 || {};
 ISY.MapImplementation.OL3.Sources = ISY.MapImplementation.OL3.Sources || {};
 
-ISY.MapImplementation.OL3.Sources.Wfs = function(isySubLayer, offline, parameters, featureObj, eventHandler){
-    /* jshint -W024 */
-    var strategy;
-    //isySubLayer.tiled = true; // todo: just for testing, remove before merge!
+ISY.MapImplementation.OL3.Sources.Wfs = function (isySubLayer, offline, parameters, featureObj, eventHandler) {
+  /* jshint -W024 */
+  var strategy;
+  //isySubLayer.tiled = true; // todo: just for testing, remove before merge!
 
-    if (isySubLayer.tiled) {
-        var newMapRes = [];
-        newMapRes[0] = 21664;
-        for (var t = 1; t < 18; t++) {
-            newMapRes[t] = newMapRes[t - 1] / 2;
-        }
-        strategy = ol.loadingstrategy.tile(new ol.tilegrid.TileGrid({
-            origin: [0, 0, 0],
-            resolutions: newMapRes
-            //strategy = ol.loadingstrategy.tile(new ol.tilegrid.XYZ({
-            //maxZoom: 19
-        }));
-    } else {
-        strategy = ol.loadingstrategy.bbox;
+  if (isySubLayer.tiled) {
+    var newMapRes = [];
+    newMapRes[0] = 21664;
+    for (var t = 1; t < 18; t++) {
+      newMapRes[t] = newMapRes[t - 1] / 2;
     }
-    var projection = ol.proj.get(isySubLayer.coordinate_system);
+    strategy = ol.loadingstrategy.tile(new ol.tilegrid.TileGrid({
+      origin: [0, 0, 0],
+      resolutions: newMapRes
+      //strategy = ol.loadingstrategy.tile(new ol.tilegrid.XYZ({
+      //maxZoom: 19
+    }));
+  } else {
+    strategy = ol.loadingstrategy.bbox;
+  }
+  var projection = ol.proj.get(isySubLayer.coordinate_system);
 
-    var parseResponse = function(response){
-        source.dispatchEvent('vectorloadend');
-        var featureNamespace;
+  var parseResponse = function (response) {
+    source.dispatchEvent('vectorloadend');
+    var featureNamespace;
 
-        if (typeof source.format === 'undefined') {
-            var gmlFormat;
-            switch (isySubLayer.version) {
-                case '1.0.0':
-                    gmlFormat = new ol.format.GML2();
-                    break;
-                case '1.1.0':
-                    gmlFormat = new ol.format.GML3();
-                    break;
-                case '2.0.0':
-                    gmlFormat = new ol.format.GML3();
-                    break;
-                default:
-                    gmlFormat = new ol.format.GML();
-                    break;
-            }
+    if (typeof source.format === 'undefined') {
+      var gmlFormat;
+      switch (isySubLayer.version) {
+        case '1.0.0':
+          gmlFormat = new ol.format.GML2();
+          break;
+        case '1.1.0':
+          gmlFormat = new ol.format.GML3();
+          break;
+        case '2.0.0':
+          gmlFormat = new ol.format.GML3();
+          break;
+        default:
+          gmlFormat = new ol.format.GML();
+          break;
+      }
 
-            // TODO: Remove this gigahack when the number of returned coordinates is static (or implement an algorithm that can find the dimension dynamically).
-            if (isySubLayer.srs_dimension && isySubLayer.srs_dimension.length > 0) {
-                featureNamespace = response.firstChild.firstElementChild.firstElementChild.namespaceURI;
-                source.format = new ol.format.WFS({
-                    featureType: response.firstChild.firstElementChild.firstElementChild.localName,
-                    featureNS: featureNamespace,
-                    gmlFormat: gmlFormat
-                });
+      // TODO: Remove this gigahack when the number of returned coordinates is static (or implement an algorithm that can find the dimension dynamically).
+      if (isySubLayer.srs_dimension && isySubLayer.srs_dimension.length > 0) {
+        featureNamespace = response.firstChild.firstElementChild.firstElementChild.namespaceURI;
+        source.format = new ol.format.WFS({
+          featureType: response.firstChild.firstElementChild.firstElementChild.localName,
+          featureNS: featureNamespace,
+          gmlFormat: gmlFormat
+        });
 
-            } else {
-                featureNamespace = response.firstChild.namespaceURI;
-                source.format = new ol.format.WFS({
-                    featureType: isySubLayer.name,
-                    featureNS: featureNamespace,
-                    gmlFormat: gmlFormat
-                });
-            }
-        }
-        if (isySubLayer.srs_dimension === "3") {
-            featureNamespace = response.firstChild.firstElementChild.firstElementChild.namespaceURI;
-            if (response.firstChild.nodeName.toLowerCase() === "gml:featurecollection") {
-                for (var i = 0; i < response.firstChild.childNodes.length; i++) {
-                    var member = response.firstChild.childNodes.item(i);
-                    if (member.nodeName.toLowerCase() === "gml:featuremember") {
-                        for (var j = 0; j < member.childNodes.length; j++) {
-                            var feature = member.childNodes.item(j);
-                            if (feature.nodeName.toLowerCase() === isySubLayer.name.toLowerCase()) {
-                                for (var k = 0; k < feature.childNodes.length; k++) {
-                                    var attribute = feature.childNodes.item(k);
-                                    for (var l = 0; l < attribute.childNodes.length; l++) {
-                                        var attributeType = attribute.childNodes.item(l).nodeName;
-                                        if (attributeType.toLowerCase() === "gml:linestring" || attributeType.toLowerCase() === "gml:point") {
-                                            var srsAttribute = document.createAttribute("srsDimension");
-                                            srsAttribute.value = isySubLayer.srs_dimension;
-                                            attribute.firstElementChild.attributes.setNamedItem(srsAttribute);
-                                        }
-                                    }
-                                }
-                            }
-                        }
+      } else {
+        featureNamespace = response.firstChild.namespaceURI;
+        source.format = new ol.format.WFS({
+          featureType: isySubLayer.name,
+          featureNS: featureNamespace,
+          gmlFormat: gmlFormat
+        });
+      }
+    }
+    if (isySubLayer.srs_dimension === "3") {
+      featureNamespace = response.firstChild.firstElementChild.firstElementChild.namespaceURI;
+      if (response.firstChild.nodeName.toLowerCase() === "gml:featurecollection") {
+        for (var i = 0; i < response.firstChild.childNodes.length; i++) {
+          var member = response.firstChild.childNodes.item(i);
+          if (member.nodeName.toLowerCase() === "gml:featuremember") {
+            for (var j = 0; j < member.childNodes.length; j++) {
+              var feature = member.childNodes.item(j);
+              if (feature.nodeName.toLowerCase() === isySubLayer.name.toLowerCase()) {
+                for (var k = 0; k < feature.childNodes.length; k++) {
+                  var attribute = feature.childNodes.item(k);
+                  for (var l = 0; l < attribute.childNodes.length; l++) {
+                    var attributeType = attribute.childNodes.item(l).nodeName;
+                    if (attributeType.toLowerCase() === "gml:linestring" || attributeType.toLowerCase() === "gml:point") {
+                      var srsAttribute = document.createAttribute("srsDimension");
+                      srsAttribute.value = isySubLayer.srs_dimension;
+                      attribute.firstElementChild.attributes.setNamedItem(srsAttribute);
                     }
+                  }
                 }
+              }
             }
+          }
         }
+      }
+    }
 
-        var features = source.format.readFeatures(response);
-        //
-        //var featureIsValid = function (feature){
-        //    var geometryIsOk = false;
-        //    var getZCoordinate = function (c) {
-        //        if (Array.isArray(c)) {
-        //            return getZCoordinate(c[c.length - 1]);
-        //        }
-        //        return c;
-        //    };
-        //    var geometry = feature.getGeometry();
-        //    var coords = geometry.getCoordinates();
-        //    var z = getZCoordinate(coords);
-        //    if (!isNaN(z)){
-        //        geometryIsOk = true;
-        //    }
-        //    return geometryIsOk;
-        //};
-
-        if (features && features.length > 0) {
-            //var featureIsOk = true;
-            //if (!featureIsValid(features[0])) {
-            //    if (console && console.log) {
-            //        featureIsOk = false;
-            //        console.log(isySubLayer.name + ' does not have valid coordinates!');
-            //    }
-            //}
-            features.forEach(function(featureitem){
-                featureitem.set("layerguid", isySubLayer.id);
-                //if (!featureIsOk){
-                //    var geometry = featureitem.getGeometry();
-                //    var coords = geometry.getCoordinates().join(',').split(',');
-                //    var newcoords = [];
-                //    for (var i = 0; i < coords.length; i+=2){
-                //        if(!isNaN(coords[i])) {
-                //            newcoords.push([parseFloat(coords[i]), parseFloat(coords[i + 1]), 0]);
-                //        }
-                //    }
-                //    geometry.setCoordinates(newcoords);
-                //}
-                //if (featureObj) {
-                //    if (featureObj.getId() === featureitem.getId()) {
-                //        featureObj = featureitem;
-                //    }
-                //}
-            });
-            source.addFeatures(features);
-        }
-
-        if (features.length > 0) {
-            isySubLayer.geometryName = features[0].getGeometryName();
-        }
-        isySubLayer.featureNS = featureNamespace;
-
-        if (featureObj) {
-            if (eventHandler){
-                eventHandler.TriggerEvent(ISY.Events.EventTypes.RefreshSourceDone, featureObj);
-            }
-        }
-
-    };
-
-    var loader = function(extent) {
-        source.dispatchEvent('vectorloadstart');
-        var url = isySubLayer.url;
-        if (Array.isArray(isySubLayer.url)){
-            url = isySubLayer.url[0];
-        }
-        if (url.toLowerCase().indexOf("service=wfs") < 0){
-            url += "service=WFS&";
-        }
-        url += 'request=GetFeature&' +
-            'version=' + isySubLayer.version + '&typename=' + isySubLayer.name + '&' +
-            'srsname=' + isySubLayer.coordinate_system + '&' +
-            'bbox=' + extent.join(',');
-
-        if (parameters){
-            // source is refreshed
-            for (var index in parameters) {
-                url += '&' + index + '=' + parameters[index];
-            }
-        }
-        var isCaching = source.get('caching');
-        if (isCaching || offline.IsActive()){
-            // We are either offline or in caching mode
-            // problem finding unique key here, using extent og zoom for now
-            //var key = view.getZoom() + '-' + extent[0] + '-' + extent[1];
-            var key = extent[0] + '-' + extent[1];
-            // todo: should not use zoom in key, but rather cache the tiles from outmost zoom level
-            offline.GetLayerResource(key, isySubLayer.name, url, parseResponse);
-        } else {
-                $.ajax({
-                    url: url
-                }).done(function(response) {
-                    if (typeof response === 'object'){
-                        if (response.firstChild.childElementCount === 0) {
-                            return;
-                        }
-                    } else {
-                        return;
-                    }
-                    parseResponse(response);
-                });
-        }
-    };
-
-    var source = new ol.source.Vector({
-        loader: loader,
-        strategy: strategy,
-        projection: projection
-    });
-    source.set('type', 'ol.source.Vector');
-
-    //// v3.11.2 bugfix:
-    //if (source.getProjection() === null){
-    //    if (source.setProjection) {
-    //        source.setProjection(projection);
-    //    } else if (source.f !== undefined) {
-    //        source.f = projection;
+    var features = source.format.readFeatures(response);
+    //
+    //var featureIsValid = function (feature){
+    //    var geometryIsOk = false;
+    //    var getZCoordinate = function (c) {
+    //        if (Array.isArray(c)) {
+    //            return getZCoordinate(c[c.length - 1]);
+    //        }
+    //        return c;
+    //    };
+    //    var geometry = feature.getGeometry();
+    //    var coords = geometry.getCoordinates();
+    //    var z = getZCoordinate(coords);
+    //    if (!isNaN(z)){
+    //        geometryIsOk = true;
     //    }
-    //}
+    //    return geometryIsOk;
+    //};
 
-    return source;
+    if (features && features.length > 0) {
+      //var featureIsOk = true;
+      //if (!featureIsValid(features[0])) {
+      //    if (console && console.log) {
+      //        featureIsOk = false;
+      //        console.log(isySubLayer.name + ' does not have valid coordinates!');
+      //    }
+      //}
+      features.forEach(function (featureitem) {
+        featureitem.set("layerguid", isySubLayer.id);
+        //if (!featureIsOk){
+        //    var geometry = featureitem.getGeometry();
+        //    var coords = geometry.getCoordinates().join(',').split(',');
+        //    var newcoords = [];
+        //    for (var i = 0; i < coords.length; i+=2){
+        //        if(!isNaN(coords[i])) {
+        //            newcoords.push([parseFloat(coords[i]), parseFloat(coords[i + 1]), 0]);
+        //        }
+        //    }
+        //    geometry.setCoordinates(newcoords);
+        //}
+        //if (featureObj) {
+        //    if (featureObj.getId() === featureitem.getId()) {
+        //        featureObj = featureitem;
+        //    }
+        //}
+      });
+      source.addFeatures(features);
+    }
+
+    if (features.length > 0) {
+      isySubLayer.geometryName = features[0].getGeometryName();
+    }
+    isySubLayer.featureNS = featureNamespace;
+
+    if (featureObj) {
+      if (eventHandler) {
+        eventHandler.TriggerEvent(ISY.Events.EventTypes.RefreshSourceDone, featureObj);
+      }
+    }
+
+  };
+
+  var loader = function (extent) {
+    source.dispatchEvent('vectorloadstart');
+    var url = isySubLayer.url;
+    if (Array.isArray(isySubLayer.url)) {
+      url = isySubLayer.url[0];
+    }
+    if (url.toLowerCase().indexOf("service=wfs") < 0) {
+      url += "service=WFS&";
+    }
+    url += 'request=GetFeature&' +
+      'version=' + isySubLayer.version + '&typename=' + isySubLayer.name + '&' +
+      'srsname=' + isySubLayer.coordinate_system + '&' +
+      'bbox=' + extent.join(',');
+
+    if (parameters) {
+      // source is refreshed
+      for (var index in parameters) {
+        url += '&' + index + '=' + parameters[index];
+      }
+    }
+    var isCaching = source.get('caching');
+    if (isCaching || offline.IsActive()) {
+      // We are either offline or in caching mode
+      // problem finding unique key here, using extent og zoom for now
+      //var key = view.getZoom() + '-' + extent[0] + '-' + extent[1];
+      var key = extent[0] + '-' + extent[1];
+      // todo: should not use zoom in key, but rather cache the tiles from outmost zoom level
+      offline.GetLayerResource(key, isySubLayer.name, url, parseResponse);
+    } else {
+      $.ajax({
+        url: url
+      }).done(function (response) {
+        if (typeof response === 'object') {
+          if (response.firstChild.childElementCount === 0) {
+            return;
+          }
+        } else {
+          return;
+        }
+        parseResponse(response);
+      });
+    }
+  };
+
+  var source = new ol.source.Vector({
+    loader: loader,
+    strategy: strategy,
+    projection: projection
+  });
+  source.set('type', 'ol.source.Vector');
+
+  //// v3.11.2 bugfix:
+  //if (source.getProjection() === null){
+  //    if (source.setProjection) {
+  //        source.setProjection(projection);
+  //    } else if (source.f !== undefined) {
+  //        source.f = projection;
+  //    }
+  //}
+
+  return source;
 };
 
 /**
@@ -10604,16 +9805,18 @@ ISY.MapImplementation.OL3.Sources.WfsT = function (url, featureType, featureNS, 
      * @throws {Error} error message.
      */
     function insertFeature(feature, describedSource) {
-        if (source_.format === undefined && describedSource === undefined){
+    if (source_.format === undefined && describedSource === undefined) {
             eventHandler.TriggerEvent(ISY.Events.EventTypes.TransactionInsertEnd, false);
             return false;
         }
-        if (describedSource !== undefined){
+    if (describedSource !== undefined) {
             source_ = describedSource;
         }
 
         var featureNode = source_.format.writeTransaction([feature], null, null, {
-            gmlOptions: {srsName: srsName_},
+      gmlOptions: {
+        srsName: srsName_
+      },
             featureNS: featureNS_,
             featureType: featureType_
         });
@@ -10637,21 +9840,18 @@ ISY.MapImplementation.OL3.Sources.WfsT = function (url, featureType, featureNS, 
                 if (result === undefined) {
                     okResult = false;
                     message += "Response parse error.";
-                }
-                else if (typeof result === 'string') {
+        } else if (typeof result === 'string') {
                     okResult = false;
                     message += result;
-                }else if (result.transactionSummary === undefined){
+        } else if (result.transactionSummary === undefined) {
                     okResult = false;
-                }
-                else if (result && result.transactionSummary.totalInserted === 1) {
+        } else if (result && result.transactionSummary.totalInserted === 1) {
                     var gmlId = result.insertIds[0];
                     feature.setId(gmlId);
                     var localId = getLocalId(gmlId);
                     feature.set("lokalId", localId);
                     source_.addFeature(feature);
-                }
-                else {
+        } else {
                     okResult = false;
                     message += "Feature not inserted.";
                 }
@@ -10681,7 +9881,7 @@ ISY.MapImplementation.OL3.Sources.WfsT = function (url, featureType, featureNS, 
      * @throws {Error} error message.
      */
     function updateFeature(feature) {
-        if (source_.format === undefined){
+    if (source_.format === undefined) {
             eventHandler.TriggerEvent(ISY.Events.EventTypes.TransactionUpdateEnd, false);
             return false;
         }
@@ -10698,23 +9898,26 @@ ISY.MapImplementation.OL3.Sources.WfsT = function (url, featureType, featureNS, 
 
         if (featureNamespace !== "") {
             featureNode = source_.format.writeTransaction(null, [clone], null, {
-                gmlOptions: {srsName: srsName_},
+        gmlOptions: {
+          srsName: srsName_
+        },
                 featureNS: featureNS_,
                 featureType: getFeatureName(featureType_),
                 featurePrefix: featureNamespace
             });
 
-            featureData = _convertXmlToString(featureNode);//serializer_.serializeToString(featureNode);
+      featureData = _convertXmlToString(featureNode); //serializer_.serializeToString(featureNode);
             featureData = featureData.replace(/<Name>/g, "<Name>" + featureNamespace + ":");
             //featureData = featureData.replace("xmlns=\"http://www.opengis.net/gml\"", "xmlns=\"http://www.opengis.net/gml/3.2\"");
-        }
-        else {
+    } else {
             featureNode = source_.format.writeTransaction(null, [clone], null, {
-                gmlOptions: {srsName: srsName_},
+        gmlOptions: {
+          srsName: srsName_
+        },
                 featureNS: featureNS_,
                 featureType: getFeatureName(featureType_)
             });
-            featureData = _convertXmlToString(featureNode);//serializer_.serializeToString(featureNode);
+      featureData = _convertXmlToString(featureNode); //serializer_.serializeToString(featureNode);
         }
 
         featureData = featureData.replace('xsi:schemaLocation="http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.1.0/wfs.xsd"', 'xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.1.0/wfs.xsd" xmlns="http://www.opengis.net/wfs"');
@@ -10737,22 +9940,18 @@ ISY.MapImplementation.OL3.Sources.WfsT = function (url, featureType, featureNS, 
                 if (result === undefined) {
                     okResult = false;
                     message += "Response parse error.";
-                }
-                else if (typeof result === 'string') {
+        } else if (typeof result === 'string') {
                     okResult = false;
                     message += result;
-                }else if (result.transactionSummary === undefined){
+        } else if (result.transactionSummary === undefined) {
                     okResult = false;
-                }
-                else if (result && result.transactionSummary.totalUpdated === undefined) {
+        } else if (result && result.transactionSummary.totalUpdated === undefined) {
                     okResult = false;
                     message += "Response parse error.";
-                }
-                else if (result && result.transactionSummary.totalUpdated !== 1) {
+        } else if (result && result.transactionSummary.totalUpdated !== 1) {
                     okResult = false;
                     message += "Feature not updated.";
-                }
-                else {
+        } else {
                     var sourceFeature = source_.getFeatureById(gmlId);
                     if (sourceFeature !== undefined) {
                         sourceFeature.setProperties(properties);
@@ -10779,13 +9978,13 @@ ISY.MapImplementation.OL3.Sources.WfsT = function (url, featureType, featureNS, 
     //var nodeElements = [];
     var resultString = "";
 
-    function _getChildElementToString(node){
-        if (node.childElementCount > 0){
-            for (var i = 0; i < node.childNodes.length; i++){
+  function _getChildElementToString(node) {
+    if (node.childElementCount > 0) {
+      for (var i = 0; i < node.childNodes.length; i++) {
 
-                resultString += '<'+node.childNodes[i].nodeName;
-                if (node.childNodes[i].attributes.length > 0){
-                    for (var j = 0; j < node.childNodes[i].attributes.length; j++){
+        resultString += '<' + node.childNodes[i].nodeName;
+        if (node.childNodes[i].attributes.length > 0) {
+          for (var j = 0; j < node.childNodes[i].attributes.length; j++) {
                         var attribute = node.childNodes[i].attributes[j];
                         resultString += ' ' + attribute.name + '=' + '"' + attribute.value + '"';
                     }
@@ -10793,65 +9992,65 @@ ISY.MapImplementation.OL3.Sources.WfsT = function (url, featureType, featureNS, 
                 if (node.childNodes[i].childNodes.length > 0) {
                     resultString += ">";
                 }
-                if (node.childNodes[i].childElementCount > 0){
+        if (node.childNodes[i].childElementCount > 0) {
                     _getChildElementToString(node.childNodes[i]);
-                }else{
-                    if (node.childNodes[i].childNodes.length > 0){
+        } else {
+          if (node.childNodes[i].childNodes.length > 0) {
                         resultString += node.childNodes[i].childNodes[0].nodeValue;
                         resultString += "</" + node.childNodes[i].nodeName + ">";
-                    }else{
+          } else {
                         resultString += "/>";
                     }
                 }
             }
-        }else{
-            resultString += '<'+node.nodeName;
-            if (node.attributes.length > 0){
-                for (var k = 0; k < node.attributes.length; k++){
+    } else {
+      resultString += '<' + node.nodeName;
+      if (node.attributes.length > 0) {
+        for (var k = 0; k < node.attributes.length; k++) {
                     var attribute1 = node.attributes[k];
                     resultString += ' ' + attribute1.name + '=' + '"' + attribute1.value + '"';
                 }
             }
-            if (node.childNodes[0].childNodes.length > 0){
+      if (node.childNodes[0].childNodes.length > 0) {
                 resultString += ">";
                 resultString += node.childNodes[0].nodeValue;
                 resultString += "</" + node.nodeName + ">";
-            }else{
+      } else {
                 resultString += "/>";
             }
         }
         resultString += "</" + node.nodeName + ">";
     }
 
-    function _convertXmlToString(xmlDoc){
+  function _convertXmlToString(xmlDoc) {
         var tags = xmlDoc.getElementsByTagName('*');
         var xmlString = '';
         var tagNodeName = [];
         var parentNode = tags[0].parentNode;
 
         //parent node
-        xmlString += '<'+parentNode.nodeName;
+    xmlString += '<' + parentNode.nodeName;
         tagNodeName.push(parentNode.nodeName);
-        for (var m = 0; m < parentNode.attributes.length; m++){
+    for (var m = 0; m < parentNode.attributes.length; m++) {
             var parentAttribute = parentNode.attributes[m];
             xmlString += ' ' + parentAttribute.name + '=' + '"' + parentAttribute.value + '"';
         }
         xmlString += ">";
 
         //main node
-        xmlString += '<'+tags[0].nodeName;
+    xmlString += '<' + tags[0].nodeName;
         tagNodeName.push(tags[0].nodeName);
-        for (var c = 0; c < tags[0].attributes.length; c++){
+    for (var c = 0; c < tags[0].attributes.length; c++) {
             var mainAttribute = tags[0].attributes[c];
             xmlString += ' ' + mainAttribute.name + '=' + '"' + mainAttribute.value + '"';
         }
         xmlString += ">";
 
         var tag = tags[0]; // tags[0] has all children - not necessary to loop tags
-        for (var i = 0; i < tag.childElementCount; i++){
-            xmlString += '<'+tag.childNodes[i].nodeName;
-            if (tag.childNodes[i].attributes.length > 0){
-                for (var b = 0; b < tag.childNodes[i].attributes.length; b++){
+    for (var i = 0; i < tag.childElementCount; i++) {
+      xmlString += '<' + tag.childNodes[i].nodeName;
+      if (tag.childNodes[i].attributes.length > 0) {
+        for (var b = 0; b < tag.childNodes[i].attributes.length; b++) {
                     var attribute = tag.childNodes[i].attributes[b];
                     xmlString += ' ' + attribute.name + '=' + '"' + attribute.value + '"';
                 }
@@ -10862,7 +10061,7 @@ ISY.MapImplementation.OL3.Sources.WfsT = function (url, featureType, featureNS, 
             resultString = "";
         }
 
-        for (var k = tagNodeName.length - 1; k >= 0; k--){
+    for (var k = tagNodeName.length - 1; k >= 0; k--) {
             xmlString += "</" + tagNodeName[k] + ">";
         }
         return xmlString;
@@ -10875,7 +10074,7 @@ ISY.MapImplementation.OL3.Sources.WfsT = function (url, featureType, featureNS, 
      * @throws {Error} error message.
      */
     function deleteFeature(feature) {
-        if (source_.format === undefined){
+    if (source_.format === undefined) {
             eventHandler.TriggerEvent(ISY.Events.EventTypes.TransactionRemoveEnd, false);
             return false;
         }
@@ -10885,7 +10084,7 @@ ISY.MapImplementation.OL3.Sources.WfsT = function (url, featureType, featureNS, 
             featureType: getFeatureName(featureType_)
         });
 
-        var featureData = _convertXmlToString(featureNode);//serializer_.serializeToString(featureNode);
+    var featureData = _convertXmlToString(featureNode); //serializer_.serializeToString(featureNode);
         featureData = featureData.replace('xsi:schemaLocation="http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.1.0/wfs.xsd"', 'xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.1.0/wfs.xsd" xmlns="http://www.opengis.net/wfs"');
         featureData = featureData.replace('Filter', 'Filter xmlns="http://www.opengis.net/ogc"');
 
@@ -10901,15 +10100,12 @@ ISY.MapImplementation.OL3.Sources.WfsT = function (url, featureType, featureNS, 
                 if (result === undefined) {
                     okResult = false;
                     message += "Response parse error.";
-                }
-                else if (typeof result === 'string') {
+        } else if (typeof result === 'string') {
                     okResult = false;
                     message += result;
-                }
-                else if (result.transactionSummary === undefined){
+        } else if (result.transactionSummary === undefined) {
                     okResult = false;
-                }
-                else if (result && result.transactionSummary.totalDeleted !== 1) {
+        } else if (result && result.transactionSummary.totalDeleted !== 1) {
                         okResult = false;
                         message += "Feature not deleted.";
                 }
@@ -10941,8 +10137,7 @@ ISY.MapImplementation.OL3.Sources.WfsT = function (url, featureType, featureNS, 
         var result;
         if (window.Document && data instanceof Document && data.documentElement && data.documentElement.localName === 'ExceptionReport') {
             result = (data.getElementsByTagNameNS('http://www.opengis.net/ows', 'ExceptionText').item(0).textContent);
-        }
-        else {
+    } else {
             result = source_.format.readTransactionResponse(data);
         }
         return result;
@@ -10965,8 +10160,7 @@ ISY.MapImplementation.OL3.Sources.WfsT = function (url, featureType, featureNS, 
         var startIndex = gmlId.indexOf('{');
         if (startIndex !== -1) {
             return gmlId.substr(startIndex);
-        }
-        else {
+    } else {
             return "";
         }
     }
@@ -10981,8 +10175,7 @@ ISY.MapImplementation.OL3.Sources.WfsT = function (url, featureType, featureNS, 
         if (startIndex !== -1) {
             startIndex++;
             return featureType.substr(startIndex);
-        }
-        else {
+    } else {
             return featureType;
         }
     }
@@ -10996,8 +10189,7 @@ ISY.MapImplementation.OL3.Sources.WfsT = function (url, featureType, featureNS, 
         var startIndex = featureType.indexOf(':');
         if (startIndex !== -1) {
             return featureType.substr(0, startIndex);
-        }
-        else {
+    } else {
             return "";
         }
     }
@@ -11016,75 +10208,75 @@ ISY.MapImplementation = ISY.MapImplementation || {};
 ISY.MapImplementation.OL3 = ISY.MapImplementation.OL3 || {};
 ISY.MapImplementation.OL3.Sources = ISY.MapImplementation.OL3.Sources || {};
 
-ISY.MapImplementation.OL3.Sources.Wms = function(isySubLayer, parameters){
-    var url;
-    var urls;
-    var getUrlParameter = function(url){
-        var urlParameter = '';
-        if (parameters) {
-            for (var index in parameters) {
-                if (urlParameter.length > 0){
-                    urlParameter += '&';
-                }
-                urlParameter += index + '=' + parameters[index];
-            }
-            if (url.indexOf('?') > 0){
-                url += '&';
-            } else {
-                url += '?';
-            }
-            url += urlParameter;
+ISY.MapImplementation.OL3.Sources.Wms = function (isySubLayer, parameters) {
+  var url;
+  var urls;
+  var getUrlParameter = function (url) {
+    var urlParameter = '';
+    if (parameters) {
+      for (var index in parameters) {
+        if (urlParameter.length > 0) {
+          urlParameter += '&';
         }
-        return url;
-    };
-    if (Array.isArray(isySubLayer.url)){
-        urls = isySubLayer.url;
-        for (var i = 0; i < urls.length; i++){
-            urls[i] = getUrlParameter(urls[i]);
-        }
-    } else {
-        url = isySubLayer.url;
-        url = getUrlParameter(url);
+        urlParameter += index + '=' + parameters[index];
+      }
+      if (url.indexOf('?') > 0) {
+        url += '&';
+      } else {
+        url += '?';
+      }
+      url += urlParameter;
     }
-    var source;
+    return url;
+  };
+  if (Array.isArray(isySubLayer.url)) {
+    urls = isySubLayer.url;
+    for (var i = 0; i < urls.length; i++) {
+      urls[i] = getUrlParameter(urls[i]);
+    }
+  } else {
+    url = isySubLayer.url;
+    url = getUrlParameter(url);
+  }
+  var source;
 
-    if (isySubLayer.tiled) {
-        source = new ol.source.TileWMS({
-            params: {
-                LAYERS: isySubLayer.name,
-                VERSION: "1.1.1",
-                FORMAT: isySubLayer.format,
-                STYLES: isySubLayer.styles || ''
-            },
-            url: url,
-            urls: urls,
-            crossOrigin: isySubLayer.crossOrigin,
-            transparent: isySubLayer.transparent,
-            minResolution: isySubLayer.minResolution,
-            maxResolution: isySubLayer.maxResolution
-        });
-        source.set('type', 'ol.source.TileWMS');
-    } else {
-        if (url === undefined){
-            url = urls[urls.length - 1];
-        }
-        source = new ol.source.ImageWMS({
-            params: {
-                LAYERS: isySubLayer.name,
-                VERSION: "1.1.1",
-                FORMAT: isySubLayer.format,
-                STYLES: isySubLayer.styles || ''
-            },
-            ratio: 1,
-            url: url,
-            crossOrigin: isySubLayer.crossOrigin,
-            transparent: isySubLayer.transparent,
-            minResolution: isySubLayer.minResolution,
-            maxResolution: isySubLayer.maxResolution
-        });
-        source.set('type', 'ol.source.ImageWMS');
+  if (isySubLayer.tiled) {
+    source = new ol.source.TileWMS({
+      params: {
+        LAYERS: isySubLayer.name,
+        VERSION: "1.1.1",
+        FORMAT: isySubLayer.format,
+        STYLES: isySubLayer.styles || ''
+      },
+      url: url,
+      urls: urls,
+      crossOrigin: isySubLayer.crossOrigin,
+      transparent: isySubLayer.transparent,
+      minResolution: isySubLayer.minResolution,
+      maxResolution: isySubLayer.maxResolution
+    });
+    source.set('type', 'ol.source.TileWMS');
+  } else {
+    if (url === undefined) {
+      url = urls[urls.length - 1];
     }
-    return source;
+    source = new ol.source.ImageWMS({
+      params: {
+        LAYERS: isySubLayer.name,
+        VERSION: "1.1.1",
+        FORMAT: isySubLayer.format,
+        STYLES: isySubLayer.styles || ''
+      },
+      ratio: 1,
+      url: url,
+      crossOrigin: isySubLayer.crossOrigin,
+      transparent: isySubLayer.transparent,
+      minResolution: isySubLayer.minResolution,
+      maxResolution: isySubLayer.maxResolution
+    });
+    source.set('type', 'ol.source.ImageWMS');
+  }
+  return source;
 };
 
 var ISY = ISY || {};
@@ -11092,7 +10284,7 @@ ISY.MapImplementation = ISY.MapImplementation || {};
 ISY.MapImplementation.OL3 = ISY.MapImplementation.OL3 || {};
 ISY.MapImplementation.OL3.Sources = ISY.MapImplementation.OL3.Sources || {};
 
-ISY.MapImplementation.OL3.Sources.Wmts = function(isySubLayer, parameters) {
+ISY.MapImplementation.OL3.Sources.Wmts = function (isySubLayer, parameters) {
     var projection = new ol.proj.Projection({
         code: isySubLayer.coordinate_system,
         extent: isySubLayer.extent,
@@ -11135,8 +10327,11 @@ ISY.MapImplementation.OL3.Sources.Wmts = function(isySubLayer, parameters) {
                 layer.WGS84BoundingBox = undefined;
             }
         });
-        sourceOptions = ol.source.WMTS.optionsFromCapabilities(capabilities,
-            {layer: isySubLayer.name, matrixSet: matrixSet, requestEncoding: 'KVP'});
+    sourceOptions = ol.source.WMTS.optionsFromCapabilities(capabilities, {
+      layer: isySubLayer.name,
+      matrixSet: matrixSet,
+      requestEncoding: 'KVP'
+    });
         sourceOptions.tileGrid = new ol.tilegrid.WMTS({
             extent: wmtsExtent,
             origin: sourceOptions.tileGrid.getOrigin(0),
@@ -11144,8 +10339,7 @@ ISY.MapImplementation.OL3.Sources.Wmts = function(isySubLayer, parameters) {
             matrixIds: sourceOptions.tileGrid.getMatrixIds(),
             tileSize: sourceOptions.tileGrid.getTileSize(0)
         });
-    }
-    else {
+  } else {
         var size = ol.extent.getWidth(projectionExtent) / 256;
         var resolutions = new Array(isySubLayer.numZoomLevels);
         var matrixIds = new Array(isySubLayer.numZoomLevels);
@@ -11190,7 +10384,7 @@ ISY.MapImplementation.OL3.Styles.Default = function () {
             color: '#3399CC',
             width: 2.25
         });
-        var styles = [
+        return [
             new ol.style.Style({
                 image: new ol.style.Circle({
                     fill: fill,
@@ -11201,7 +10395,6 @@ ISY.MapImplementation.OL3.Styles.Default = function () {
                 stroke: stroke
             })
         ];
-        return styles;
     };
 
     return {
@@ -11697,11 +10890,6 @@ ISY.MapImplementation.OL3.Styles.Sld = function () {
                 }
             },
             "Rule": function(node, obj) {
-                var config;
-                if (this.multipleSymbolizers) {
-                    config = {symbolizers: []};
-                }
-                //var rule = new OpenLayers.Rule(config);
                 var rule = {symbolizer:[]};
                 rule.symbolizer = {
                     fill: false,
@@ -12653,7 +11841,6 @@ ISY.MapImplementation.OL3.Styles.Sld = function () {
             } else {
                 return 'right';
             }
-            return 'left';
         },
         getBaselineValue: function(baseline){
             if (baseline === undefined){
@@ -12667,7 +11854,6 @@ ISY.MapImplementation.OL3.Styles.Sld = function () {
             } else {
                 return 'top';
             }
-            return 'bottom';
         },
         getColorValue: function(colorvalue, opacityvalue){
             //if (colorvalue === undefined){

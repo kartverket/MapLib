@@ -2,7 +2,7 @@ var ISY = ISY || {};
 ISY.MapImplementation = ISY.MapImplementation || {};
 ISY.MapImplementation.OL3 = ISY.MapImplementation.OL3 || {};
 
-ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, measure, featureInfo, mapExport, hoverInfo, measureLine, drawFeature, offline, addLayerFeature, modifyFeature, addFeatureGps, printBoxSelect, addLayerUrl){
+ISY.MapImplementation.OL3.Map = function (repository, eventHandler, httpHelper, measure, featureInfo, mapExport, hoverInfo, measureLine, drawFeature, offline, addLayerFeature, modifyFeature, addFeatureGps, printBoxSelect, addLayerUrl) {
     var map;
     var layerPool = [];
     var isySubLayerPool = [];
@@ -10,7 +10,6 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
     var mapResolutions;
     var mapScales;
     var hoverOptions;
-    var mapGroups;
     var featureEditor = new ISY.MapImplementation.OL3.FeatureEditor(eventHandler);
     var initialGeolocationChange = false;
 
@@ -39,15 +38,14 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
         Start up functions Start
      */
 
-    function initMap(targetId, mapConfig){
+  function initMap(targetId, mapConfig) {
         proxyHost = mapConfig.proxyHost;
         tokenHost = mapConfig.tokenHost;
         ticketHost = mapConfig.ticketHost;
-        mapGroups = mapConfig.groups;
         hoverOptions = mapConfig.hoverOptions;
         var numZoomLevels = mapConfig.numZoomLevels;
         var newMapRes = [];
-        newMapRes[0]= mapConfig.newMaxRes;
+    newMapRes[0] = mapConfig.newMaxRes;
         mapScales = [];
         mapScales[0] = mapConfig.newMaxScale;
         for (var t = 1; t < numZoomLevels; t++) {
@@ -61,7 +59,10 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
             units: mapConfig.extentUnits
         });
 
-        var interactions = ol.interaction.defaults({altShiftDragRotate:false, pinchRotate:false});
+    var interactions = ol.interaction.defaults({
+      altShiftDragRotate: false,
+      pinchRotate: false
+    });
 
         map = new ol.Map({
             target: targetId,
@@ -84,16 +85,15 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
             interactions: interactions
         });
         //TODO: fix initOffline
-        if (false){
+    if (false) {
             _initOffline();
         }
-
         _registerMapCallbacks();
 
-        if (mapConfig.showProgressBar){
+    if (mapConfig.showProgressBar) {
             _registerProgressBar();
         }
-        if (mapConfig.showMousePosition){
+    if (mapConfig.showMousePosition) {
             _registerMousePositionControl(mapConfig.mouseProjectionPrefix);
         }
         _registerMessageHandler();
@@ -101,20 +101,20 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
         ISY.MapImplementation.OL3.olMap = map;
     }
 
-    function _registerMapCallbacks(){
+  function _registerMapCallbacks() {
         var view = map.getView();
 
-        var changeCenter = function(){
+    var changeCenter = function () {
             var mapViewChangedObj = _getUrlObject();
             eventHandler.TriggerEvent(ISY.Events.EventTypes.ChangeCenter, mapViewChangedObj);
         };
 
-        var changeResolution = function(){
+    var changeResolution = function () {
             var mapViewChangedObj = _getUrlObject();
             eventHandler.TriggerEvent(ISY.Events.EventTypes.ChangeResolution, mapViewChangedObj);
         };
 
-        var mapMoveend = function(){
+    var mapMoveend = function () {
             _checkGktToken();
             _checkTicket();
             var mapViewChangedObj = _getUrlObject();
@@ -126,7 +126,7 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
         map.on('moveend', mapMoveend);
     }
 
-    function _registerMessageHandler(){
+  function _registerMessageHandler() {
         var layerMessageHandler = new ISY.MapImplementation.OL3.Sources.CustomMessageHandler(eventHandler, _getIsySubLayerFromPool);
         layerMessageHandler.Init(map);
 
@@ -134,21 +134,21 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
         customMessageHandler.InitMessage('');
     }
 
-    function _registerProgressBar(){
+  function _registerProgressBar() {
         var progressBar = new ISY.MapImplementation.OL3.ProgressBar(eventHandler);
         progressBar.Init(map);
     }
 
-    function _registerMousePositionControl(prefix){
+  function _registerMousePositionControl(prefix) {
         var element = document.getElementById('mouseposition');
         if (element) {
             var units = map.getView().getProjection().getUnits();
             var epsg = getEpsgCode();
             //var coordinateFunction = ol.coordinate.createStringXY(0);
-            if (prefix === undefined){
+      if (prefix === undefined) {
                 prefix = '';
             }
-            var coordinate2string = function(coord){
+      var coordinate2string = function (coord) {
                 var mousehtml = '' + prefix;
                 var geographic = false;
                 if (mousehtml.length > 0) {
@@ -158,7 +158,7 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
                             geographic = true;
                             break;
                         case 'm':
-                            switch(epsg){
+              switch (epsg) {
                                 case 'EPSG:25831':
                                 case 'EPSG:32631':
                                     mousehtml += '31 ';
@@ -195,8 +195,8 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
                             break;
                     }
                 }
-                if (geographic){
-                    mousehtml += Math.round(coord[1]*10000)/10000 + translateOptions['north'] + Math.round(coord[0]*10000)/10000 + translateOptions['east'];
+        if (geographic) {
+          mousehtml += Math.round(coord[1] * 10000) / 10000 + translateOptions['north'] + Math.round(coord[0] * 10000) / 10000 + translateOptions['east'];
                 } else {
                     mousehtml += parseInt(coord[1], 10) + translateOptions['north'] + parseInt(coord[0], 10) + translateOptions['east'];
                 }
@@ -215,7 +215,7 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
         }
     }
 
-    function _checkGktToken(){
+  function _checkGktToken() {
         var currentTime = (new Date()).getTime();
         if (currentTime < (lastGktCheck + 60000)) {
             // check if token has expired each minute
@@ -225,13 +225,13 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
         if (map.getLayers()) {
             map.getLayers().forEach(function (layer) {
                 var source = layer.getSource();
-                if (source && source.getParams){
+        if (source && source.getParams) {
                     var params = source.getParams();
                     if (params && params.GKT) {
                         //console.log(layer.typename + ' ' + params.GKT);
                         var initTime = source.get("timestamp");
                         if (initTime) {
-                            var elapsedTime = Math.round((currentTime - initTime)/1000);
+              var elapsedTime = Math.round((currentTime - initTime) / 1000);
                             if (elapsedTime > gktLifetime) {
                                 _setToken(source);
                             }
@@ -242,7 +242,7 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
         }
     }
 
-    function _checkTicket(){
+  function _checkTicket() {
         var currentTime = (new Date()).getTime();
         if (currentTime < (lastTicketCheck + 60000)) {
             // check if token has expired each minute
@@ -252,12 +252,12 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
         if (map.getLayers()) {
             map.getLayers().forEach(function (layer) {
                 var source = layer.getSource();
-                if (source && source.getParams){
+        if (source && source.getParams) {
                     var params = source.getParams();
                     if (params && params.ticket) {
                         var initTime = source.get("timestamp");
                         if (initTime) {
-                            var elapsedTime = Math.round((currentTime - initTime)/1000);
+              var elapsedTime = Math.round((currentTime - initTime) / 1000);
                             if (elapsedTime > ticketLifetime) {
                                 _setTicket(source);
                             }
@@ -268,19 +268,23 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
         }
     }
     // Adds GKT-token to existing source
-    function _setToken(source){
+  function _setToken(source) {
         //console.log("updating token");
         //console.log(layer.typename + ' - ' + source.get("timestamp") + ' - ' + params.GKT);
-        source.updateParams({GKT: _getToken()});
+    source.updateParams({
+      GKT: _getToken()
+    });
         source.set("timestamp", (new Date()).getTime());
     }
 
-    function _setTicket(source){
-        source.updateParams({ticket: _getTicket()});
+  function _setTicket(source) {
+    source.updateParams({
+      ticket: _getTicket()
+    });
         source.set("timestamp", (new Date()).getTime());
     }
 
-    function changeView(viewPropertyObject){
+  function changeView(viewPropertyObject) {
         if (map !== undefined) {
             var view = map.getView();
             var lon, lat, zoom;
@@ -295,8 +299,8 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
             }
 
             if (lon !== undefined && lat !== undefined) {
-                var latitude = typeof(lat) === 'number' ? lat : parseFloat(lat.replace(/,/g, '.'));
-                var longitude = typeof(lon) === 'number' ? lon : parseFloat(lon.replace(/,/g, '.'));
+        var latitude = typeof (lat) === 'number' ? lat : parseFloat(lat.replace(/,/g, '.'));
+        var longitude = typeof (lon) === 'number' ? lon : parseFloat(lon.replace(/,/g, '.'));
                 if (isFinite(latitude) && isFinite(longitude)) {
                     view.setCenter([longitude, latitude]);
                 }
@@ -331,8 +335,10 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
             //}
             if (isySubLayer.id && isySubLayer.name) {
                 for (var i = 0; i < features.length; ++i) {
-                    if (features[i].getProperties().Guid === undefined){
-                        features[i].setProperties({"Guid": new ISY.Utils.Guid().NewGuid()});
+          if (features[i].getProperties().Guid === undefined) {
+            features[i].setProperties({
+              Guid: new ISY.Utils.Guid().NewGuid()
+            });
                     }
                     features[i].setId(isySubLayer.name + '.' + features[i].getProperties().Guid);
                 }
@@ -366,7 +372,7 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
         }
     }
 
-    function _isLayerVisible(isySubLayer){
+  function _isLayerVisible(isySubLayer) {
         var layerexists = false;
         map.getLayers().forEach(function (maplayer) {
             if (!layerexists && maplayer.guid === isySubLayer.id) {
@@ -376,7 +382,7 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
         return layerexists;
     }
 
-    function showLayer(isySubLayer){
+  function showLayer(isySubLayer) {
         if (!_isLayerVisible(isySubLayer)) {
             var layer = _createLayer(isySubLayer);
             if (layer) {
@@ -387,15 +393,15 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
         }
     }
 
-    function getLegendStyles(isySubLayer){
+  function getLegendStyles(isySubLayer) {
         var layer = _getLayerFromPool(isySubLayer);
-        if (layer !== null){
+    if (layer !== null) {
             return getLegendStyleFromLayer(layer);
         }
         return undefined;
     }
 
-    function showBaseLayer(isySubLayer){
+  function showBaseLayer(isySubLayer) {
         if (!_isLayerVisible(isySubLayer)) {
             var layer = _createLayer(isySubLayer);
             if (layer) {
@@ -405,7 +411,7 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
         }
     }
 
-    function hideLayer(isySubLayer){
+  function hideLayer(isySubLayer) {
         if (_isLayerVisible(isySubLayer)) {
             var layer = _getLayerByGuid(isySubLayer.id);
             if (layer) {
@@ -415,11 +421,11 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
         }
     }
 
-    function _getProxyUrl(layerUrl, flattenproxy){
-        if (Array.isArray(layerUrl)){
+  function _getProxyUrl(layerUrl, flattenproxy) {
+    if (Array.isArray(layerUrl)) {
             layerUrl = layerUrl[0];
         }
-        if (flattenproxy){
+    if (flattenproxy) {
             if (Array.isArray(proxyHost)) {
                 return proxyHost[0] + layerUrl;
             }
@@ -429,42 +435,39 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
             return proxyHost + layerUrl;
         }
         var newLayerUrl = [];
-        for (var i = 0; i < proxyHost.length; i++){
+    for (var i = 0; i < proxyHost.length; i++) {
             newLayerUrl.push(proxyHost[i] + layerUrl);
         }
         return newLayerUrl;
     }
 
-    function _getToken(){
-        if (!tokenHost){
+  function _getToken() {
+    if (!tokenHost) {
             return null;
-        }
-        else if(!globalGkt || _checkGlobalGktTokenExpired()){
-            globalGkt=$.ajax({
+    } else if (!globalGkt || _checkGlobalGktTokenExpired()) {
+      globalGkt = $.ajax({
                 type: "GET",
                 url: tokenHost,
                 async: false
-            }).responseText.trim().replace(/\"/g, "");
+      }).responseText.trim().replace(/"/g, "");
             lastGlobalGktCheck = (new Date()).getTime();
         }
         return globalGkt;
     }
 
-    function _getTicket(){
-        if (!ticketHost){
+  function _getTicket() {
+    if (!ticketHost) {
             return null;
-        }
-        else if(!globalTicket || _checkGlobalTicketExpired()){
-            globalTicket=$.ajax({
+    } else if (!globalTicket || _checkGlobalTicketExpired()) {
+      globalTicket = $.ajax({
                 type: "GET",
                 url: ticketHost,
                 async: false
-            }).responseText.trim().replace(/\"/g, "");
+      }).responseText.trim().replace(/"/g, "");
             lastGlobalTicketCheck = (new Date()).getTime();
         }
         return globalTicket;
     }
-
 
     function _checkGlobalGktTokenExpired() {
         var currentTime = (new Date()).getTime();
@@ -484,32 +487,34 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
         return true;
     }
 
-    function _setLayerProperties(layer, isySubLayer){
+  function _setLayerProperties(layer, isySubLayer) {
         // For caching, remember layer config
         layer.set('config', isySubLayer);
-        layer.on('change',function(){
+    layer.on('change', function () {
             layer.set('loading', true);
         }, layer);
-        layer.on('render',function(){
+    layer.on('render', function () {
             // usikker på om render er riktig funksjon...
-            if (layer.get('loading')){
+      if (layer.get('loading')) {
                 layer.set('loading', undefined);
                 eventHandler.TriggerEvent(ISY.Events.EventTypes.LoadingLayerEnd, layer);
             }
         }, layer);
     }
 
-    function _createLayer(isySubLayer){
+  function _createLayer(isySubLayer) {
         var layer;
         var source;
         var layerFromPool = _getLayerFromPool(isySubLayer);
         var returnlayer = true;
         var parameters;
-        if (isyToken && isyToken.length > 0){
-            parameters = {isyToken: isyToken};
+    if (isyToken && isyToken.length > 0) {
+      parameters = {
+        isyToken: isyToken
+      };
         }
 
-        var styleCallback = function(response){
+    var styleCallback = function (response) {
             // For caching, remember layer config
             layer.set('config', isySubLayer);
             var scales = sldstyles[isySubLayer.id].ParseSld(response, parseInt(isySubLayer.id, 10));
@@ -528,21 +533,22 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
             _trigLayersChanged();
         };
 
-        if(layerFromPool !== null){
+    if (layerFromPool !== null) {
             layer = layerFromPool;
             // For caching, remember layer config
             layer.set('config', isySubLayer);
         } else {
-            switch(isySubLayer.source){
+      switch (isySubLayer.source) {
                 case ISY.Domain.SubLayer.SOURCES.wmts:
-                    if (isySubLayer.gatekeeper && isySubLayer.tiled && ((offline === undefined) ? true : !offline.IsActive())){
-                        if(parameters){
-                            parameters['gkt']= _getToken();
+          if (isySubLayer.gatekeeper && isySubLayer.tiled && ((offline === undefined) ? true : !offline.IsActive())) {
+            if (parameters) {
+              parameters['gkt'] = _getToken();
+            } else {
+              parameters = {
+                gkt: _getToken()
+              };
                         }
-                        else{
-                            parameters={'gkt': _getToken()};
                         }
-                    }
                     source = new ISY.MapImplementation.OL3.Sources.Wmts(isySubLayer, parameters);
                     break;
                 case ISY.Domain.SubLayer.SOURCES.proxyWmts:
@@ -551,10 +557,10 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
                     break;
                 case ISY.Domain.SubLayer.SOURCES.wms:
                     source = new ISY.MapImplementation.OL3.Sources.Wms(isySubLayer, parameters);
-                    if (isySubLayer.gatekeeper && isySubLayer.tiled && ((offline === undefined) ? true : !offline.IsActive())){
+          if (isySubLayer.gatekeeper && isySubLayer.tiled && ((offline === undefined) ? true : !offline.IsActive())) {
                         _setToken(source);
                     }
-                    if (isySubLayer.ticket && ((offline === undefined) ? true : !offline.IsActive())){
+          if (isySubLayer.ticket && ((offline === undefined) ? true : !offline.IsActive())) {
                         _setTicket(source);
                     }
                     break;
@@ -586,7 +592,7 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
                             " and name " + isySubLayer.name + ".";
             }
 
-            if(isySubLayer.source === ISY.Domain.SubLayer.SOURCES.vector){
+      if (isySubLayer.source === ISY.Domain.SubLayer.SOURCES.vector) {
                 if (isySubLayer.style) {
                     if (typeof isySubLayer.style === "object" || isySubLayer.style.indexOf("http") < 0) {
                         sldstyles[isySubLayer.id] = new ISY.MapImplementation.OL3.Styles.Json(isySubLayer.style);
@@ -605,14 +611,14 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
                                 return sldstyles[isySubLayer.id].GetStyle(feature, _getScaleByResolution(resolution));
                             }
                         });
-                        if (isySubLayer.style){
+            if (isySubLayer.style) {
                             returnlayer = false;
                             getConfigResource(isySubLayer.style, 'application/xml', styleCallback);
                         }
                         _setLayerProperties(layer, isySubLayer);
                     }
                 } else {
-                    layer= new ol.layer.Vector({
+          layer = new ol.layer.Vector({
                         source: new ol.source.Vector({
                             format: new ol.format.GeoJSON({
                                 defaultDataProjection: isySubLayer.coordinate_system
@@ -622,8 +628,7 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
                         })
                     });
                 }
-            }
-            else if (isySubLayer.source === ISY.Domain.SubLayer.SOURCES.wfs){
+      } else if (isySubLayer.source === ISY.Domain.SubLayer.SOURCES.wfs) {
                 sldstyles[isySubLayer.id] = new ISY.MapImplementation.OL3.Styles.Sld();
                 layer = new ol.layer.Vector({
                     source: source,
@@ -631,13 +636,12 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
                         return sldstyles[isySubLayer.id].GetStyle(feature, _getScaleByResolution(resolution));
                     }
                 });
-                if (isySubLayer.style){
+        if (isySubLayer.style) {
                     returnlayer = false;
                     getConfigResource(isySubLayer.style, 'application/xml', styleCallback);
                 }
                 _setLayerProperties(layer, isySubLayer);
-            }
-            else if (isySubLayer.tiled) {
+      } else if (isySubLayer.tiled) {
                 layer = new ol.layer.Tile({
                     extent: isySubLayer.extent,
                     opacity: isySubLayer.opacity,
@@ -663,13 +667,13 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
             if (isySubLayer.maxResolution !== undefined) {
                 layer.setMaxResolution(isySubLayer.maxResolution);
             }
-            if (isySubLayer.maxScale){
+      if (isySubLayer.maxScale) {
                 _setLayerMinresolution(layer, _getResolutionByScale(isySubLayer.maxScale), 'layer');
             }
-            if (isySubLayer.minScale){
+      if (isySubLayer.minScale) {
                 _setLayerMaxresolution(layer, _getResolutionByScale(isySubLayer.minScale), 'layer');
             }
-            if (returnlayer){
+      if (returnlayer) {
                 _addIsySubLayer(isySubLayer);
                 layerPool.push(layer);
             }
@@ -680,10 +684,10 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
         }
     }
 
-    function _setLayerMinresolution(layer, scale){ //}, debuginfo) {
+  function _setLayerMinresolution(layer, scale) { //}, debuginfo) {
         if (layer && scale) {
             var minRes = layer.getMinResolution();
-            if (minRes && minRes >= scale){
+      if (minRes && minRes >= scale) {
                 //console.log(minRes + ' > ' + scale);
                 return;
             }
@@ -692,10 +696,10 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
         }
     }
 
-    function _setLayerMaxresolution(layer, scale){ //, debuginfo) {
+  function _setLayerMaxresolution(layer, scale) { //, debuginfo) {
         if (layer && scale) {
             var maxRes = layer.getMaxResolution();
-            if (maxRes && maxRes <= scale){
+      if (maxRes && maxRes <= scale) {
                 //console.log(maxRes + ' < ' + scale);
                 return;
             }
@@ -704,13 +708,13 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
         }
     }
 
-    function _loadVectorLayer(isySubLayer, source){
-        var callback = function(data){
+  function _loadVectorLayer(isySubLayer, source) {
+    var callback = function (data) {
             data = typeof data === 'object' ? data : JSON.parse(data);
             var format = new ol.format.GeoJSON();
-            for(var i = 0; i < data.features.length; i++) {
+      for (var i = 0; i < data.features.length; i++) {
                 var feature = data.features[i];
-                if (feature.type){
+        if (feature.type) {
                     source.addFeature(format.readFeature(feature));
                 }
             }
@@ -723,43 +727,43 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
         });
     }
 
-    function _getLayerFromPool(isySubLayer){
-        for(var i = 0; i < layerPool.length; i++){
+  function _getLayerFromPool(isySubLayer) {
+    for (var i = 0; i < layerPool.length; i++) {
             var layerInPool = layerPool[i];
-            if(layerInPool.guid === isySubLayer.id){
+      if (layerInPool.guid === isySubLayer.id) {
                 return layerInPool;
             }
         }
         return null;
     }
 
-    function _getLayerFromPoolByGuid(guid){
-        for(var i = 0; i < layerPool.length; i++){
+  function _getLayerFromPoolByGuid(guid) {
+    for (var i = 0; i < layerPool.length; i++) {
             var layerInPool = layerPool[i];
-            if(layerInPool.guid === guid){
+      if (layerInPool.guid === guid) {
                 return layerInPool;
             }
         }
         return null;
     }
 
-    function _addIsySubLayer(isySubLayer){
+  function _addIsySubLayer(isySubLayer) {
         var itemExists = false;
-        for (var i = 0; i < isySubLayerPool.length; i++){
-            if (isySubLayer.id === isySubLayerPool[i].id){
+    for (var i = 0; i < isySubLayerPool.length; i++) {
+      if (isySubLayer.id === isySubLayerPool[i].id) {
                 itemExists = true;
                 break;
             }
         }
-        if (!itemExists){
+    if (!itemExists) {
             isySubLayerPool.push(isySubLayer);
         }
     }
 
-    function _getIsySubLayerFromPool(layer){
+  function _getIsySubLayerFromPool(layer) {
         var isySubLayer;
-        for (var i = 0; i < isySubLayerPool.length; i++){
-            if (isySubLayerPool[i].id === layer.guid){
+    for (var i = 0; i < isySubLayerPool.length; i++) {
+      if (isySubLayerPool[i].id === layer.guid) {
                 isySubLayer = isySubLayerPool[i];
                 break;
             }
@@ -767,7 +771,7 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
         return isySubLayer;
     }
 
-    function _getLayerFromPoolByFeature(feature){
+  function _getLayerFromPoolByFeature(feature) {
         var featureId = feature.get("layerguid");
         if (featureId === undefined) {
             featureId = feature.getId();
@@ -793,8 +797,8 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
                 }
             }
         } else {
-            for (var j = 0; j < layerPool.length; j++){
-                if (featureId === layerPool[j].guid){
+      for (var j = 0; j < layerPool.length; j++) {
+        if (featureId === layerPool[j].guid) {
                     return layerPool[j];
                 }
             }
@@ -802,13 +806,13 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
         return null;
     }
 
-    var _getScaleByResolution = function(resolution){
-        if (resolution === undefined){
+  var _getScaleByResolution = function (resolution) {
+    if (resolution === undefined) {
             return;
         }
         var scale;
-        for (var i = 0; i < mapResolutions.length; i++){
-            if (mapResolutions[i] === resolution){
+    for (var i = 0; i < mapResolutions.length; i++) {
+      if (mapResolutions[i] === resolution) {
                 scale = mapScales[i];
                 break;
             }
@@ -816,86 +820,90 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
         return scale;
     };
 
-    var _getResolutionByScale = function(scale){
-        if (scale === undefined){
+  var _getResolutionByScale = function (scale) {
+    if (scale === undefined) {
             scale = getScale();
         }
         if (scale === 1) {
             return mapResolutions[mapResolutions.length - 1];
         }
-        if (scale === Infinity){
+    if (scale === Infinity) {
             return undefined;
         }
         var zoomlevel = -1;
-        for (var i = 0; i < mapScales.length; i++){
-            if (mapScales[i] < scale){
+    for (var i = 0; i < mapScales.length; i++) {
+      if (mapScales[i] < scale) {
                 zoomlevel = i - 1;
                 break;
             }
         }
-        if (zoomlevel < 0){
+    if (zoomlevel < 0) {
             return mapResolutions[mapResolutions.length - 1];
         }
         return mapResolutions[zoomlevel];
     };
 
-    function setLayerBrightness(isySubLayer, value){
+  function setLayerBrightness(isySubLayer, value) {
         // Require WebGL-rendering of map
         var layer = _getLayerByGuid(isySubLayer.id);
-        if(layer && !isNaN(value)){
-            layer.setBrightness(Math.min(value,1));
-        }
-    }
-    function setLayerContrast(isySubLayer, value){
-        // Require WebGL-rendering of map
-        var layer = _getLayerByGuid(isySubLayer.id);
-        if(layer && !isNaN(value)){
-            layer.setContrast(Math.min(value,1));
-        }
-    }
-    function setLayerOpacity(isySubLayer, value){
-        var layer = _getLayerByGuid(isySubLayer.id);
-        if(layer && !isNaN(value)){
-            layer.setOpacity(Math.min(value,1));
-        }
-    }
-    function setLayerSaturation(isySubLayer, value){
-        // Require WebGL-rendering of map
-        var layer = _getLayerByGuid(isySubLayer.id);
-        if(layer && !isNaN(value)){
-            layer.setSaturation(Math.min(value,1));
-        }
-    }
-    function setLayerHue(isySubLayer, value){
-        // Require WebGL-rendering of map
-        var layer = _getLayerByGuid(isySubLayer.id);
-        if(layer && !isNaN(value)){
-            layer.setHue(Math.min(value,1));
+    if (layer && !isNaN(value)) {
+      layer.setBrightness(Math.min(value, 1));
         }
     }
 
-    function _getLayersWithGuid(){
-        return map.getLayers().getArray().filter(function(elem){
+  function setLayerContrast(isySubLayer, value) {
+        // Require WebGL-rendering of map
+        var layer = _getLayerByGuid(isySubLayer.id);
+    if (layer && !isNaN(value)) {
+      layer.setContrast(Math.min(value, 1));
+        }
+    }
+
+  function setLayerOpacity(isySubLayer, value) {
+        var layer = _getLayerByGuid(isySubLayer.id);
+    if (layer && !isNaN(value)) {
+      layer.setOpacity(Math.min(value, 1));
+        }
+    }
+
+  function setLayerSaturation(isySubLayer, value) {
+        // Require WebGL-rendering of map
+        var layer = _getLayerByGuid(isySubLayer.id);
+    if (layer && !isNaN(value)) {
+      layer.setSaturation(Math.min(value, 1));
+        }
+    }
+
+  function setLayerHue(isySubLayer, value) {
+        // Require WebGL-rendering of map
+        var layer = _getLayerByGuid(isySubLayer.id);
+    if (layer && !isNaN(value)) {
+      layer.setHue(Math.min(value, 1));
+        }
+    }
+
+  function _getLayersWithGuid() {
+    return map.getLayers().getArray().filter(function (elem) {
             return elem.guid !== undefined;
         });
     }
 
-    function _getLayerByGuid(guid){
+  function _getLayerByGuid(guid) {
         var layers = _getLayersWithGuid();
-        for(var i = 0; i < layers.length; i++){
+    for (var i = 0; i < layers.length; i++) {
             var layer = layers[i];
-            if(layer.guid === guid){
+      if (layer.guid === guid) {
                 return layer;
             }
         }
         return null;
     }
 
-    function getLayerIndex(isySubLayer){
+  function getLayerIndex(isySubLayer) {
         var layers = _getLayersWithGuid();
-        for(var i = 0; i < layers.length; i++){
+    for (var i = 0; i < layers.length; i++) {
             var layer = layers[i];
-            if(layer.guid === isySubLayer.id){
+      if (layer.guid === isySubLayer.id) {
                 return i;
             }
         }
@@ -912,12 +920,12 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
         return null;
     }
 
-    function moveLayerToIndex(isySubLayer, index){
+  function moveLayerToIndex(isySubLayer, index) {
         var subLayerIndex = getLayerIndex(isySubLayer);
         var layersArray = map.getLayers().getArray();
 
-        for(var i=0; i<layersArray.length; i++){
-            if (layersArray[i].guid === undefined){
+    for (var i = 0; i < layersArray.length; i++) {
+      if (layersArray[i].guid === undefined) {
                 layersArray.splice(i, 1);
                 break;
             }
@@ -927,47 +935,48 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
         _trigLayersChanged();
     }
 
-    function sortLayerBySortIndex(){
+  function sortLayerBySortIndex() {
         var layersArray = map.getLayers().getArray();
         _sortByKey(layersArray, 'sortingIndex');
         _trigLayersChanged();
     }
 
     function _sortByKey(array, key) {
-        return array.sort(function(a, b) {
-            var x = a[key]; var y = b[key];
+    return array.sort(function (a, b) {
+      var x = a[key];
+      var y = b[key];
             return ((x > y) ? -1 : ((x < y) ? 1 : 0));
         });
     }
 
-    function _getLayerById(layerId){
+  function _getLayerById(layerId) {
         var layers = map.getLayers().getArray();
-        for (var i = 0; i<layers.length; i++){
-            if (layers[i].guid === layerId){
+    for (var i = 0; i < layers.length; i++) {
+      if (layers[i].guid === layerId) {
                 return layers[i];
             }
         }
         return undefined;
     }
 
-    function updateLayerSortIndex(groups){
-        for (var i = 0; i < groups.length; i++){
-            if (groups[i].isyLayers !== undefined){
-                for (var j = 0; j < groups[i].isyLayers.length; j++){
-                    for (var k = 0; k < groups[i].isyLayers[j].subLayers.length; k++){
+  function updateLayerSortIndex(groups) {
+    for (var i = 0; i < groups.length; i++) {
+      if (groups[i].isyLayers !== undefined) {
+        for (var j = 0; j < groups[i].isyLayers.length; j++) {
+          for (var k = 0; k < groups[i].isyLayers[j].subLayers.length; k++) {
                         var layer = _getLayerById(groups[i].isyLayers[j].subLayers[k].id);
-                        if (layer !== undefined){
+            if (layer !== undefined) {
                             layer.sortingIndex = groups[i].isyLayers[j].subLayers[k].sortingIndex;
                         }
                     }
                 }
-                }else{
+      } else {
                     break;
                 }
         }
     }
 
-    function _trigLayersChanged(){
+  function _trigLayersChanged() {
         var eventObject = _getUrlObject();
         eventHandler.TriggerEvent(ISY.Events.EventTypes.ChangeLayers, eventObject);
     }
@@ -984,17 +993,17 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
 
         visibleLayers.sort(_compareMapLayerIndex);
         var result = [];
-        for(var j = 0; j < visibleLayers.length; j++){
+    for (var j = 0; j < visibleLayers.length; j++) {
             result.push(visibleLayers[j].guid);
         }
         return result.join(",");
     }
 
     function _compareMapLayerIndex(a, b) {
-        if (a.mapLayerIndex < b.mapLayerIndex){
+    if (a.mapLayerIndex < b.mapLayerIndex) {
             return -1;
         }
-        if (a.mapLayerIndex > b.mapLayerIndex){
+    if (a.mapLayerIndex > b.mapLayerIndex) {
             return 1;
         }
         return 0;
@@ -1009,7 +1018,7 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
         Functionality in ISY.;ap.OL3.Export
      */
 
-    var _resizeEvent = function(){
+  var _resizeEvent = function () {
         mapExport.WindowResized(map);
     };
 
@@ -1023,7 +1032,7 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
         mapExport.Deactivate(redrawMap);
     }
 
-    function exportMap(callback){
+  function exportMap(callback) {
         mapExport.ExportMap(callback, map);
     }
 
@@ -1034,40 +1043,42 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
     }
 
     function refreshMap() {
-        map.getLayers().forEach(function(layer){
+    map.getLayers().forEach(function (layer) {
             refreshLayer(layer);
         });
     }
 
-    function refreshLayerByGuid(guid, featureObj){
-        if (guid){
+  function refreshLayerByGuid(guid, featureObj) {
+    if (guid) {
             refreshLayer(_getLayerFromPoolByGuid(guid), undefined, featureObj);
         }
     }
 
-    function refreshIsyLayer(isySubLayer, featureObj){
+  function refreshIsyLayer(isySubLayer, featureObj) {
         refreshLayer(_getLayerFromPool(isySubLayer), isySubLayer, featureObj);
     }
 
-    function refreshLayer(layer, isySubLayer, featureObj){
-        if (layer === undefined){
+  function refreshLayer(layer, isySubLayer, featureObj) {
+    if (layer === undefined) {
             return;
         }
         if (isySubLayer === undefined) {
             isySubLayer = _getIsySubLayerFromPool(layer);
         }
-        if (isySubLayer === undefined){
+    if (isySubLayer === undefined) {
             return;
         }
         var parameters;
-        if (isyToken && isyToken.length > 0){
-            parameters = {isyToken: isyToken};
+    if (isyToken && isyToken.length > 0) {
+      parameters = {
+        isyToken: isyToken
+      };
         }
         var source;
-        switch(isySubLayer.source){
+    switch (isySubLayer.source) {
             case ISY.Domain.SubLayer.SOURCES.wmts:
                 source = new ISY.MapImplementation.OL3.Sources.Wmts(isySubLayer, parameters);
-                if (isySubLayer.gatekeeper && ((offline === undefined) ? true : !offline.IsActive())){
+        if (isySubLayer.gatekeeper && ((offline === undefined) ? true : !offline.IsActive())) {
                     _setToken(source);
                 }
                 break;
@@ -1076,7 +1087,7 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
                 break;
             case ISY.Domain.SubLayer.SOURCES.wms:
                 source = new ISY.MapImplementation.OL3.Sources.Wms(isySubLayer, parameters);
-                if (isySubLayer.gatekeeper && isySubLayer.tiled && ((offline === undefined) ? true : !offline.IsActive())){
+        if (isySubLayer.gatekeeper && isySubLayer.tiled && ((offline === undefined) ? true : !offline.IsActive())) {
                     _setToken(source);
                 }
                 break;
@@ -1099,15 +1110,17 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
         }
     }
 
-    var setIsyToken = function(token){
-        if (token.length === 0){
+  var setIsyToken = function (token) {
+    if (token.length === 0) {
             return;
         }
-        if (isyToken && isyToken === token){
+    if (isyToken && isyToken === token) {
             return;
         }
         isyToken = token;
-        var parameters = {isyToken: isyToken};
+    var parameters = {
+      isyToken: isyToken
+    };
         for (var i = 0; i < isySubLayerPool.length; i++) {
             isySubLayerPool[i].isyToken = isyToken;
             var isySubLayer = isySubLayerPool[i];
@@ -1143,9 +1156,11 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
         }
     };
 
-    var removeIsyToken = function(){
+  var removeIsyToken = function () {
         isyToken = undefined;
-        var parameters = {isyToken: ''};
+    var parameters = {
+      isyToken: ''
+    };
         for (var i = 0; i < isySubLayerPool.length; i++) {
             isySubLayerPool[i].isyToken = isyToken;
             var isySubLayer = isySubLayerPool[i];
@@ -1181,11 +1196,11 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
         }
     };
 
-    function showCustomMessage(message){
+  function showCustomMessage(message) {
         customMessageHandler.ShowCustomMessage(message);
     }
 
-    function renderSync(){
+  function renderSync() {
         map.renderSync();
     }
 
@@ -1198,61 +1213,61 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
         Functionality in ISY.MapImplementation.OL3.FeatureInfo
      */
 
-    function activateInfoClick(callback){
+  function activateInfoClick(callback) {
         featureInfo.ActivateInfoClick(callback, map);
     }
 
-    function deactivateInfoClick(){
+  function deactivateInfoClick() {
         featureInfo.DeactivateInfoClick(map);
     }
 
-    function getFeatureInfoUrl(isySubLayer, coordinate){
+  function getFeatureInfoUrl(isySubLayer, coordinate) {
         return proxyHost + featureInfo.GetFeatureInfoUrl(isySubLayer, _getLayerFromPool(isySubLayer), coordinate, map.getView());
     }
 
-    function showHighlightedFeatures(layerguid, features){
+  function showHighlightedFeatures(layerguid, features) {
         featureInfo.ShowHighlightedFeatures(_getFeaturesAndAddHoverStyle(layerguid, features), map);
     }
 
-    function clearHighlightedFeatures(){
+  function clearHighlightedFeatures() {
         featureInfo.ClearHighlightedFeatures();
     }
 
-    function showInfoMarker(coordinate, element){
+  function showInfoMarker(coordinate, element) {
         featureInfo.ShowInfoMarker(coordinate, element, map);
     }
 
-    function showInfoMarkers(coordinates, element){
+  function showInfoMarkers(coordinates, element) {
         featureInfo.ShowInfoMarkers(coordinates, element, map);
     }
 
-    function removeInfoMarker(element){
+  function removeInfoMarker(element) {
         featureInfo.RemoveInfoMarker(element, map);
     }
 
-    function removeInfoMarkers(element){
+  function removeInfoMarkers(element) {
         featureInfo.RemoveInfoMarkers(element, map);
     }
 
-    function setHighlightStyle(style){
+  function setHighlightStyle(style) {
         featureInfo.SetHighlightStyle(style);
     }
 
-    function activateBoxSelect(callback){
+  function activateBoxSelect(callback) {
         featureInfo.ActivateBoxSelect(callback, map);
     }
 
-    function deactivateBoxSelect(){
+  function deactivateBoxSelect() {
         featureInfo.DeactivateBoxSelect(map);
     }
 
     function initEdit(isySubLayer) {
-        if (isySubLayer.featureNS === '' || isySubLayer.featureNS === undefined){
+    if (isySubLayer.featureNS === '' || isySubLayer.featureNS === undefined) {
             //_describeFeature(isySubLayer);
             return false;
         }
         var layerFromPool = _getLayerFromPool(isySubLayer);
-        if (layerFromPool !== null){
+    if (layerFromPool !== null) {
             featureEditor.Init(
                 isySubLayer.url,
                 isySubLayer.name,
@@ -1262,13 +1277,13 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
                 isySubLayer.geometryName
             );
             return true;
-        }else{
+    } else {
             _createLayer(isySubLayer);
             initEdit(isySubLayer);
         }
     }
 
-    Array.prototype.where = function(matcher) {
+  Array.prototype.where = function (matcher) {
         var result = [];
         for (var i = 0; i < this.length; i++) {
             if (matcher(this[i])) {
@@ -1282,10 +1297,10 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
         //Get elements and convert to array
         var elems = Array.prototype.slice.call(response.getElementsByTagName(tag), 0);
 
-        var matcher = function(el) {
-            if (exactName){
+    var matcher = function (el) {
+      if (exactName) {
                 return el.getAttribute(attr).toLowerCase() === attrValue.toLowerCase();
-            }else{
+      } else {
                 return el.getAttribute(attr).indexOf(attrValue) > -1 || attrValue.indexOf(el.getAttribute(attr)) > -1;
             }
         };
@@ -1294,12 +1309,12 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
     }
 
 
-    function _parseResponse(response){
+  function _parseResponse(response) {
 
         var subLayerName = describedSubLayer.name.split(":");
-        if (subLayerName.length > 0){
+    if (subLayerName.length > 0) {
             subLayerName = subLayerName[subLayerName.length - 1];
-        }else{
+    } else {
             return;
         }
 
@@ -1307,9 +1322,9 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
 
         var elementGeometryName = _getElementsByAttribute("element", "type", isyLayerGeometryType, elementNodeByName, false)[0];
 
-        if (elementGeometryName === undefined){
+    if (elementGeometryName === undefined) {
             return;
-        }else{
+    } else {
             elementGeometryName = elementGeometryName.getAttribute("name");
         }
 
@@ -1354,10 +1369,10 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
         });
         describedSource.set('type', 'ol.source.Vector');
         var url = isySubLayer.url;
-        if (Array.isArray(isySubLayer.url)){
+    if (Array.isArray(isySubLayer.url)) {
             url = isySubLayer.url[0];
         }
-        if (url.toLowerCase().indexOf("service=wfs") < 0){
+    if (url.toLowerCase().indexOf("service=wfs") < 0) {
             url += "service=WFS&";
         }
         url += 'request=DescribeFeatureType&' +
@@ -1365,7 +1380,7 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
 
         $.ajax({
             url: url
-        }).done(function(response) {
+    }).done(function (response) {
             _parseResponse(response);
         });
     }
@@ -1386,35 +1401,35 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
         featureEditor.UpdateFeature(feature);
     }
 
-    function insertFeature(feature, source){
+  function insertFeature(feature, source) {
         return featureEditor.InsertFeature(feature, source);
     }
 
-    function deleteFeature(feature){
+  function deleteFeature(feature) {
         return featureEditor.DeleteFeature(feature);
     }
 
-    function getExtentForCoordinate(coordinate, pixelTolerance){
+  function getExtentForCoordinate(coordinate, pixelTolerance) {
         return featureInfo.GetExtentForCoordinate(coordinate, pixelTolerance, map.getView().getResolution());
     }
 
-    function getFeaturesInExtent(isySubLayer, extent){
+  function getFeaturesInExtent(isySubLayer, extent) {
         return featureInfo.GetFeaturesInExtent(extent, _getLayerFromPool(isySubLayer), map.getView().getResolution());
     }
 
-    function getFeatureCollection(isySubLayer){
+  function getFeatureCollection(isySubLayer) {
         return featureInfo.GetFeatureCollection(_getLayerFromPool(isySubLayer));
     }
 
-    function getFeaturesInMap(isySubLayer){
+  function getFeaturesInMap(isySubLayer) {
         return featureInfo.GetFeaturesInMap(_getLayerFromPool(isySubLayer));
     }
 
-    function getLayerByFeature(feature){
+  function getLayerByFeature(feature) {
         return _getLayerFromPoolByFeature(feature);
     }
 
-    function getHoverStyle(feature, resolution){
+  function getHoverStyle(feature, resolution) {
         //var featureId = feature.getId();
         //if (featureId.indexOf('.') > 0) {
         //    featureId = featureId.slice(0, featureId.indexOf('.'));
@@ -1424,7 +1439,7 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
         //    featureId = tempFeatureId.slice(0, tempFeatureId.indexOf('_'));
         //}
         var layer = this.GetLayerByFeature(feature);
-        if (layer){
+    if (layer) {
             if (sldstyles[layer.guid]) {
                 return sldstyles[layer.guid].GetHoverStyle(feature, _getScaleByResolution(resolution));
             } else {
@@ -1433,22 +1448,22 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
         }
     }
 
-    function _getFeaturesAndAddHoverStyle(layerguid, features){
+  function _getFeaturesAndAddHoverStyle(layerguid, features) {
         if (layerguid === undefined) {
             return features;
         }
         var scale = _getScaleByResolution(map.getView().getResolution());
         var feature;
-        var featureAttribute = function(attr){
-            for (var j = 0; j < feature.attributes.length; j++){
-                if (attr === feature.attributes[j][0]){
+    var featureAttribute = function (attr) {
+      for (var j = 0; j < feature.attributes.length; j++) {
+        if (attr === feature.attributes[j][0]) {
                     return feature.attributes[j][1];
                 }
             }
         };
-        for (var i = 0; i < features.length; i++){
+    for (var i = 0; i < features.length; i++) {
             feature = features[i];
-            if (features[i].get === undefined){
+      if (features[i].get === undefined) {
                 features[i].get = featureAttribute;
             }
             var hoverstyle = sldstyles[layerguid].GetHoverStyle(features[i], scale);
@@ -1459,7 +1474,7 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
         return features;
     }
 
-    function getFeatureExtent(feature){
+  function getFeatureExtent(feature) {
         return featureInfo.GetFeatureExtent(feature);
     }
     /*
@@ -1470,11 +1485,11 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
      HoverInfo Start
      */
 
-    function activateHoverInfo(callback){
+  function activateHoverInfo(callback) {
         hoverInfo.ActivateHoverInfo(map, callback, this, hoverOptions);
     }
 
-    function deactivateHoverInfo(){
+  function deactivateHoverInfo() {
         hoverInfo.DeactivateHoverInfo(map);
     }
 
@@ -1486,21 +1501,21 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
      Measure Start
      Functionality in ISY.MapImplementation.OL3.Measure
      */
-    function activateMeasure(callback, options){
+  function activateMeasure(callback, options) {
         measure.Activate(map, callback, options);
     }
 
-    function deactivateMeasure(){
+  function deactivateMeasure() {
         measure.Deactivate(map);
     }
 
-    function activateMeasureLine(callback, options){
+  function activateMeasureLine(callback, options) {
         measureLine.Activate(map, callback, options);
         //var vector = measure.Activate(map, callback);
 
     }
 
-    function deactivateMeasureLine(){
+  function deactivateMeasureLine() {
         measureLine.Deactivate(map);
     }
 
@@ -1512,11 +1527,11 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
      AddLayerFeature Start
      Functionality in ISY.MapImplementation.OL3.AddLayerFeature
      */
-    function activateAddLayerFeature(options){
+  function activateAddLayerFeature(options) {
         addLayerFeature.Activate(map, options);
     }
 
-    function deactivateAddLayerFeature(){
+  function deactivateAddLayerFeature() {
         addLayerFeature.Deactivate(map);
     }
 
@@ -1528,15 +1543,15 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
      AddFeatureGps Start
      Functionality in ISY.MapImplementation.OL3.AddFeatureGps
      */
-    function activateAddFeatureGps(options){
+  function activateAddFeatureGps(options) {
         addFeatureGps.Activate(map, options);
     }
 
-    function addCoordinatesGps(coordinates){
+  function addCoordinatesGps(coordinates) {
         addFeatureGps.AddCoordinates(coordinates);
     }
 
-    function deactivateAddFeatureGps(){
+  function deactivateAddFeatureGps() {
         addFeatureGps.Deactivate(map);
     }
 
@@ -1549,11 +1564,11 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
      Modify Feature Start
      */
 
-    function activateModifyFeature(options){
+  function activateModifyFeature(options) {
         modifyFeature.Activate(map, options);
     }
 
-    function deactivateModifyFeature(){
+  function deactivateModifyFeature() {
         modifyFeature.Deactivate(map);
     }
 
@@ -1566,11 +1581,11 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
      DrawFeature Start
      */
 
-    function activateDrawFeature(callback, options){
+  function activateDrawFeature(callback, options) {
         drawFeature.Activate(map, callback, options);
     }
 
-    function deactivateDrawFeature(){
+  function deactivateDrawFeature() {
         drawFeature.Deactivate(map);
     }
 
@@ -1601,20 +1616,20 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
         }
     }
 
-    function stopCaching(){
+  function stopCaching() {
         offline.StopCaching();
     }
 
-    function deleteDatabase(callback, zoomlevels, eventhandler){
+  function deleteDatabase(callback, zoomlevels, eventhandler) {
         offline.DeleteDatabase(callback, zoomlevels, eventhandler);
     }
 
-    function cacheDatabaseExist(){
+  function cacheDatabaseExist() {
         return offline.CacheDatabaseExist();
     }
 
-    function calculateTileCount(zoomLevelMin, zoomLevelMax, extentView){
-        if (offline){
+  function calculateTileCount(zoomLevelMin, zoomLevelMax, extentView) {
+    if (offline) {
            return offline.CalculateTileCount(zoomLevelMin, zoomLevelMax, extentView);
         }
     }
@@ -1631,8 +1646,8 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
         }
     }
 
-    function getResourceFromJson(url, contentType, callback){
-        if (offline){
+  function getResourceFromJson(url, contentType, callback) {
+    if (offline) {
             offline.GetResourceFromJson(url, contentType, callback);
         }
     }
@@ -1659,13 +1674,13 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
     /*
       PrintBoxSelect Start
      */
-    var activatePrintBoxSelect = function (options){
+  var activatePrintBoxSelect = function (options) {
         printBoxSelect.Activate(map, options);
-    } ;
+  };
 
-    var deactivatePrintBoxSelect = function (){
+  var deactivatePrintBoxSelect = function () {
         printBoxSelect.Deactivate(map);
-    } ;
+  };
 
     /*
      PrintBoxSelect End
@@ -1675,13 +1690,13 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
     /*
      AddLayerUrl Start
      */
-    var activateAddLayerUrl = function (options){
+  var activateAddLayerUrl = function (options) {
         addLayerUrl.Activate(map, options);
-    } ;
+  };
 
-    var deactivateAddLayerUrl = function (){
+  var deactivateAddLayerUrl = function () {
         addLayerUrl.Deactivate(map);
-    } ;
+  };
 
     /*
      AddLayerUrl End
@@ -1693,8 +1708,8 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
         Utility functions start
      */
 
-    var _getUrlObject = function(){
-        if (map !== undefined){
+  var _getUrlObject = function () {
+    if (map !== undefined) {
             var retVal = {
                 layers: _getGuidsForVisibleLayers()
             };
@@ -1702,10 +1717,10 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
             var view = map.getView();
             var center = view.getCenter();
             var zoom = view.getZoom();
-            if(zoom){
+      if (zoom) {
                 retVal.zoom = zoom.toString();
             }
-            if(center){
+      if (center) {
                 retVal.lat = center[1].toFixed(2);
                 retVal.lon = center[0].toFixed(2);
             }
@@ -1713,9 +1728,9 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
         }
     };
 
-    var zoomToLayer = function(isySubLayer){
+  var zoomToLayer = function (isySubLayer) {
         var layer = _getLayerFromPool(isySubLayer);
-        if (layer){
+    if (layer) {
             var extent;
             if (typeof layer.getSource().getExtent !== "undefined") {
               extent = layer.getSource().getExtent();
@@ -1723,32 +1738,32 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
               extent = layer.getSource().getTileGrid().getExtent();
             }
             if (Array.isArray(extent) && extent[0] !== Infinity) {
-                if (!ol.extent.containsCoordinate(extent, map.getView().getCenter())){
+        if (!ol.extent.containsCoordinate(extent, map.getView().getCenter())) {
                     map.getView().fit(extent, map.getSize());
                 }
             }
         }
     };
 
-    var zoomToLayers = function(isySubLayers){
+  var zoomToLayers = function (isySubLayers) {
         var layersExtent = [Infinity, Infinity, -Infinity, -Infinity];
-        var setNewExtent = function(newExtent){
-            if (layersExtent[0] > newExtent[0]){
+    var setNewExtent = function (newExtent) {
+      if (layersExtent[0] > newExtent[0]) {
                 layersExtent[0] = newExtent[0];
             }
-            if (layersExtent[1] > newExtent[1]){
+      if (layersExtent[1] > newExtent[1]) {
                 layersExtent[1] = newExtent[1];
             }
-            if (layersExtent[2] < newExtent[2]){
+      if (layersExtent[2] < newExtent[2]) {
                 layersExtent[2] = newExtent[2];
             }
-            if (layersExtent[3] < newExtent[3]){
+      if (layersExtent[3] < newExtent[3]) {
                 layersExtent[3] = newExtent[3];
             }
         };
-        isySubLayers.forEach(function(isySubLayer){
+    isySubLayers.forEach(function (isySubLayer) {
             var layer = _getLayerFromPool(isySubLayer);
-            if (layer){
+      if (layer) {
                 var extent = layer.getSource().getExtent();
                 if (Array.isArray(extent) && extent[0] !== Infinity) {
                     setNewExtent(extent);
@@ -1760,11 +1775,11 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
         }
     };
 
-    var fitExtent = function(extent){
+  var fitExtent = function (extent) {
         map.getView().fit(extent, map.getSize());
     };
 
-    var getCenter = function(){
+  var getCenter = function () {
         var retVal;
         var view = map.getView();
         var center = view.getCenter();
@@ -1777,9 +1792,9 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
         return retVal;
     };
 
-    var setCenter = function(center) {
+  var setCenter = function (center) {
         var view = map.getView();
-        if (center.epsg){
+    if (center.epsg) {
             center = transformEpsgCoordinate(center, getEpsgCode());
         }
         view.setCenter([center.lon, center.lat]);
@@ -1788,22 +1803,22 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
         }
     };
 
-    var getZoom = function(){
+  var getZoom = function () {
         var view = map.getView();
         return view.getZoom();
     };
 
-    var setZoom = function(zoom){
+  var setZoom = function (zoom) {
         var view = map.getView();
         return view.setZoom(zoom);
     };
 
-    var getRotation = function(){
+  var getRotation = function () {
         var view = map.getView();
         return view.getRotation();
     };
 
-    var setRotation = function(angle, anchor){
+  var setRotation = function (angle, anchor) {
         var view = map.getView();
         if (anchor) {
             view.rotate(angle, anchor);
@@ -1812,19 +1827,19 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
         }
     };
 
-    var getEpsgCode = function() {
+  var getEpsgCode = function () {
         var view = map.getView();
         var projection = view.getProjection();
         return projection.getCode();
     };
 
-    function transformEpsgCoordinate(coord, toCrs){
-        if(coord.epsg !== "" && toCrs !== "" && coord.epsg !== toCrs){
+  function transformEpsgCoordinate(coord, toCrs) {
+    if (coord.epsg !== "" && toCrs !== "" && coord.epsg !== toCrs) {
             //var fromProj = ol.proj.get(coord.epsg);
             //var toProj = ol.proj.get(toCrs);
             var transformedCoord = ol.proj.transform([coord.lon, coord.lat], coord.epsg, toCrs);
 
-            if(toCrs === "EPSG:4326"){
+      if (toCrs === "EPSG:4326") {
                 transformedCoord = [transformedCoord[1], transformedCoord[0]];
             }
             coord.lon = transformedCoord[0];
@@ -1835,16 +1850,16 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
         return coord;
     }
 
-    function transformBox(fromCrs, toCrs, boxExtent){
+  function transformBox(fromCrs, toCrs, boxExtent) {
         var returnExtent = boxExtent;
-        if(fromCrs !== "" && toCrs !== "" && fromCrs !== toCrs){
+    if (fromCrs !== "" && toCrs !== "" && fromCrs !== toCrs) {
             //var fromProj = ol.proj.get(fromCrs);
             //var toProj = ol.proj.get(toCrs);
             //var transformedExtent = ol.proj.transformExtent(boxExtent, fromProj, toProj);
             var transformedExtent = ol.proj.transformExtent(boxExtent, fromCrs, toCrs);
 
             returnExtent = transformedExtent;
-            if(toCrs === "EPSG:4326"){
+      if (toCrs === "EPSG:4326") {
                 returnExtent = transformedExtent[1] + "," + transformedExtent[0] + "," + transformedExtent[3] + "," + transformedExtent[2];
             }
         }
@@ -1852,7 +1867,7 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
         return returnExtent;
     }
 
-    function convertGmlToGeoJson(gml){
+  function convertGmlToGeoJson(gml) {
         var xmlParser = new ol.format.WMSCapabilities();
         var xmlFeatures = xmlParser.read(gml);
         var gmlParser = new ol.format.GML();
@@ -1861,7 +1876,7 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
         return jsonParser.writeFeatures(features);
     }
 
-    function extentToGeoJson(x, y){
+  function extentToGeoJson(x, y) {
         var point = new ol.geom.Point([x, y]);
         var feature = new ol.Feature();
         feature.setGeometry(point);
@@ -1880,7 +1895,9 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
     }
 
     function addZoomToExtent(extent) {
-        var zoomToExtent = new ol.control.ZoomToExtent({"extent": extent});
+    var zoomToExtent = new ol.control.ZoomToExtent({
+      "extent": extent
+    });
         map.addControl(zoomToExtent);
     }
 
@@ -1889,7 +1906,7 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
         map.addControl(scaleLine);
     }
 
-    var getVectorLayers = function(isySubLayer, data){
+  var getVectorLayers = function (isySubLayer, data) {
         var vectors = [];
         var source = ISY.MapImplementation.OL3.Sources.Vector(isySubLayer.subLayers[0], map.getView().getProjection());
 
@@ -1905,34 +1922,34 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
         return vectors;
     };
 
-    var getLayerCount = function(){
+  var getLayerCount = function () {
         if (map) {
             return map.getLayers().getArray().length;
         }
         return 0;
     };
 
-    var getCenterFromExtent = function(extent){
+  var getCenterFromExtent = function (extent) {
       return ol.extent.getCenter(extent);
     };
 
-    var getScale = function(){
+  var getScale = function () {
         return mapScales[map.getView().getZoom()];
     };
 
-    var getLegendStyleFromLayer = function(layer){
-            if (sldstyles[layer.guid] !== undefined){
+  var getLegendStyleFromLayer = function (layer) {
+    if (sldstyles[layer.guid] !== undefined) {
                 return sldstyles[layer.guid].GetStyleForLegend();
-            }else{
+    } else {
                 return undefined;
             }
     };
 
-    var getExtent = function(){
+  var getExtent = function () {
         return map.getView().calculateExtent(map.getSize());
     };
 
-    var getUrlObject = function(){
+  var getUrlObject = function () {
         return _getUrlObject();
     };
 
@@ -1946,9 +1963,9 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
         _trigLayersChanged();
     }
 
-    function _drawGeolocation(center, radius){
+  function _drawGeolocation(center, radius) {
         var geolocationLayer = _getLayerByGuid(99999);
-        if (geolocationLayer !== null){
+    if (geolocationLayer !== null) {
             var geolocationSource = geolocationLayer.getSource();
             geolocationSource.clear();
             var geolocationStyle = new ol.style.Style({
@@ -1976,29 +1993,29 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
             });
             geolocationFeature.setStyle(geolocationStyle);
             geolocationSource.addFeature(geolocationFeature);
-            if (initialGeolocationChange){
+      if (initialGeolocationChange) {
                 initialGeolocationChange = false;
                 var geolocextent = geolocationFeature.getGeometry().getExtent();
-                geolocextent[0] -= 5*radius;
-                geolocextent[1] -= 5*radius;
-                geolocextent[2] += 5*radius;
-                geolocextent[3] += 5*radius;
+        geolocextent[0] -= 5 * radius;
+        geolocextent[1] -= 5 * radius;
+        geolocextent[2] += 5 * radius;
+        geolocextent[3] += 5 * radius;
                 map.getView().fit(geolocextent, map.getSize());
             }
         }
     }
 
-    function _geolocationChange(){
+  function _geolocationChange() {
         var view = map.getView();
         var center = geolocation.getPosition();
-        if (center === undefined){
+    if (center === undefined) {
             return;
         }
         view.setCenter(center);
         _drawGeolocation(center, geolocation.getAccuracy());
         var geolocationObject = {
             center: center,
-            accuracy: Math.round(geolocation.getAccuracy()*10)/10,
+      accuracy: Math.round(geolocation.getAccuracy() * 10) / 10,
             altitude: geolocation.getAltitude(),
             altitudeAccuracy: geolocation.getAltitudeAccuracy(),
             heading: geolocation.getHeading(),
@@ -2007,11 +2024,11 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
         eventHandler.TriggerEvent(ISY.Events.EventTypes.GeolocationUpdated, geolocationObject);
     }
 
-    var getGeolocation = function(){
+  var getGeolocation = function () {
         var view = map.getView();
         var mapProjection = view.getProjection();
         geolocation = new ol.Geolocation({
-            projection:  mapProjection,
+      projection: mapProjection,
             tracking: true,
             trackingOptions: {
                 //enableHighAccuracy: true,
@@ -2028,36 +2045,36 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
         geolocation.on('change:accuracy', _geolocationChange);
     };
 
-    var removeGeolocation = function(){
+  var removeGeolocation = function () {
         var geolocationLayer = _getLayerByGuid(99999);
-        if (geolocationLayer !== null){
+    if (geolocationLayer !== null) {
             map.removeLayer(geolocationLayer);
             _trigLayersChanged();
         }
 
-        if (geolocation !== undefined){
+    if (geolocation !== undefined) {
             geolocation.un('change:position', _geolocationChange);
             geolocation.un('change:accuracy', _geolocationChange);
             geolocation = undefined;
         }
     };
 
-    var getProxyHost = function(){
+  var getProxyHost = function () {
         return proxyHost;
     };
 
-    var setTranslateOptions = function(translate){
+  var setTranslateOptions = function (translate) {
         translateOptions = translate;
     };
 
-    var transformCoordinates = function(fromEpsg, toEpsg, coordinates){
+  var transformCoordinates = function (fromEpsg, toEpsg, coordinates) {
         if (proj4.defs(fromEpsg) && proj4.defs(toEpsg)) {
             var transformObject = proj4(fromEpsg, toEpsg);
             return transformObject.forward(coordinates);
         }
     };
 
-    var transformFromGeographic = function(coordinates){
+  var transformFromGeographic = function (coordinates) {
         // If no coordinates are given an object with two methods is returned,
         // its methods are forward which projects from the first projection to
         // the second and inverse which projects from the second to the first.
@@ -2068,7 +2085,7 @@ ISY.MapImplementation.OL3.Map = function(repository, eventHandler, httpHelper, m
         }
     };
 
-    var transformToGeographic = function(coordinates){
+  var transformToGeographic = function (coordinates) {
         // If no coordinates are given an object with two methods is returned,
         // its methods are forward which projects from the first projection to
         // the second and inverse which projects from the second to the first.

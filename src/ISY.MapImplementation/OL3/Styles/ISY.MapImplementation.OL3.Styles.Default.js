@@ -12,7 +12,7 @@ ISY.MapImplementation.OL3.Styles.Default = function () {
             color: '#3399CC',
             width: 2.25
         });
-        var styles = [
+        return [
             new ol.style.Style({
                 image: new ol.style.Circle({
                     fill: fill,
@@ -23,7 +23,6 @@ ISY.MapImplementation.OL3.Styles.Default = function () {
                 stroke: stroke
             })
         ];
-        return styles;
     };
 
     return {

@@ -401,10 +401,9 @@ ISY.MapImplementation.OL3.Offline = function(){
                     addrevision = true;
                     projectXml = response;
                     pouchAttachment = btoa(unescape(encodeURIComponent(JSON.stringify(response))));
-                }).error(function(){
+                }).fail(function(){
                     addrevision = false;
                     _getOfflineResource(url, isConfig, callback);
-
                 });
                 //projectXml = $.ajax(
                 //    { type: 'GET', url: url, async: false }
@@ -876,7 +875,7 @@ ISY.MapImplementation.OL3.Offline = function(){
     //};
 
     var _getCircleStyle = function() {
-        var iconStyle = new ol.style.Style({
+        return new ol.style.Style({
             stroke: new ol.style.Stroke({
                 color: 'rgba(0,0,0,0.3)',
                 width: 1
@@ -885,17 +884,15 @@ ISY.MapImplementation.OL3.Offline = function(){
                 color: 'rgba(160,0,0,0.9)'
             })
         });
-        return iconStyle;
     };
 
     var _getSquareStyle = function() {
-        var iconStyle = new ol.style.Style({
+        return new ol.style.Style({
             stroke: new ol.style.Stroke({
                 color: 'rgba(160,0,0,0.7)',
                 width: 2
             })
         });
-        return iconStyle;
     };
 
     var _addCircle = function(c) {
