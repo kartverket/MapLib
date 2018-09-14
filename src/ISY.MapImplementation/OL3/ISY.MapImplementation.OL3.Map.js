@@ -67,7 +67,13 @@ ISY.MapImplementation.OL3.Map = function (repository, eventHandler, httpHelper, 
         map = new ol.Map({
             target: targetId,
             renderer: mapConfig.renderer,
-            layers: [],
+            layers: [
+              new ol.layer.Tile({
+                source: new ol.source.OSM(),
+                opacity: 0.7,
+                zIndex: -1
+              })
+            ],
             loadTilesWhileAnimating: true, // Improve user experience by loading tiles while animating. Will make animations stutter on mobile or slow devices.
             loadTilesWhileInteracting: true,
             view: new ol.View({
