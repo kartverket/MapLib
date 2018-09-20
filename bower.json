@@ -1,13 +1,12 @@
 {
   "name": "maplib",
-  "version": "1.0.21",
+  "version": "1.0.22",
   "main": [],
   "ignore": [],
   "devDependencies": {},
   "dependencies": {
     "jquery": "3.3.1",
     "openlayers3": "https://github.com/kartverket/ol/releases/download/v4.5.0-kv/v4.5.0-kv.zip",
-    "xml2json": "*",
     "proj4": "*",
     "pouchdb": "~5.0.0",
     "blob-util": "*",

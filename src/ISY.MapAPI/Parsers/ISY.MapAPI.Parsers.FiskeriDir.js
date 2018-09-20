@@ -13,7 +13,7 @@ ISY.MapAPI.Parsers.FiskeriDir = function(mapApi){
         result = result.replace(/:gml/g, '');
         result = result.replace(/gml:/g, insteadOfGml);
         result = result.replace(/s:x/g, 'sx');
-        var jsonFeatures = xml2json.parser(result);
+        var jsonFeatures = xml.xmlToJSON(result);
 
         var rootObject = jsonFeatures[Object.keys(jsonFeatures)[0]];
         for(var i in rootObject){

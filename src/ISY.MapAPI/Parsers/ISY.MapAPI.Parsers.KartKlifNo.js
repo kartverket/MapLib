@@ -7,7 +7,7 @@ ISY.MapAPI.Parsers.KartKlifNo = function() {
     function parse(result) {
         var jsonResult = [];
         result = result.replace(/:/g, ''); // Remove colon to prevent xml errors
-        var jsonFeatures = xml2json.parser(result);
+        var jsonFeatures = xml.xmlToJSON(result);
 
         if(jsonFeatures.featureinforesponse){
             var response = jsonFeatures.featureinforesponse;

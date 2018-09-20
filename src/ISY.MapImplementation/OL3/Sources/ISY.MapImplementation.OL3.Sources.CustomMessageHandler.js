@@ -103,7 +103,7 @@ ISY.MapImplementation.OL3.Sources.CustomMessageHandler = function (eventHandler,
                     url: image.src,
                     async: false
                 }).responseText;
-                var responseObject = xml2json.parser(response);
+                var responseObject = xml.xmlToJSON(response);
         if (responseObject && responseObject.serviceexceptionreport && responseObject.serviceexceptionreport.serviceexception) {
                     var gkterror = responseObject.serviceexceptionreport.serviceexception.split('\n');
                     return message + '<br>' + gkterror[2] + ' ' + gkterror[3].substr(0, gkterror[3].indexOf(' Token:'));

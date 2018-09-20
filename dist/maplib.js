@@ -1,5 +1,5 @@
 /**
- * maplib - v1.0.21 - 2018-09-12
+ * maplib - v1.0.21 - 2018-09-20
  * https://github.com/kartverket/MapLib
  *
  * Copyright (c) 2018 
@@ -2223,7 +2223,7 @@ ISY.MapAPI.Parsers.Base = function(factory) {
             var tableResult = result.substring(indexOfTableStart, result.length);
             var indexOfTableEnd = tableResult.indexOf("</body>");
             tableResult = tableResult.substring(0, indexOfTableEnd);
-            return xml2json.parser(tableResult);
+            return xml.xmlToJSON(tableResult);
         } else {
           return [];
         }
@@ -2290,7 +2290,7 @@ ISY.MapAPI.Parsers.FiskeriDir = function(mapApi){
         result = result.replace(/:gml/g, '');
         result = result.replace(/gml:/g, insteadOfGml);
         result = result.replace(/s:x/g, 'sx');
-        var jsonFeatures = xml2json.parser(result);
+        var jsonFeatures = xml.xmlToJSON(result);
 
         var rootObject = jsonFeatures[Object.keys(jsonFeatures)[0]];
         for(var i in rootObject){
@@ -2345,6 +2345,7 @@ ISY.MapAPI.Parsers.FiskeriDir = function(mapApi){
         Parse: parse
     };
 };
+
 var ISY = ISY || {};
 ISY.MapAPI = ISY.MapAPI || {};
 ISY.MapAPI.Parsers = ISY.MapAPI.Parsers || {};
@@ -2428,7 +2429,7 @@ ISY.MapAPI.Parsers.KartKlifNo = function() {
     function parse(result) {
         var jsonResult = [];
         result = result.replace(/:/g, ''); // Remove colon to prevent xml errors
-        var jsonFeatures = xml2json.parser(result);
+        var jsonFeatures = xml.xmlToJSON(result);
 
         if(jsonFeatures.featureinforesponse){
             var response = jsonFeatures.featureinforesponse;
@@ -2469,6 +2470,7 @@ ISY.MapAPI.Parsers.KartKlifNo = function() {
       Parse: parse
     };
 };
+
 var ISY = ISY || {};
 ISY.MapAPI = ISY.MapAPI || {};
 ISY.MapAPI.Tools = ISY.MapAPI.Tools || {};
@@ -8392,7 +8394,7 @@ ISY.MapImplementation.OL3.Offline = function(){
 
                 if (projectXml){
                     if (contentType.toLowerCase() === 'application/json'){
-                        resource = xml2json.parser(projectXml);
+                        resource = xml.xmlToJSON(projectXml);
                     }
                     else {
                         resource = projectXml;
@@ -9464,7 +9466,7 @@ ISY.MapImplementation.OL3.Sources.CustomMessageHandler = function (eventHandler,
                     url: image.src,
                     async: false
                 }).responseText;
-                var responseObject = xml2json.parser(response);
+                var responseObject = xml.xmlToJSON(response);
         if (responseObject && responseObject.serviceexceptionreport && responseObject.serviceexceptionreport.serviceexception) {
                     var gkterror = responseObject.serviceexceptionreport.serviceexception.split('\n');
                     return message + '<br>' + gkterror[2] + ' ' + gkterror[3].substr(0, gkterror[3].indexOf(' Token:'));

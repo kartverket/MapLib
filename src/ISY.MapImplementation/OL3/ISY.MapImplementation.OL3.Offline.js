@@ -497,7 +497,7 @@ ISY.MapImplementation.OL3.Offline = function(){
 
                 if (projectXml){
                     if (contentType.toLowerCase() === 'application/json'){
-                        resource = xml2json.parser(projectXml);
+                        resource = xml.xmlToJSON(projectXml);
                     }
                     else {
                         resource = projectXml;
