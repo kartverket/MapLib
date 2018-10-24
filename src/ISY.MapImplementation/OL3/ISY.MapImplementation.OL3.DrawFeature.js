@@ -231,7 +231,10 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler) {
     function drawFeatureEnd() {
         setFeatureDefaultValues(features.getArray());
         if (!modificationActive) {
-            eventHandler.TriggerEvent(ISY.Events.EventTypes.DrawFeatureEnd, format.writeFeatures(source.getFeatures()));
+            var resultJson = JSON.parse(format.writeFeatures(source.getFeatures()));
+            reusltJson = _transformGeoJson('EPSG:4326', resultJson);
+            reusltJson = JSON.stringify(resultJson);
+            eventHandler.TriggerEvent(ISY.Events.EventTypes.DrawFeatureEnd, reusltJson);
         }
     }
 
@@ -554,7 +557,37 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler) {
         map.addInteraction(
             new ol.interaction.DoubleClickZoom()
         );
-    };
+    };   
+
+    function _transformCrd(proj, crds) {
+        switch (proj) {
+            case 'EPSG:4326':
+                if (crds[1] > 90) {
+                    crds = proj4('EPSG:32633', 'EPSG:4326', crds);
+                }
+                break;
+            case 'EPSG:32633':
+                if (crds[1] < 90) {
+                    crds = proj4('EPSG:4326', 'EPSG:32633', crds);
+                }
+                break;
+        }
+        return crds;
+    }
+
+    function _transformGeoJson(proj, geoJson) {
+        for (var i = 0; i < geoJson.features.length; i++) {
+            var featureCrds = geoJson.features[i].geometry.coordinates;
+            if (featureCrds.length === 2 && typeof featureCrds[0] === 'number') {
+                geoJson.features[i].geometry.coordinates = _transformCrd(proj, featureCrds);
+            } else {
+                for (var j = 0; j < featureCrds.length; j++) {
+                    geoJson.features[i].geometry.coordinates[j] = _transformCrd(proj, featureCrds[j]);
+                }
+            }
+        }
+        return geoJson;
+    }
 
     function activate(map, options) {
         isActive = true;
@@ -578,6 +611,8 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler) {
                 eventHandler.TriggerEvent(ISY.Events.EventTypes.DrawFeatureEnd, format.writeFeatures(source.getFeatures()));
             }
             else {
+                options.GeoJSON = typeof options.GeoJSON == 'object' ? options.GeoJSON : JSON.parse(options.GeoJSON);
+                options.GeoJSON = _transformGeoJson('EPSG:32633', options.GeoJSON);
                 initiateDrawing(format.readFeatures(options.GeoJSON));
             }
         }
