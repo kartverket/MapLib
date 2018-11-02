@@ -11,3 +11,4 @@ node_modules/
 .idea/
 .sass-cache/
 .divshot-cache/
+package-lock.json
