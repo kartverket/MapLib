@@ -12,12 +12,17 @@ ISY.Events.EventHandler = function(){
     }
 
     function unRegisterEvent(eventType, callBack){
-        for(var i = 0; i < callBacks.length; i++){
-            if(callBacks[i].eventType === eventType && callBacks[i].callBack === callBack){
+        // count down to consider all callbacks (don't skip after splice)
+        for (var i = callBacks.length - 1; i >= 0; i--) {
+            if (callBacks[i].eventType == eventType && (callBacks[i].callBack == callBack || callBack === false)) {
                 callBacks.splice(i, 1);
                 break;
             }
         }
+    }
+
+    function unRegisterAllEvents(){
+        callBacks = [];
     }
 
     function triggerEvent(eventType, args){
@@ -32,6 +37,7 @@ ISY.Events.EventHandler = function(){
     return {
         RegisterEvent: registerEvent,
         UnRegisterEvent: unRegisterEvent,
+        UnRegisterAllEvents: unRegisterAllEvents,
         TriggerEvent: triggerEvent
     };
 };

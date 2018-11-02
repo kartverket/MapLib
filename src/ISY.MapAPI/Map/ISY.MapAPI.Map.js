@@ -21,6 +21,13 @@ ISY.MapAPI.Map = function (mapImplementation, eventHandler, featureInfo, layerHa
     eventHandler.TriggerEvent(ISY.Events.EventTypes.MapLoaded);
   }
 
+  function reInit(mapConfig){
+    mapImplementation.ReInitMap(mapConfig);
+    layerHandler.ReInit(mapConfig);
+    groupHandler.ReInit(mapConfig);
+    categoryHandler.ReInit(mapConfig);
+  }
+
   function _loadCustomCrs() {
     var customCrsLoader = new ISY.MapAPI.CustomCrsLoader();
     customCrsLoader.LoadCustomCrs();
@@ -756,6 +763,7 @@ ISY.MapAPI.Map = function (mapImplementation, eventHandler, featureInfo, layerHa
   return {
     // Start up start
     Init: init,
+    ReInit: reInit,
     // Start up end
 
     /***********************************/

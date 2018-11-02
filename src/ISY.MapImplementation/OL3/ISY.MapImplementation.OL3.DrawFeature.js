@@ -632,9 +632,12 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler) {
             selectedFeature = undefined;
         }
         map.getLayers().forEach(function (layer) {
-                if (layer.get('id') === 'drawing') {
-                    map.removeLayer(layer);
+                if (layer !== undefined){
+                    if (layer.get('id') === 'drawing') {
+                        map.removeLayer(layer);
+                    }
                 }
+                
             }
         );
         map.addLayer(drawLayer);
