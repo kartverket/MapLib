@@ -37,6 +37,13 @@ ISY.MapAPI.Layers = function (mapImplementation) {
     }
   }
 
+  function reInit(mapConfig) {
+    config = undefined;
+    layers = undefined;
+    layersArranged = undefined;
+    init(mapConfig);
+  }
+
   function _setUpLayerIndex() {
     var layerIndex = 0;
 
@@ -282,6 +289,7 @@ ISY.MapAPI.Layers = function (mapImplementation) {
 
   return {
     Init: init,
+    ReInit: reInit,
     ArrangeLayers: arrangeLayers,
     GetBaseLayers: getBaseLayers,
     GetOverlayLayers: getOverlayLayers,

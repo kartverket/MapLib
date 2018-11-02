@@ -1,5 +1,5 @@
 /**
- * maplib - v1.0.21 - 2018-09-20
+ * maplib - v1.0.22 - 2018-11-02
  * https://github.com/kartverket/MapLib
  *
  * Copyright (c) 2018 
@@ -242,12 +242,17 @@ ISY.Events.EventHandler = function(){
     }
 
     function unRegisterEvent(eventType, callBack){
-        for(var i = 0; i < callBacks.length; i++){
-            if(callBacks[i].eventType === eventType && callBacks[i].callBack === callBack){
+        // count down to consider all callbacks (don't skip after splice)
+        for (var i = callBacks.length - 1; i >= 0; i--) {
+            if (callBacks[i].eventType == eventType && (callBacks[i].callBack == callBack || callBack === false)) {
                 callBacks.splice(i, 1);
                 break;
             }
         }
+    }
+
+    function unRegisterAllEvents(){
+        callBacks = [];
     }
 
     function triggerEvent(eventType, args){
@@ -262,6 +267,7 @@ ISY.Events.EventHandler = function(){
     return {
         RegisterEvent: registerEvent,
         UnRegisterEvent: unRegisterEvent,
+        UnRegisterAllEvents: unRegisterAllEvents,
         TriggerEvent: triggerEvent
     };
 };
@@ -329,6 +335,11 @@ ISY.MapAPI.Categories = function () {
     categories = mapConfig.categories;
   }
 
+  function reInit(mapConfig){
+    categories = [];
+    init(mapConfig);
+  }
+
   function getCategories() {
     return categories;
   }
@@ -350,6 +361,7 @@ ISY.MapAPI.Categories = function () {
 
   return {
     Init: init,
+    ReInit: reInit,
     GetCategoryById: getCategoryById,
     GetCategories: getCategories
   };
@@ -873,6 +885,11 @@ ISY.MapAPI.Groups = function () {
     groups = mapConfig.groups;
   }
 
+  function reInit(mapConfig){
+    groups = [];
+    init(mapConfig);
+  }
+
   function getGroups() {
     return groups;
   }
@@ -894,6 +911,7 @@ ISY.MapAPI.Groups = function () {
 
   return {
     Init: init,
+    ReInit: reInit,
     GetGroupById: getGroupById,
     GetGroups: getGroups
   };
@@ -936,6 +954,13 @@ ISY.MapAPI.Layers = function (mapImplementation) {
         hideLayer(overlayLayer);
       }
     }
+  }
+
+  function reInit(mapConfig) {
+    config = undefined;
+    layers = undefined;
+    layersArranged = undefined;
+    init(mapConfig);
   }
 
   function _setUpLayerIndex() {
@@ -1183,6 +1208,7 @@ ISY.MapAPI.Layers = function (mapImplementation) {
 
   return {
     Init: init,
+    ReInit: reInit,
     ArrangeLayers: arrangeLayers,
     GetBaseLayers: getBaseLayers,
     GetOverlayLayers: getOverlayLayers,
@@ -1222,6 +1248,13 @@ ISY.MapAPI.Map = function (mapImplementation, eventHandler, featureInfo, layerHa
     categoryHandler.Init(mapConfig);
 
     eventHandler.TriggerEvent(ISY.Events.EventTypes.MapLoaded);
+  }
+
+  function reInit(mapConfig){
+    mapImplementation.ReInitMap(mapConfig);
+    layerHandler.ReInit(mapConfig);
+    groupHandler.ReInit(mapConfig);
+    categoryHandler.ReInit(mapConfig);
   }
 
   function _loadCustomCrs() {
@@ -1959,6 +1992,7 @@ ISY.MapAPI.Map = function (mapImplementation, eventHandler, featureInfo, layerHa
   return {
     // Start up start
     Init: init,
+    ReInit: reInit,
     // Start up end
 
     /***********************************/
@@ -3522,7 +3556,10 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler) {
     function drawFeatureEnd() {
         setFeatureDefaultValues(features.getArray());
         if (!modificationActive) {
-            eventHandler.TriggerEvent(ISY.Events.EventTypes.DrawFeatureEnd, format.writeFeatures(source.getFeatures()));
+            var resultJson = JSON.parse(format.writeFeatures(source.getFeatures()));
+            reusltJson = _transformGeoJson('EPSG:4326', resultJson);
+            reusltJson = JSON.stringify(resultJson);
+            eventHandler.TriggerEvent(ISY.Events.EventTypes.DrawFeatureEnd, reusltJson);
         }
     }
 
@@ -3845,7 +3882,37 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler) {
         map.addInteraction(
             new ol.interaction.DoubleClickZoom()
         );
-    };
+    };   
+
+    function _transformCrd(proj, crds) {
+        switch (proj) {
+            case 'EPSG:4326':
+                if (crds[1] > 90) {
+                    crds = proj4('EPSG:32633', 'EPSG:4326', crds);
+                }
+                break;
+            case 'EPSG:32633':
+                if (crds[1] < 90) {
+                    crds = proj4('EPSG:4326', 'EPSG:32633', crds);
+                }
+                break;
+        }
+        return crds;
+    }
+
+    function _transformGeoJson(proj, geoJson) {
+        for (var i = 0; i < geoJson.features.length; i++) {
+            var featureCrds = geoJson.features[i].geometry.coordinates;
+            if (featureCrds.length === 2 && typeof featureCrds[0] === 'number') {
+                geoJson.features[i].geometry.coordinates = _transformCrd(proj, featureCrds);
+            } else {
+                for (var j = 0; j < featureCrds.length; j++) {
+                    geoJson.features[i].geometry.coordinates[j] = _transformCrd(proj, featureCrds[j]);
+                }
+            }
+        }
+        return geoJson;
+    }
 
     function activate(map, options) {
         isActive = true;
@@ -3869,6 +3936,8 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler) {
                 eventHandler.TriggerEvent(ISY.Events.EventTypes.DrawFeatureEnd, format.writeFeatures(source.getFeatures()));
             }
             else {
+                options.GeoJSON = typeof options.GeoJSON == 'object' ? options.GeoJSON : JSON.parse(options.GeoJSON);
+                options.GeoJSON = _transformGeoJson('EPSG:32633', options.GeoJSON);
                 initiateDrawing(format.readFeatures(options.GeoJSON));
             }
         }
@@ -3888,9 +3957,12 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler) {
             selectedFeature = undefined;
         }
         map.getLayers().forEach(function (layer) {
-                if (layer.get('id') === 'drawing') {
-                    map.removeLayer(layer);
+                if (layer !== undefined){
+                    if (layer.get('id') === 'drawing') {
+                        map.removeLayer(layer);
+                    }
                 }
+                
             }
         );
         map.addLayer(drawLayer);
@@ -4846,6 +4918,58 @@ ISY.MapImplementation.OL3.Map = function (repository, eventHandler, httpHelper, 
         }
         _registerMessageHandler();
         //Make ol.map accessible
+        ISY.MapImplementation.OL3.olMap = map;
+    }
+
+    function reInitMap(mapConfig) {
+        var layers = map.getLayers().getArray();
+        for (i = 0; i < layers.length; i ++){
+            map.removeLayer(layers[i]);
+        }
+        var overlays = map.getOverlays();
+        for (j = 0; j < overlays.length; j++){
+            map.removeOverlay(overlays[j]);
+        }
+
+        var layersWithGuid = _getLayersWithGuid();
+        for (var i = 0; i < layersWithGuid.length; i++) {
+            var layer = layersWithGuid[i];
+            if (layer.getVisible() === true) {
+                map.removeLayer(layersWithGuid[i]);
+            }
+        }
+
+        layerPool = [];
+        isySubLayerPool = [];
+        
+        var numZoomLevels = mapConfig.numZoomLevels;
+        var newMapRes = [];
+        newMapRes[0] = mapConfig.newMaxRes;
+        mapScales = [];
+        mapScales[0] = mapConfig.newMaxScale;
+        for (var t = 1; t < numZoomLevels; t++) {
+            newMapRes[t] = newMapRes[t - 1] / 2;
+            mapScales[t] = mapScales[t - 1] / 2;
+        }
+        mapResolutions = newMapRes;
+        var sm = new ol.proj.Projection({
+            code: mapConfig.coordinate_system,
+            extent: mapConfig.extent,
+            units: mapConfig.extentUnits
+        });
+
+        var view = new ol.View({
+            projection: sm,
+            //constrainRotation: 4,
+            enableRotation: false,
+            center: mapConfig.center,
+            zoom: mapConfig.zoom,
+            resolutions: newMapRes,
+            maxResolution: mapConfig.newMaxRes,
+            numZoomLevels: numZoomLevels
+        });
+        map.setView(view);
+
         ISY.MapImplementation.OL3.olMap = map;
     }
 
@@ -6852,6 +6976,7 @@ ISY.MapImplementation.OL3.Map = function (repository, eventHandler, httpHelper, 
         // Start up start
         InitMap: initMap,
         ChangeView: changeView,
+        ReInitMap: reInitMap,
         // Start up end
 
         /***********************************/

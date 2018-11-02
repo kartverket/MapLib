@@ -8,6 +8,11 @@ ISY.MapAPI.Categories = function () {
     categories = mapConfig.categories;
   }
 
+  function reInit(mapConfig){
+    categories = [];
+    init(mapConfig);
+  }
+
   function getCategories() {
     return categories;
   }
@@ -29,6 +34,7 @@ ISY.MapAPI.Categories = function () {
 
   return {
     Init: init,
+    ReInit: reInit,
     GetCategoryById: getCategoryById,
     GetCategories: getCategories
   };

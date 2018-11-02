@@ -8,6 +8,11 @@ ISY.MapAPI.Groups = function () {
     groups = mapConfig.groups;
   }
 
+  function reInit(mapConfig){
+    groups = [];
+    init(mapConfig);
+  }
+
   function getGroups() {
     return groups;
   }
@@ -29,6 +34,7 @@ ISY.MapAPI.Groups = function () {
 
   return {
     Init: init,
+    ReInit: reInit,
     GetGroupById: getGroupById,
     GetGroups: getGroups
   };

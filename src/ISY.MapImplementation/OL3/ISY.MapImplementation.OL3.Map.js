@@ -101,6 +101,58 @@ ISY.MapImplementation.OL3.Map = function (repository, eventHandler, httpHelper, 
         ISY.MapImplementation.OL3.olMap = map;
     }
 
+    function reInitMap(mapConfig) {
+        var layers = map.getLayers().getArray();
+        for (i = 0; i < layers.length; i ++){
+            map.removeLayer(layers[i]);
+        }
+        var overlays = map.getOverlays();
+        for (j = 0; j < overlays.length; j++){
+            map.removeOverlay(overlays[j]);
+        }
+
+        var layersWithGuid = _getLayersWithGuid();
+        for (var i = 0; i < layersWithGuid.length; i++) {
+            var layer = layersWithGuid[i];
+            if (layer.getVisible() === true) {
+                map.removeLayer(layersWithGuid[i]);
+            }
+        }
+
+        layerPool = [];
+        isySubLayerPool = [];
+        
+        var numZoomLevels = mapConfig.numZoomLevels;
+        var newMapRes = [];
+        newMapRes[0] = mapConfig.newMaxRes;
+        mapScales = [];
+        mapScales[0] = mapConfig.newMaxScale;
+        for (var t = 1; t < numZoomLevels; t++) {
+            newMapRes[t] = newMapRes[t - 1] / 2;
+            mapScales[t] = mapScales[t - 1] / 2;
+        }
+        mapResolutions = newMapRes;
+        var sm = new ol.proj.Projection({
+            code: mapConfig.coordinate_system,
+            extent: mapConfig.extent,
+            units: mapConfig.extentUnits
+        });
+
+        var view = new ol.View({
+            projection: sm,
+            //constrainRotation: 4,
+            enableRotation: false,
+            center: mapConfig.center,
+            zoom: mapConfig.zoom,
+            resolutions: newMapRes,
+            maxResolution: mapConfig.newMaxRes,
+            numZoomLevels: numZoomLevels
+        });
+        map.setView(view);
+
+        ISY.MapImplementation.OL3.olMap = map;
+    }
+
   function _registerMapCallbacks() {
         var view = map.getView();
 
@@ -2104,6 +2156,7 @@ ISY.MapImplementation.OL3.Map = function (repository, eventHandler, httpHelper, 
         // Start up start
         InitMap: initMap,
         ChangeView: changeView,
+        ReInitMap: reInitMap,
         // Start up end
 
         /***********************************/
