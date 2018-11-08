@@ -309,6 +309,12 @@ ISY.MapImplementation.OL3.PrintBoxSelect = function (eventHandler) {
     isActive = true;
     if (map !== undefined) {
       scale = options.scale;
+      if (options.pageWidth !== undefined) {
+        pageWidth = options.pageWidth;
+      }
+      if (options.pageHeight !== undefined) {
+        pageHeight = options.pageHeight;
+      }
       cols = options.cols;
       rows = options.rows;
       if (options.orientation !== undefined && orientation !== options.orientation) {

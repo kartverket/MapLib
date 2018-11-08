@@ -40,6 +40,9 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler) {
 
 
     function addEventHandlers(map, showMeasurements) {
+        if (draw === undefined){
+            return;
+        }
         if (source) {
             eventHandlers['source'].push(source.on('addfeature',
                 function () {
