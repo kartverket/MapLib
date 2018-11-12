@@ -1,5 +1,5 @@
 /**
- * maplib - v1.0.22 - 2018-11-02
+ * maplib - v1.0.22 - 2018-11-07
  * https://github.com/kartverket/MapLib
  *
  * Copyright (c) 2018 
@@ -3290,8 +3290,10 @@ ISY.MapImplementation.OL3.AddLayerUrl = function (eventHandler) {
 
   function _removeOldLayer(map) {
     map.getLayers().forEach(function (layer) {
-      if (layer.get('id') === layerId) {
-        map.removeLayer(layer);
+      if (layer !== undefined){
+        if (layer.get('id') === layerId) {
+          map.removeLayer(layer);
+        }
       }
     });
   }
@@ -3365,6 +3367,9 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler) {
 
 
     function addEventHandlers(map, showMeasurements) {
+        if (draw === undefined){
+            return;
+        }
         if (source) {
             eventHandlers['source'].push(source.on('addfeature',
                 function () {
@@ -9282,6 +9287,12 @@ ISY.MapImplementation.OL3.PrintBoxSelect = function (eventHandler) {
     isActive = true;
     if (map !== undefined) {
       scale = options.scale;
+      if (options.pageWidth !== undefined) {
+        pageWidth = options.pageWidth;
+      }
+      if (options.pageHeight !== undefined) {
+        pageHeight = options.pageHeight;
+      }
       cols = options.cols;
       rows = options.rows;
       if (options.orientation !== undefined && orientation !== options.orientation) {
