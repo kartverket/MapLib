@@ -37,6 +37,7 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler) {
     var selectedFeatureId;
     var selectedFeature;
     var showMeasurements;
+    var showNauticalMiles;
 
 
     function addEventHandlers(map, showMeasurements) {
@@ -119,9 +120,34 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler) {
         listener = sketch.getGeometry().on('change', function (evt) {
             var output = getMeasurements(evt.target, map);
             sketch.setProperties({measurement: output});
-            measureTooltipElement.innerHTML = output;
+            if (showNauticalMiles) {
+                var natucialMile = parseMeasurementsToNauticalMiles(output, evt.target);
+                measureTooltipElement.innerHTML = natucialMile;
+            } else {
+                measureTooltipElement.innerHTML = output;
+            }
             measureTooltip.setPosition(getTooltipCoord(evt.target));
         });
+    }
+
+    function parseMeasurementsToNauticalMiles(measurementTxt, geom){
+        if (geom instanceof ol.geom.Polygon){
+            return formatAreaToNautical(measurementTxt);
+        } else if (geom instanceof ol.geom.LineString) {
+            return formatLengthToNautical(measurementTxt);
+        }
+    }
+
+    function formatAreaToNautical(measurementTxt) {
+        var splitTxt = measurementTxt.split(" ");
+        var convertToSquareNauticalMile = splitTxt[1] === 'm&sup2;' ? splitTxt[0] / 3.43E6 : splitTxt[0] / 3.43;
+        return convertToSquareNauticalMile.toFixed(4) + ' nmi&sup2;';
+    }
+
+    function formatLengthToNautical(measurementTxt){
+        var splitTxt = measurementTxt.split(" ");
+        var convertToNauticalMiles = splitTxt[1] === 'm' ? splitTxt[0] / 1000 / 1.852 : splitTxt[0] / 1.852;
+        return convertToNauticalMiles.toFixed(3) + ' nmi';
     }
 
     function getMeasurements(geom, map) {
@@ -439,6 +465,9 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler) {
 
     function addMeasurementsToLinestringStyle(feature, measurement) {
         var featureStyle = feature.getStyle()[0];
+        if (showNauticalMiles){
+            measurement = formatLengthToNautical(measurement);
+        }
         var newFeatureStyle = new ol.style.Style({
             stroke: featureStyle.getStroke(),
             text: new ol.style.Text({
@@ -460,6 +489,9 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler) {
 
     function addMeasurementsToPolygonStyle(feature, measurement) {
         var featureStyle = feature.getStyle()[0];
+        if (showNauticalMiles) {
+            measurement = formatAreaToNautical(measurement);
+        }
         var newFeatureStyle = new ol.style.Style({
             fill: featureStyle.getFill(),
             stroke: featureStyle.getStroke(),
@@ -510,7 +542,7 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler) {
         // } else {
         //     length = Math.round(line.getLength() * 100) / 100;
         // }
-        return length < 1000 ? length.toFixed(2) + ' m' : (length / 1000).toFixed(3) + ' km';
+            return length < 1000 ? length.toFixed(2) + ' m' : (length / 1000).toFixed(3) + ' km';
     };
 
     var formatArea = function (map, polygon) {
@@ -596,6 +628,7 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler) {
         isActive = true;
         text = false;
         showMeasurements = options.showMeasurements;
+        showNauticalMiles = options.showNauticalMiles;
         if (!options.style && !style) {
             style = drawStyle.Styles();
         }
