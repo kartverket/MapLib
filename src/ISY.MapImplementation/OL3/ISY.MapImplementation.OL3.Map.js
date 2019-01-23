@@ -2,7 +2,7 @@ var ISY = ISY || {};
 ISY.MapImplementation = ISY.MapImplementation || {};
 ISY.MapImplementation.OL3 = ISY.MapImplementation.OL3 || {};
 
-ISY.MapImplementation.OL3.Map = function (repository, eventHandler, httpHelper, measure, featureInfo, mapExport, hoverInfo, measureLine, drawFeature, offline, addLayerFeature, modifyFeature, addFeatureGps, printBoxSelect, addLayerUrl) {
+ISY.MapImplementation.OL3.Map = function (repository, eventHandler, httpHelper, measure, featureInfo, mapExport, hoverInfo, measureLine, drawFeature, offline, addLayerFeature, modifyFeature, addFeatureGps, printBox, printBoxSelect, addLayerUrl) {
     var map;
     var layerPool = [];
     var isySubLayerPool = [];
@@ -121,7 +121,7 @@ ISY.MapImplementation.OL3.Map = function (repository, eventHandler, httpHelper, 
 
         layerPool = [];
         isySubLayerPool = [];
-        
+
         var numZoomLevels = mapConfig.numZoomLevels;
         var newMapRes = [];
         newMapRes[0] = mapConfig.newMaxRes;
@@ -1722,17 +1722,32 @@ ISY.MapImplementation.OL3.Map = function (repository, eventHandler, httpHelper, 
      Offline End
      */
 
+    /*
+      PrintBox Start
+     */
+    var activatePrintBox = function (options) {
+      printBox.Activate(map, options);
+    };
+
+    var deactivatePrintBox = function () {
+          printBox.Deactivate(map);
+    };
+
+    /*
+    PrintBox End
+    */
+
 
     /*
       PrintBoxSelect Start
      */
-  var activatePrintBoxSelect = function (options) {
-        printBoxSelect.Activate(map, options);
-  };
+    var activatePrintBoxSelect = function (options) {
+          printBoxSelect.Activate(map, options);
+    };
 
-  var deactivatePrintBoxSelect = function () {
-        printBoxSelect.Deactivate(map);
-  };
+    var deactivatePrintBoxSelect = function () {
+          printBoxSelect.Deactivate(map);
+    };
 
     /*
      PrintBoxSelect End
@@ -2297,6 +2312,11 @@ ISY.MapImplementation.OL3.Map = function (repository, eventHandler, httpHelper, 
         // Offline end
 
         /***********************************/
+
+        // PrintBox Start
+        ActivatePrintBox: activatePrintBox,
+        DeactivatePrintBox: deactivatePrintBox,
+        // PrintBox End
 
         // PrintBoxSelect Start
         ActivatePrintBoxSelect: activatePrintBoxSelect,

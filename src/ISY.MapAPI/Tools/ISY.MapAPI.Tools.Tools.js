@@ -180,6 +180,20 @@ ISY.MapAPI.Tools.Tools = function(mapApi){
     var featureEditor = new ISY.MapAPI.Tools.Tool(featureEditorConfig);
     tools.push(featureEditor);
 
+    var printBoxConfig = {
+      id: 'PrintBox',
+      description: 'This tool activates box select functionality for printing',
+      activate: function (options){
+          mapApi.ActivatePrintBox(options);
+      },
+      deactivate: function (){
+          mapApi.DeactivatePrintBox();
+      },
+      messageObject: []
+    };
+    var printBox = new ISY.MapAPI.Tools.Tool(printBoxConfig);
+    tools.push(printBox);
+
     var printBoxSelectConfig = {
         id: 'PrintBoxSelect',
         description: 'This tool activates box select functionality for printing',

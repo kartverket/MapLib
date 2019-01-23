@@ -530,6 +530,21 @@ ISY.MapAPI.Map = function (mapImplementation, eventHandler, featureInfo, layerHa
    HoverInfo End
    */
 
+  /*
+   PrintBox Start
+   */
+  function activatePrintBox(options) {
+    mapImplementation.ActivatePrintBox(options);
+  }
+
+  function deactivatePrintBox() {
+    mapImplementation.DeactivatePrintBox();
+  }
+
+  /*
+   PrintBox End
+   */
+
 
   /*
    PrintBoxSelect Start
@@ -910,6 +925,11 @@ ISY.MapAPI.Map = function (mapImplementation, eventHandler, featureInfo, layerHa
     // DrawFeature end
 
     /***********************************/
+
+    // PrintBox Start
+    ActivatePrintBox: activatePrintBox,
+    DeactivatePrintBox: deactivatePrintBox,
+    // PrintBox End
 
     // PrintBoxSelect Start
     ActivatePrintBoxSelect: activatePrintBoxSelect,
