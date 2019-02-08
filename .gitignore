@@ -1,8 +1,5 @@
 *.sw*
 *~
-.bower-cache/
-.bower-registry/
-.bower-tmp/
 /build/
 /dist/src/
 /dist/vendor/

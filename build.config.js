@@ -14,7 +14,7 @@ module.exports = {
    * localDeployDir is the directory to which the localDeployDir copy task copies the dist directory.
    * It is useful for testing out changes made to maplib before pushing it to the repository
    */
-  localDeployDir: '../norgeskart3/build/vendor/maplib',
+  localDeployDir: '../norgeskart3/build/node_modules/maplib',
 
   /**
    * This is a collection of file patterns that refer to our app code (the
@@ -51,7 +51,6 @@ module.exports = {
    */
   test_files: {
     js: [
-        'build/vendor/**/*.js',
         'src/ISY.Utils/*.js',
         'src/ISY.Events/*.js',
         'src/ISY.Facade/*.js',
@@ -63,7 +62,13 @@ module.exports = {
         'src/ISY.MapImplementation/OL3/Styles/*.js',
         'src/ISY.Domain/*.js',
         'src/ISY.Repository/*.js',
-        'vendor/jasmine-ajax/lib/mock-ajax.js'
+        'node_modules/jquery/dist/jquery.js',
+        'node_modules/ol/dist/ol.js',
+        'node_modules/proj4/dist/proj4.js',
+        'node_modules/blob-util/dist/blob-util.min.js',
+        'node_modules/xml-to-json/xml.js',
+        'node_modules/xml-to-json/json2xml.js',
+        'node_modules/jasmine-ajax/lib/mock-ajax.js'
     ]
   },
 
@@ -87,21 +92,21 @@ module.exports = {
    */
   vendor_files: {
     js: [
-      'vendor/jquery/dist/jquery.js',
-      'vendor/openlayers3/ol.js',
-      'vendor/proj4/dist/proj4.js',
-      'vendor/blob-util/dist/blob-util.min.js',
-      'vendor/xml-to-json/xml.js',
-      'vendor/xml-to-json/json2xml.js'
+      'node_modules/jquery/dist/jquery.js',
+      'node_modules/ol/dist/ol.js',
+      'node_modules/proj4/dist/proj4.js',
+      'node_modules/blob-util/dist/blob-util.min.js',
+      'node_modules/xml-to-json/xml.js',
+      'node_modules/xml-to-json/json2xml.js'
     ],
     css: [
-      'vendor/openlayers3/ol.css'
+      'node_modules/ol/css/ol.css'
     ],
     assets: [
     ],
     fonts: [
-      'vendor/bootstrap/fonts/glyphicons-halflings-regular.woff',
-      'vendor/bootstrap/fonts/glyphicons-halflings-regular.ttf'
+      'node_modules/bootstrap/fonts/glyphicons-halflings-regular.woff',
+      'node_modules/bootstrap/fonts/glyphicons-halflings-regular.ttf'
     ]
   },
   vendor_leaflet_files: {
