@@ -3,10 +3,8 @@ ISY maplib
 
 Fetching the code
 ----------------
-	1. Install nodejs and bower, make sure you can run the commands "node" and "bower" in your preferred command line
-	2. Run "bower install https://github.com/kartverket/MapLib.git" (add "--save-dev" to save it to your bower.json)
-		or
-	add "maplib": "https://github.com/kartverket/MapLib.git" to your bower.json dependencies and run "bower install"
+	1. Install nodejs, make sure you can run the commands "node" in your preferred command line
+	2. add "maplib": "https://github.com/kartverket/MapLib.git" to your package.json dependencies and run "npm i"
 
 Contributing
 ------------
@@ -14,7 +12,6 @@ Contributing
     2. Install grunt    
     3. Cloen the git-repository "https://github.com/kartverket/MapLib.git"
     4. Run "npm install" on the command line from within the fetched directory
-    5. Run "bower install"
     6. Build and run unit tests with "grunt build"
 
 Architecture

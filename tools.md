@@ -158,60 +158,6 @@ add more tasks and change some steps around to make this build your own.
 Hopefully, this readme and the documentation within `Gruntfile.js` (as well as
 of course the documentation at gruntjs.com) will set you on the right path.
 
-## Bower
-
-[Bower](bower.io) is a package manager for the web. It's similar in many
-respects to NPM, though it is significantly simpler and only contains code for
-web projects, like Twitter Bootstrap and its AngularJS counterpart Angular
-Bootstrap. Bower allows us to say that our app depends in some way on these
-other libraries so that we can manage all of them in one simple place.
-
-`ngBoilerplate` comes with a `bower.json` file that looks something like this:
-
-```js
-{
-  "name": "maplib",
-  "version": "0.2.0-SNAPSHOT",
-  "devDependencies": {
-    "angular": "~1.0.7",
-    "angular-mocks": "~1.0.7",
-    "bootstrap": "~2.3.2",
-    "angular-bootstrap": "~0.3.0",
-    "angular-ui-router": "~0.0.1",
-    "angular-ui-utils": "~0.0.3"
-  },
-  "dependencies": {}
-}
-```
-
-This file is fairly self-explanatory; it gives the package name and version
-(duplicated from `package.json`, but this is unavoidable) as well as a list of
-dependencies our application needs in order to work. If we simply call
-
-```sh
-$ bower install
-```
-
-it will read these three dependencies and install them into the `vendor/` folder
-(along with any dependencies they have) so that we can use them in our app. If
-we want to add a new package like AngularUI's
-[ngGrid](http://angular-ui.github.io/ng-grid/), then we can tell Bower to
-install that from the web, place it into the `vendor/` folder for us to use, and
-then add it as a dependency to `bower.json`:
-
-```js
-$ bower install angular-grid --save-dev
-```
-
-Bower can also update all of our packages for us at a later date, though that
-and its many other awesome features are beyond the scope of this simple
-overview.
-
-One last thing to note is that packages installed with Bower are not
-standardized, so we cannot automatically add them to the build process; anything
-installed with Bower (or placed in the `vendor/` directory manually) *must* be
-added to your `build.config.js` file manually; look for the Bower libs included
-in `ngBoilerplate` by default in there to see what I mean.
 
 ## Where to Go From Here
 

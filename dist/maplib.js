@@ -1,5 +1,5 @@
 /**
- * maplib - v1.0.27 - 2019-01-23
+ * maplib - v1.1.0 - 2019-02-08
  * https://github.com/kartverket/MapLib
  *
  * Copyright (c) 2019 
@@ -423,6 +423,7 @@ ISY.MapAPI.CustomCrsLoader = function () {
     //proj4.defs("http://www.opengis.net/gml/srs/epsg.xml#32632", '+proj=utm +zone=32 +ellps=WGS84 +datum=WGS84 +units=m +no_defs');
     //proj4.defs("http://www.opengis.net/gml/srs/epsg.xml#32633", '+proj=utm +zone=33 +ellps=WGS84 +datum=WGS84 +units=m +no_defs');
     //proj4.defs("http://www.opengis.net/gml/srs/epsg.xml#32635", '+proj=utm +zone=35 +ellps=WGS84 +datum=WGS84 +units=m +no_defs');
+    ol.proj.proj4.register(proj4);
   }
 
   return {
@@ -3384,7 +3385,7 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler) {
     var measureTooltipElement;
     var measureTooltip;
     var modificationActive = false;
-    var wgs84Sphere = new ol.Sphere(6378137);
+    // var wgs84Sphere = new ol.Sphere(6378137);
     var format = new ol.format.GeoJSON({
             defaultDataProjection: 'EPSG:25833',
             projection: 'EPSG:25833'
@@ -3899,7 +3900,7 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler) {
         for (var i = 0, ii = coordinates.length - 1; i < ii; ++i) {
             var c1 = ol.proj.transform(coordinates[i], sourceProj, 'EPSG:4326');
             var c2 = ol.proj.transform(coordinates[i + 1], sourceProj, 'EPSG:4326');
-            length += wgs84Sphere.haversineDistance(c1, c2);
+            length += ol.sphere.getDistance(c1, c2);
         }
         // } else {
         //     length = Math.round(line.getLength() * 100) / 100;
@@ -3914,7 +3915,7 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler) {
         var geom = (polygon.clone().transform(
             sourceProj, 'EPSG:4326'));
         var coordinates = geom.getLinearRing(0).getCoordinates();
-        area = Math.abs(wgs84Sphere.geodesicArea(coordinates));
+        area = Math.abs(ol.sphere.getArea(coordinates));
         // } else {
         //     area = polygon.getArea();
         // }
