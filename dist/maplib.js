@@ -1,5 +1,5 @@
 /**
- * maplib - v1.1.0 - 2019-02-08
+ * maplib - v1.1.0 - 2019-02-09
  * https://github.com/kartverket/MapLib
  *
  * Copyright (c) 2019 
