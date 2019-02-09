@@ -549,10 +549,7 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler) {
         var area;
         // if (geodesicCheckbox.checked) {
         var sourceProj = map.getView().getProjection();
-        var geom = (polygon.clone().transform(
-            sourceProj, 'EPSG:4326'));
-        var coordinates = geom.getLinearRing(0).getCoordinates();
-        area = Math.abs(ol.sphere.getArea(coordinates));
+        area = Math.abs(ol.sphere.getArea(polygon, { projection: sourceProj}));
         // } else {
         //     area = polygon.getArea();
         // }
