@@ -332,12 +332,13 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler) {
         map.addInteraction(select);
     }
 
-    function initiateDrawing(newFeatures) {
+    function initiateDrawing(newFeatures, options) {
         features = new ol.Collection(newFeatures);
         source = new ol.source.Vector({features: features});
         drawLayer = new ol.layer.Vector({
             source: source,
-            style: styleFunction
+            style: styleFunction,
+            options: options
         });
         drawLayer.set('id', 'drawing');
     }
@@ -589,7 +590,7 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler) {
         map.addInteraction(
             new ol.interaction.DoubleClickZoom()
         );
-    };   
+    };
 
     function _transformCrd(proj, crds) {
         switch (proj) {
@@ -646,7 +647,7 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler) {
             else {
                 options.GeoJSON = typeof options.GeoJSON == 'object' ? options.GeoJSON : JSON.parse(options.GeoJSON);
                 options.GeoJSON = _transformGeoJson('EPSG:32633', options.GeoJSON);
-                initiateDrawing(format.readFeatures(options.GeoJSON));
+                initiateDrawing(format.readFeatures(options.GeoJSON), options);
             }
         }
         else {
@@ -670,7 +671,7 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler) {
                         map.removeLayer(layer);
                     }
                 }
-                
+
             }
         );
         map.addLayer(drawLayer);
