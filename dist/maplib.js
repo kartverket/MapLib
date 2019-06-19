@@ -1,5 +1,5 @@
 /**
- * maplib - v1.1.3 - 2019-05-22
+ * maplib - v1.1.4 - 2019-06-19
  * https://github.com/kartverket/MapLib
  *
  * Copyright (c) 2019 
@@ -3974,12 +3974,23 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler) {
     function _transformGeoJson(proj, geoJson) {
         for (var i = 0; i < geoJson.features.length; i++) {
             var featureCrds = geoJson.features[i].geometry.coordinates;
-            if (featureCrds.length === 2 && typeof featureCrds[0] === 'number') {
-                geoJson.features[i].geometry.coordinates = _transformCrd(proj, featureCrds);
-            } else {
-                for (var j = 0; j < featureCrds.length; j++) {
-                    geoJson.features[i].geometry.coordinates[j] = _transformCrd(proj, featureCrds[j]);
-                }
+            var featureType = geoJson.features[i].geometry.type.toLowerCase();
+            switch (featureType) {
+                case 'point':
+                    geoJson.features[i].geometry.coordinates = _transformCrd(proj, featureCrds);
+                    break;
+                case 'linestring':
+                    for (var j = 0; j < featureCrds.length; j++) {
+                        geoJson.features[i].geometry.coordinates[j] = _transformCrd(proj, featureCrds[j]);
+                    }
+                    break;
+                case 'polygon':
+                    for (var k = 0; k < featureCrds.length; k++) {
+                        for (var l = 0; l < featureCrds[k].length; l++) {
+                            geoJson.features[i].geometry.coordinates[k][l] = _transformCrd(proj, featureCrds[k][l]);
+                        }
+                    }
+                    break;
             }
         }
         return geoJson;
