@@ -1,8 +1,8 @@
 /**
- * maplib - v1.1.4 - 2019-06-19
+ * maplib - v1.1.4 - 2020-03-04
  * https://github.com/kartverket/MapLib
  *
- * Copyright (c) 2019 
+ * Copyright (c) 2020 
  */
 var ISY = ISY || {};
 ISY.Domain = ISY.Domain || {};
