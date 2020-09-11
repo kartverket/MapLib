@@ -95,7 +95,7 @@ ISY.MapImplementation.OL3.FeatureInfo = function () {
     var layerSource = mapLayer.getSource();
     var projection = view.getProjection();
 
-    var url = layerSource.getGetFeatureInfoUrl(coordinate, viewResolution, projection, {
+    var url = layerSource.getFeatureInfoUrl(coordinate, viewResolution, projection, {
       INFO_FORMAT: isySubLayer.featureInfo.getFeatureInfoFormat,
       feature_count: 10
     });

@@ -1796,21 +1796,23 @@ ISY.MapImplementation.OL3.Map = function (repository, eventHandler, httpHelper, 
     };
 
   var zoomToLayer = function (isySubLayer) {
-        var layer = _getLayerFromPool(isySubLayer);
+    var layer = _getLayerFromPool(isySubLayer);
     if (layer) {
-            var extent;
-            if (typeof layer.getSource().getExtent !== "undefined") {
-              extent = layer.getSource().getExtent();
-            } else {
-              extent = layer.getSource().getTileGrid().getExtent();
-            }
-            if (Array.isArray(extent) && extent[0] !== Infinity) {
+      var extent;
+      if (typeof layer.getSource().getExtent !== "undefined") {
+        extent = layer.getSource().getExtent();
+      } else if( typeof layer.getSource().getTileGrid !== "undefined") {
+        extent = layer.getSource().getTileGrid().getExtent();
+      } else {
+        extent = layer.getExtent();
+      }
+      if (Array.isArray(extent) && extent[0] !== Infinity) {
         if (!ol.extent.containsCoordinate(extent, map.getView().getCenter())) {
-                    map.getView().fit(extent, map.getSize());
-                }
-            }
+          map.getView().fit(extent, map.getSize());
         }
-    };
+      }
+    }
+  };
 
   var zoomToLayers = function (isySubLayers) {
         var layersExtent = [Infinity, Infinity, -Infinity, -Infinity];

@@ -1,5 +1,5 @@
 /**
- * maplib - v1.1.4 - 2020-05-08
+ * maplib - v1.1.5 - 2020-09-11
  * https://github.com/kartverket/MapLib
  *
  * Copyright (c) 2020 
@@ -4388,7 +4388,7 @@ ISY.MapImplementation.OL3.FeatureInfo = function () {
     var layerSource = mapLayer.getSource();
     var projection = view.getProjection();
 
-    var url = layerSource.getGetFeatureInfoUrl(coordinate, viewResolution, projection, {
+    var url = layerSource.getFeatureInfoUrl(coordinate, viewResolution, projection, {
       INFO_FORMAT: isySubLayer.featureInfo.getFeatureInfoFormat,
       feature_count: 10
     });
@@ -6699,21 +6699,23 @@ ISY.MapImplementation.OL3.Map = function (repository, eventHandler, httpHelper, 
     };
 
   var zoomToLayer = function (isySubLayer) {
-        var layer = _getLayerFromPool(isySubLayer);
+    var layer = _getLayerFromPool(isySubLayer);
     if (layer) {
-            var extent;
-            if (typeof layer.getSource().getExtent !== "undefined") {
-              extent = layer.getSource().getExtent();
-            } else {
-              extent = layer.getSource().getTileGrid().getExtent();
-            }
-            if (Array.isArray(extent) && extent[0] !== Infinity) {
+      var extent;
+      if (typeof layer.getSource().getExtent !== "undefined") {
+        extent = layer.getSource().getExtent();
+      } else if( typeof layer.getSource().getTileGrid !== "undefined") {
+        extent = layer.getSource().getTileGrid().getExtent();
+      } else {
+        extent = layer.getExtent();
+      }
+      if (Array.isArray(extent) && extent[0] !== Infinity) {
         if (!ol.extent.containsCoordinate(extent, map.getView().getCenter())) {
-                    map.getView().fit(extent, map.getSize());
-                }
-            }
+          map.getView().fit(extent, map.getSize());
         }
-    };
+      }
+    }
+  };
 
   var zoomToLayers = function (isySubLayers) {
         var layersExtent = [Infinity, Infinity, -Infinity, -Infinity];

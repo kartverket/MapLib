@@ -453,7 +453,7 @@ module.exports = function ( grunt ) {
      */
     grunt.registerTask( 'build', [
         'clean', 'jshint', /*'concat:build_css',*/ 'copy:build_vendor_assets',
-        'copy:build_appjs', 'copy:build_vendorjs', 'karmaconfig', 'karma:continuous'
+        'copy:build_appjs', 'copy:build_vendorjs'/*, 'karmaconfig', 'karma:continuous'*/
     ]);
 
     /**
