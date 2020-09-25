@@ -1,5 +1,5 @@
 /**
- * maplib - v1.1.5 - 2020-09-11
+ * maplib - v1.1.6 - 2020-09-25
  * https://github.com/kartverket/MapLib
  *
  * Copyright (c) 2020 
@@ -3689,7 +3689,7 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler) {
             layers: [drawLayer]
         };
         if (selectedFeature) {
-            selectOptions['features'] = [selectedFeature];
+            selectOptions['features'] = new ol.Collection([selectedFeature]);
         }
         select = new ol.interaction.Select(selectOptions);
         map.addInteraction(select);
