@@ -326,7 +326,7 @@ ISY.MapImplementation.OL3.DrawFeature = function(eventHandler) {
             layers: [drawLayer]
         };
         if (selectedFeature) {
-            selectOptions['features'] = [selectedFeature];
+            selectOptions['features'] = new ol.Collection([selectedFeature]);
         }
         select = new ol.interaction.Select(selectOptions);
         map.addInteraction(select);
