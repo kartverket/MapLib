@@ -141,6 +141,7 @@ ISY.MapImplementation.OL3.Map = function (repository, eventHandler, httpHelper, 
 
         var view = new ol.View({
             projection: sm,
+            constrainResolution: true,
             //constrainRotation: 4,
             enableRotation: false,
             center: mapConfig.center,

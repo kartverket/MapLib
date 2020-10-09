@@ -1,5 +1,5 @@
 /**
- * maplib - v1.1.7 - 2020-09-28
+ * maplib - v1.1.8 - 2020-10-09
  * https://github.com/kartverket/MapLib
  *
  * Copyright (c) 2020 
@@ -5044,6 +5044,7 @@ ISY.MapImplementation.OL3.Map = function (repository, eventHandler, httpHelper, 
 
         var view = new ol.View({
             projection: sm,
+            constrainResolution: true,
             //constrainRotation: 4,
             enableRotation: false,
             center: mapConfig.center,
