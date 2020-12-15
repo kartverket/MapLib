@@ -68,7 +68,7 @@ ISY.MapImplementation.OL3.Map = function (repository, eventHandler, httpHelper, 
     for (var z = 0; z < mapConfig.numZoomLevels; ++z) {
       matrixIds[z] = mapConfig.basemap.matrixprefix ? matrixSet + ":" + z : matrixIds[z] = z;
     }
-    var baseLayer = mapConfig.basemap ? [ new TileLayer({
+    var baseLayer = mapConfig.basemap ? [new TileLayer({
       source: new WMTS({
         url: mapConfig.basemap.url,
         layer: mapConfig.basemap.layers,
@@ -83,7 +83,7 @@ ISY.MapImplementation.OL3.Map = function (repository, eventHandler, httpHelper, 
         style: 'default'
       }),
       zIndex: -1
-    })] : []
+    })] : [];
         map = new ol.Map({
             target: targetId,
             renderer: mapConfig.renderer,
