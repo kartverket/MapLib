@@ -1,5 +1,5 @@
 /**
- * maplib - v1.1.8 - 2020-10-09
+ * maplib - v1.1.9 - 2020-12-15
  * https://github.com/kartverket/MapLib
  *
  * Copyright (c) 2020 
@@ -4966,11 +4966,31 @@ ISY.MapImplementation.OL3.Map = function (repository, eventHandler, httpHelper, 
       altShiftDragRotate: false,
       pinchRotate: false
     });
-
+    var matrixIds = new Array(mapConfig.numZoomLevels);
+    var matrixSet = mapConfig.matrixSet;
+    for (var z = 0; z < mapConfig.numZoomLevels; ++z) {
+      matrixIds[z] = mapConfig.basemap.matrixprefix ? matrixSet + ":" + z : matrixIds[z] = z;
+    }
+    var baseLayer = mapConfig.basemap ? [new TileLayer({
+      source: new WMTS({
+        url: mapConfig.basemap.url,
+        layer: mapConfig.basemap.layers,
+        matrixSet: 'EPSG:' + parseInt(mapConfig.coordinate_system.substr(mapConfig.coordinate_system.indexOf(':') + 1), 10),
+        format: mapConfig.basemap.format,
+        projection: sm,
+        tileGrid: new WMTSTileGrid({
+          origin: getExtentTopLeft(sm.getExtent()),
+          resolutions: newMapRes,
+          matrixIds: matrixIds
+        }),
+        style: 'default'
+      }),
+      zIndex: -1
+    })] : [];
         map = new ol.Map({
             target: targetId,
             renderer: mapConfig.renderer,
-            layers: [],
+          layers: baseLayer,
             loadTilesWhileAnimating: true, // Improve user experience by loading tiles while animating. Will make animations stutter on mobile or slow devices.
             loadTilesWhileInteracting: true,
             view: new ol.View({
