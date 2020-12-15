@@ -68,15 +68,15 @@ ISY.MapImplementation.OL3.Map = function (repository, eventHandler, httpHelper, 
     for (var z = 0; z < mapConfig.numZoomLevels; ++z) {
       matrixIds[z] = mapConfig.basemap.matrixprefix ? matrixSet + ":" + z : matrixIds[z] = z;
     }
-    var baseLayer = mapConfig.basemap ? [new TileLayer({
-      source: new WMTS({
+    var baseLayer = mapConfig.basemap ? [new ol.layer.Tile({
+      source: new ol.source.WMTS({
         url: mapConfig.basemap.url,
         layer: mapConfig.basemap.layers,
         matrixSet: 'EPSG:' + parseInt(mapConfig.coordinate_system.substr(mapConfig.coordinate_system.indexOf(':') + 1), 10),
         format: mapConfig.basemap.format,
         projection: sm,
-        tileGrid: new WMTSTileGrid({
-          origin: getExtentTopLeft(sm.getExtent()),
+        tileGrid: new ol.tilegrid.WMTS({
+          origin: ol.extent.getTopLeft(sm.getExtent()),
           resolutions: newMapRes,
           matrixIds: matrixIds
         }),
