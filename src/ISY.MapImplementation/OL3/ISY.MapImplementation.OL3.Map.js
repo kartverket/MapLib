@@ -65,8 +65,10 @@ ISY.MapImplementation.OL3.Map = function (repository, eventHandler, httpHelper, 
     });
     var matrixIds = new Array(mapConfig.numZoomLevels);
     var matrixSet = mapConfig.matrixSet;
-    for (var z = 0; z < mapConfig.numZoomLevels; ++z) {
-      matrixIds[z] = mapConfig.basemap.matrixprefix ? matrixSet + ":" + z : matrixIds[z] = z;
+    if (mapConfig.basemap && mapConfig.basemap.matrixprefix ) {
+        for (var z = 0; z < mapConfig.numZoomLevels; ++z) {
+            matrixIds[z] = mapConfig.basemap.matrixprefix ? matrixSet + ":" + z : matrixIds[z] = z;
+          }
     }
     var baseLayer = mapConfig.basemap ? [new ol.layer.Tile({
       source: new ol.source.WMTS({
