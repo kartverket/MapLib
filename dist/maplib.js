@@ -1,8 +1,8 @@
 /**
- * maplib - v1.1.9 - 2020-12-15
+ * maplib - v1.1.9 - 2021-01-08
  * https://github.com/kartverket/MapLib
  *
- * Copyright (c) 2020 
+ * Copyright (c) 2021 
  */
 var ISY = ISY || {};
 ISY.Domain = ISY.Domain || {};
@@ -4337,6 +4337,7 @@ ISY.MapImplementation.OL3.FeatureInfo = function () {
     var height = $element[0].height;
     var width = $element[0].width;
     infoMarkerOverlay = new ol.Overlay({
+      insertFirst: false,
       element: element,
       stopEvent: false,
       offset: [-width / 2, -height]
@@ -4968,8 +4969,10 @@ ISY.MapImplementation.OL3.Map = function (repository, eventHandler, httpHelper, 
     });
     var matrixIds = new Array(mapConfig.numZoomLevels);
     var matrixSet = mapConfig.matrixSet;
-    for (var z = 0; z < mapConfig.numZoomLevels; ++z) {
-      matrixIds[z] = mapConfig.basemap.matrixprefix ? matrixSet + ":" + z : matrixIds[z] = z;
+    if (mapConfig.basemap && mapConfig.basemap.matrixprefix ) {
+        for (var z = 0; z < mapConfig.numZoomLevels; ++z) {
+            matrixIds[z] = mapConfig.basemap.matrixprefix ? matrixSet + ":" + z : matrixIds[z] = z;
+          }
     }
     var baseLayer = mapConfig.basemap ? [new ol.layer.Tile({
       source: new ol.source.WMTS({
