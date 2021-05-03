@@ -243,11 +243,9 @@ module.exports = function ( grunt ) {
         'Gruntfile.js'
       ],
       options: { // http://www.jshint.com/docs/options/
+        asi: true,
         curly: true,
-        immed: true,
-        newcap: true,
         noarg: true,
-        noempty: true,
         sub: true,
         boss: false,
         eqnull: true,
