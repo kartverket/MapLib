@@ -1,90 +1,90 @@
-var ISY = ISY || {};
-ISY.MapImplementation = ISY.MapImplementation || {};
-ISY.MapImplementation.OL3 = ISY.MapImplementation.OL3 || {};
-ISY.MapImplementation.OL3.Sources = ISY.MapImplementation.OL3.Sources || {};
+var ISY = ISY || {}
+ISY.MapImplementation = ISY.MapImplementation || {}
+ISY.MapImplementation.OL3 = ISY.MapImplementation.OL3 || {}
+ISY.MapImplementation.OL3.Sources = ISY.MapImplementation.OL3.Sources || {}
 
 ISY.MapImplementation.OL3.Sources.Wmts = function (isySubLayer, parameters) {
-    var projection = new ol.proj.Projection({
-        code: isySubLayer.coordinate_system,
-        extent: isySubLayer.extent,
-        units: isySubLayer.extentUnits
-    });
-    var getUrlParameter = function () {
-        var urlParameter = '';
-        if (parameters) {
-            for (var index in parameters) {
-                urlParameter += '&' + index + '=' + parameters[index];
-            }
-        }
-        return urlParameter;
-    };
-
-    var matrixSet = isySubLayer.matrixSet;
-    if (matrixSet === null || matrixSet === '' || matrixSet === undefined) {
-        matrixSet = isySubLayer.matrixPrefix ? isySubLayer.coordinate_system : parseInt(isySubLayer.coordinate_system.substr(isySubLayer.coordinate_system.indexOf(':') + 1), 10);
+  var projection = new ol.proj.Projection({
+    code: isySubLayer.coordinate_system,
+    extent: isySubLayer.extent,
+    units: isySubLayer.extentUnits
+  })
+  var getUrlParameter = function () {
+    var urlParameter = ''
+    if (parameters) {
+      for (var index in parameters) {
+        urlParameter += '&' + index + '=' + parameters[index]
+      }
     }
+    return urlParameter
+  }
 
-    var urls = isySubLayer.url;
-    for (var i = 0; i < urls.length; i++) {
-        urls[i] += getUrlParameter();
-    }
+  var matrixSet = isySubLayer.matrixSet
+  if (matrixSet === null || matrixSet === '' || matrixSet === undefined) {
+    matrixSet = isySubLayer.matrixPrefix ? isySubLayer.coordinate_system : parseInt(isySubLayer.coordinate_system.substr(isySubLayer.coordinate_system.indexOf(':') + 1), 10)
+  }
 
-    var source, sourceOptions;
-    var projectionExtent = projection.getExtent();
-    var wmtsExtent = isySubLayer.wmtsExtent ? isySubLayer.wmtsExtent.split(',') : projectionExtent;
-    if (isySubLayer.getCapabilities) {
-        var capabilitiesUrl = urls[0] + '&Request=GetCapabilities&Service=WMTS&Version=1.0.0';
-        var capabilities = $.ajax({
-            type: "GET",
-            url: capabilitiesUrl,
-            async: false
-        }).responseText;
-        var parser = new ol.format.WMTSCapabilities();
-        capabilities = parser.read(capabilities);
-        capabilities.Contents.Layer.forEach(function (layer) {
-            if (layer.Identifier === isySubLayer.name) {
-                layer.WGS84BoundingBox = undefined;
-            }
-        });
+  var urls = isySubLayer.url
+  for (var i = 0; i < urls.length; i++) {
+    urls[i] += getUrlParameter()
+  }
+
+  var source, sourceOptions
+  var projectionExtent = projection.getExtent()
+  var wmtsExtent = isySubLayer.wmtsExtent ? isySubLayer.wmtsExtent.split(',') : projectionExtent
+  if (isySubLayer.getCapabilities) {
+    var capabilitiesUrl = urls[0] + '&Request=GetCapabilities&Service=WMTS&Version=1.0.0'
+    var capabilities = $.ajax({
+      type: "GET",
+      url: capabilitiesUrl,
+      async: false
+    }).responseText
+    var parser = new ol.format.WMTSCapabilities()
+    capabilities = parser.read(capabilities)
+    capabilities.Contents.Layer.forEach(function (layer) {
+      if (layer.Identifier === isySubLayer.name) {
+        layer.WGS84BoundingBox = undefined
+      }
+    })
     sourceOptions = ol.source.WMTS.optionsFromCapabilities(capabilities, {
       layer: isySubLayer.name,
       matrixSet: matrixSet,
       requestEncoding: 'KVP'
-    });
-        sourceOptions.tileGrid = new ol.tilegrid.WMTS({
-            extent: wmtsExtent,
-            origin: sourceOptions.tileGrid.getOrigin(0),
-            resolutions: sourceOptions.tileGrid.getResolutions(),
-            matrixIds: sourceOptions.tileGrid.getMatrixIds(),
-            tileSize: sourceOptions.tileGrid.getTileSize(0)
-        });
+    })
+    sourceOptions.tileGrid = new ol.tilegrid.WMTS({
+      extent: wmtsExtent,
+      origin: sourceOptions.tileGrid.getOrigin(0),
+      resolutions: sourceOptions.tileGrid.getResolutions(),
+      matrixIds: sourceOptions.tileGrid.getMatrixIds(),
+      tileSize: sourceOptions.tileGrid.getTileSize(0)
+    })
   } else {
-        var size = ol.extent.getWidth(projectionExtent) / 256;
-        var resolutions = new Array(isySubLayer.numZoomLevels);
-        var matrixIds = new Array(isySubLayer.numZoomLevels);
-        for (var z = 0; z < isySubLayer.numZoomLevels; ++z) {
-            resolutions[z] = size / Math.pow(2, z);
-            matrixIds[z] = isySubLayer.matrixPrefix ? matrixSet + ":" + z : matrixIds[z] = z;
-        }
-        sourceOptions = {
-            layer: isySubLayer.name,
-            format: isySubLayer.format,
-            matrixSet: matrixSet,
-            crossOrigin: isySubLayer.crossOrigin,
-            tileGrid: new ol.tilegrid.WMTS({
-                extent: wmtsExtent,
-                origin: ol.extent.getTopLeft(projectionExtent),
-                resolutions: resolutions,
-                matrixIds: matrixIds
-            }),
-            style: 'default',
-            wrapX: true
-        };
+    var size = ol.extent.getWidth(projectionExtent) / 256
+    var resolutions = new Array(isySubLayer.numZoomLevels)
+    var matrixIds = new Array(isySubLayer.numZoomLevels)
+    for (var z = 0; z < isySubLayer.numZoomLevels; ++z) {
+      resolutions[z] = size / Math.pow(2, z)
+      matrixIds[z] = isySubLayer.matrixPrefix ? matrixSet + ":" + z : matrixIds[z] = z
     }
-    sourceOptions.projection = projection;
-    sourceOptions.urls = urls;
-    source = new ol.source.WMTS(sourceOptions);
-    source.set('type', 'ol.source.WMTS');
+    sourceOptions = {
+      layer: isySubLayer.name,
+      format: isySubLayer.format,
+      matrixSet: matrixSet,
+      crossOrigin: isySubLayer.crossOrigin,
+      tileGrid: new ol.tilegrid.WMTS({
+        extent: wmtsExtent,
+        origin: ol.extent.getTopLeft(projectionExtent),
+        resolutions: resolutions,
+        matrixIds: matrixIds
+      }),
+      style: 'default',
+      wrapX: true
+    }
+  }
+  sourceOptions.projection = projection
+  sourceOptions.urls = urls
+  source = new ol.source.WMTS(sourceOptions)
+  source.set('type', 'ol.source.WMTS')
 
-    return source;
-};
+  return source
+}
