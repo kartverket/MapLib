@@ -82,14 +82,12 @@ ISY.MapImplementation.OL3.Map = function (
     });
     var matrixIds = new Array(mapConfig.numZoomLevels);
     var matrixSet = mapConfig.matrixSet;
-    for (var z = 0; z < mapConfig.numZoomLevels; ++z) {
-      matrixIds[z] = mapConfig.basemap.matrixPrefix
-        ? matrixSet + ":" + z
-        : (matrixIds[z] = z);
-    }
     var baseLayer = [];
     if (mapConfig.basemap) {
-      var parameters = {
+      for (var z = 0; z < mapConfig.numZoomLevels; ++z) {
+        matrixIds[z] = mapConfig.basemap.matrixPrefix ? matrixSet + ":" + z : (matrixIds[z] = z);
+      }
+        var parameters = {
         gkt: _getToken(),
       };
       mapConfig.basemap.coordinate_system = mapConfig.coordinate_system;
