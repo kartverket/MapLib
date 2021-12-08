@@ -80,12 +80,10 @@ ISY.MapImplementation.OL3.Map = function (
       altShiftDragRotate: false,
       pinchRotate: false,
     });
-    var matrixIds = new Array(mapConfig.numZoomLevels);
-    var matrixSet = mapConfig.matrixSet;
     var baseLayer = [];
     if (mapConfig.basemap) {
-      for (var z = 0; z < mapConfig.numZoomLevels; ++z) {
-        matrixIds[z] = mapConfig.basemap.matrixPrefix ? matrixSet + ":" + z : (matrixIds[z] = z);
+      if (mapConfig.basemap.matrixSet === null || mapConfig.basemap.matrixSet === '' || mapConfig.basemap.matrixSet === undefined) {
+        mapConfig.basemap.matrixSet = mapConfig.basemap.matrixPrefix ? mapConfig.coordinate_system : parseInt(mapConfig.coordinate_system.substr(mapConfig.coordinate_system.indexOf(':') + 1), 10)
       }
         var parameters = {
         gkt: _getToken(),
@@ -94,14 +92,6 @@ ISY.MapImplementation.OL3.Map = function (
       mapConfig.basemap.extent = mapConfig.extent;
       mapConfig.basemap.extentUnits = mapConfig.extentUnits;
       mapConfig.basemap.numZoomLevels = mapConfig.numZoomLevels;
-      mapConfig.basemap.matrixSet =
-        "EPSG:" +
-        parseInt(
-          mapConfig.coordinate_system.substr(
-            mapConfig.coordinate_system.indexOf(":") + 1
-          ),
-          10
-        );
       baseLayer = [
         new ol.layer.Tile({
           source: new ISY.MapImplementation.OL3.Sources.Wmts(
